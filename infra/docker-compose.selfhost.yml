@@ -1,0 +1,172 @@
+# tapeshelf on your own server. You don't need to edit this file: install.sh writes the settings
+# into .env next to it, and ./tapeshelf.sh starts, stops and updates everything.
+name: tapeshelf
+
+x-app: &app
+  image: ${TAPESHELF_IMAGES:-ghcr.io/tapeshelf/tapeshelf}-api:${TAPESHELF_VERSION:-latest}
+  restart: unless-stopped
+  environment: &app-env
+    NODE_ENV: production
+    EDITION: community
+    LOG_LEVEL: ${LOG_LEVEL:-info}
+    PUBLIC_URL: ${PUBLIC_URL:?run install.sh first}
+    SITE_NAME: ${SITE_NAME:-tapeshelf}
+    CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+    DATABASE_URL: postgresql://tapeshelf:${POSTGRES_PASSWORD:?run install.sh first}@postgres:5432/tapeshelf
+    REDIS_URL: redis://redis:6379/0
+    WORKER_TMP_DIR: /work
+    WORKER_HEALTH_PORT: '3001'
+    # Secrets. KEK encrypts every video's key: without it, no video can be played again.
+    COOKIE_SECRET: ${COOKIE_SECRET:?run install.sh first}
+    JWT_SECRET: ${JWT_SECRET:?run install.sh first}
+    KEK: ${KEK:?run install.sh first}
+    # The first admin, created on the first start. Later changes in the app stay; to set a new
+    # password from here, use ./tapeshelf.sh admin-password.
+    ADMIN_KEEP_PASSWORD: ${ADMIN_KEEP_PASSWORD:-true}
+    # Whether a new instance starts with sign-ups closed; after that, Admin → Settings decides.
+    INITIAL_REGISTRATION: ${INITIAL_REGISTRATION:-open}
+    ADMIN_EMAIL: ${ADMIN_EMAIL:?run install.sh first}
+    ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:?run install.sh first}
+    # Storage. The built-in one by default; to use another, see "Good to know" in the README.
+    S3_ENDPOINT: ${S3_ENDPOINT:-http://storage:9000}
+    S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-${PUBLIC_URL}}
+    S3_REGION: ${S3_REGION:-us-east-1}
+    S3_ACCESS_KEY: ${S3_ACCESS_KEY:-${STORAGE_ACCESS_KEY:?run install.sh first}}
+    S3_SECRET_KEY: ${S3_SECRET_KEY:-${STORAGE_SECRET_KEY:?run install.sh first}}
+    S3_BUCKET_PRIVATE: ${S3_BUCKET_PRIVATE:-tapeshelf-private}
+    S3_BUCKET_PUBLIC: ${S3_BUCKET_PUBLIC:-tapeshelf-public}
+    S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
+    S3_PUBLIC_BUCKET_URL: ${S3_PUBLIC_BUCKET_URL:-}
+    # Email. Without an account (EMAIL_DISABLED=true) nothing is sent and sign-ups need no confirmation.
+    EMAIL_DISABLED: ${EMAIL_DISABLED:-true}
+    SMTP_HOST: ${SMTP_HOST:-localhost}
+    SMTP_PORT: ${SMTP_PORT:-587}
+    SMTP_SECURE: ${SMTP_SECURE:-false}
+    SMTP_USER: ${SMTP_USER:-}
+    SMTP_PASS: ${SMTP_PASS:-}
+    SMTP_FROM: ${SMTP_FROM:-tapeshelf <no-reply@localhost>}
+    GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+    WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-1}
+    BACKUP_KEEP: ${BACKUP_KEEP:-14}
+  logging:
+    driver: json-file
+    options: { max-size: 20m, max-file: '5' }
+
+services:
+  # The front door: HTTPS certificates, the web app, and /api, /ws and the storage behind it.
+  web:
+    image: ${TAPESHELF_IMAGES:-ghcr.io/tapeshelf/tapeshelf}-web:${TAPESHELF_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - '${BIND_ADDRESS:-0.0.0.0}:${HTTP_PORT:-80}:80'
+      - '${BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-443}:443'
+      - '${BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-443}:443/udp'
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?run install.sh first}
+      # Whose X-Forwarded-For to believe: nobody's, unless your own proxy stands in front.
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-127.0.0.1/32}
+      CSP_S3_ORIGINS: ${CSP_S3_ORIGINS:-}
+      STORAGE_UPSTREAM: ${STORAGE_UPSTREAM-storage:9000}
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api: { condition: service_healthy }
+    logging:
+      driver: json-file
+      options: { max-size: 20m, max-file: '5' }
+
+  api:
+    <<: *app
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_healthy }
+
+  # Video processing, emails and housekeeping.
+  worker:
+    <<: *app
+    image: ${TAPESHELF_IMAGES:-ghcr.io/tapeshelf/tapeshelf}-worker:${TAPESHELF_VERSION:-latest}
+    stop_grace_period: 60s
+    volumes:
+      - worker-tmp:/work
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_healthy }
+
+  # Runs on every start and exits: database migrations, the admin account, the storage buckets.
+  migrate:
+    <<: *app
+    restart: 'no'
+    command:
+      - sh
+      - -c
+      - npx prisma migrate deploy && node dist/scripts/seed-admin.js && node dist/scripts/storage-init.js
+    depends_on:
+      postgres: { condition: service_healthy }
+      storage: { condition: service_healthy }
+
+  # A copy of the database every day, kept in the storage (backups/ in the private bucket).
+  backup:
+    <<: *app
+    image: ${TAPESHELF_IMAGES:-ghcr.io/tapeshelf/tapeshelf}-worker:${TAPESHELF_VERSION:-latest}
+    command:
+      - sh
+      - -c
+      - 'while :; do if node dist/scripts/db-backup.js; then sleep 86400; else echo "backup failed, retrying in an hour"; sleep 3600; fi; done'
+    healthcheck: { disable: true }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tapeshelf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run install.sh first}
+      POSTGRES_DB: tapeshelf
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tapeshelf -d tapeshelf']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Where the videos live, unless you point S3_ENDPOINT at your own storage.
+  storage:
+    image: rustfs/rustfs:1.0.1
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${STORAGE_ACCESS_KEY:?run install.sh first}
+      RUSTFS_SECRET_KEY: ${STORAGE_SECRET_KEY:?run install.sh first}
+      RUSTFS_OBS_LOG_DIRECTORY: /data/.rustfs-logs
+    volumes:
+      - storage-data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:9000/health']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pg-data:
+  redis-data:
+  worker-tmp:
+  caddy-data:
+  caddy-config:
+  storage-data:

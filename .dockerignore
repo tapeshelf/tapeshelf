@@ -1,0 +1,13 @@
+# Repository-root build context (only the web image uses it, see frontend/Dockerfile): send only
+# what that image needs. The backend images use backend/ as context with backend/.dockerignore.
+*
+!frontend
+!backend/openapi.json
+!infra/Caddyfile
+frontend/node_modules
+frontend/dist
+frontend/.angular
+frontend/src/app/api
+frontend/e2e
+frontend/test-results
+frontend/playwright-report

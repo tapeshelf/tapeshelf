@@ -1,0 +1,1310 @@
+// The tapeshelf database: accounts, videos and uploads, notifications, exchange, social and chat,
+// reports and the admin audit log, plans, downloads, blocklist and Pro subscriptions.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+/// BASIC is "Free" and PREMIUM is "Pro" in the interface.
+enum Tier {
+  BASIC
+  PREMIUM
+}
+
+/// Who gave the account its current tier: an admin by hand or a subscription.
+enum TierSource {
+  ADMIN
+  PADDLE
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  DELETED
+  /// Someone exchanging without an account: no email, password or page; known by a key in
+  /// their browser and in their deal's link, shown as "Guest".
+  GUEST
+}
+
+enum Locale {
+  en
+  ru
+  es
+  pt
+  fr
+  de
+  it
+  pl
+  uk
+  tr
+  nl
+  cs
+  sv
+  ja
+  ko
+  zh
+  id
+  vi
+  th
+  hi
+}
+
+enum Theme {
+  DARK
+  LIGHT
+  SYSTEM
+}
+
+enum OAuthProvider {
+  GOOGLE
+}
+
+enum EmailTokenType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+  /// A guest confirms the address their deal's news go to.
+  GUEST_EMAIL
+}
+
+model User {
+  id                   String      @id @default(uuid(7)) @db.Uuid
+  /// Null only for tombstoned (deleted) accounts.
+  email                String?     @unique
+  emailVerifiedAt      DateTime?
+  passwordHash         String?
+  /// Lowercase handle used in /u/:username. Changeable (see UsernameHistory), never reused.
+  username             String      @unique
+  displayName          String
+  avatarKey            String?
+  coverKey             String?
+  bio                  String?
+  accentColor          String?
+  /// Which generated pattern the default cover draws; null = derived from the id.
+  coverPattern         Int?
+  locale               Locale      @default(en)
+  theme                Theme       @default(SYSTEM)
+  /// Show videos marked sensitive without the consent dialog; set by the dialog or in settings.
+  showSensitive        Boolean     @default(false)
+  role                 Role        @default(USER)
+  tier                 Tier        @default(BASIC)
+  /// End of a PREMIUM tier; null = no end. Past the date the account counts as BASIC at once and
+  /// the hourly tier.expire job writes it down and tells the user.
+  tierUntil            DateTime?
+  tierSource           TierSource?
+  /// Which reminder about tierUntil was already sent (7 = a week before, 1 = the last day); reset
+  /// whenever tierUntil changes.
+  tierReminder         Int?
+  status               UserStatus  @default(ACTIVE)
+  bannedAt             DateTime?
+  /// Why an admin banned the account (shown in the admin panel only).
+  banReason            String?
+  pageSettings         Json        @default("{}")
+  /// The owner hid their page: 404 for everyone but them and admins. True only while
+  /// they may hide it (Pro or admin; anyone self-hosted): the end of Pro or of the role clears it.
+  pageHidden           Boolean     @default(false)
+  storageUsedBytes     BigInt      @default(0)
+  requestHintSeenCount Int         @default(0)
+  requestHintDismissed Boolean     @default(false)
+  /// When "What's new" was last opened: newer videos there light its dot.
+  whatsNewSeenAt       DateTime?
+  /// An invitation accepted before the email was confirmed: the friendship waits for it.
+  pendingInviteId      String?     @db.Uuid
+  usernameChangedAt    DateTime?
+  lastLoginAt          DateTime?
+  /// Two-step sign-in is on: set when the first way (the app or a passkey) is
+  /// confirmed, cleared with the last one. A sign-in with the password then asks for the second step.
+  twoFactorAt          DateTime?
+  /// The authenticator app's secret, encrypted with a key derived from KEK; null = no app.
+  totpSecret           String?
+  /// The time step of the last code taken: the same code is never accepted twice.
+  totpLastStep         Int?
+  /// Guests may start an exchange from this user's private videos.
+  acceptGuestExchanges Boolean     @default(true)
+  /// What the user looks for and what not to offer them: shown in every exchange with them.
+  exchangeWants        String?
+  exchangeAvoid        String?
+  /// The two also on the shelf (off unless the user turns it on).
+  showExchangePrefs    Boolean     @default(false)
+  /// A guest's key, hashed: their browser's cookie and their deal's links carry it.
+  guestKeyHash         String?     @unique
+  /// The same key sealed with a key from KEK: mails to the guest lead back with it.
+  guestKeySealed       String?
+  /// Where a guest asked to hear about their deals; mailed only once confirmed.
+  guestEmail           String?
+  guestEmailVerifiedAt DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  deletedAt            DateTime?
+
+  sessions                Session[]
+  passkeys                Passkey[]
+  recoveryCodes           RecoveryCode[]
+  emailTokens             EmailToken[]
+  oauthAccounts           OAuthAccount[]
+  usernameHistory         UsernameHistory[]
+  videos                  Video[]                   @relation("AuthoredVideos")
+  holdings                VideoAccess[]             @relation("Holdings")
+  stacks                  VideoStack[]
+  categories              Category[]
+  uploads                 UploadSession[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  requestsSent            VideoRequest[]            @relation("RequestsSent")
+  requestsReceived        VideoRequest[]            @relation("RequestsReceived")
+  blocksGiven             Block[]                   @relation("BlocksGiven")
+  blocksReceived          Block[]                   @relation("BlocksReceived")
+  following               Follow[]                  @relation("Following")
+  followers               Follow[]                  @relation("Followers")
+  conversationsA          Conversation[]            @relation("ConversationsA")
+  conversationsB          Conversation[]            @relation("ConversationsB")
+  chatMemberships         ConversationParticipant[]
+  messagesSent            Message[]
+  reportsFiled            Report[]                  @relation("ReportsFiled")
+  reportsAgainst          Report[]                  @relation("ReportsAgainst")
+  auditEntries            AuditLog[]
+  downloads               DownloadEvent[]
+  blockedFiles            BlockedFile[]
+  subscriptions           Subscription[]
+  shelfVisits             ShelfVisit[]              @relation("ShelfVisitsMade")
+  shelfVisitors           ShelfVisit[]              @relation("ShelfVisitsReceived")
+  invitesSent             FriendInvite[]            @relation("InvitesSent")
+  supportTickets          SupportTicket[]
+  supportMessages         SupportMessage[]
+  shareLinks              ShareLink[]
+  exchangeLinks           ExchangeLink[]
+  anonymousLinks          AnonymousLink[]
+  appTokens               AppToken[]
+  pendingInvite           FriendInvite?             @relation("PendingInvite", fields: [pendingInviteId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([tierUntil])
+}
+
+/// Former usernames: old links redirect to the current profile and the name is never handed out again.
+model UsernameHistory {
+  username  String   @id
+  userId    String   @db.Uuid
+  changedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model OAuthAccount {
+  id             String        @id @default(uuid(7)) @db.Uuid
+  provider       OAuthProvider
+  providerUserId String
+  /// Email reported by the provider at link time (display only).
+  email          String?
+  userId         String        @db.Uuid
+  createdAt      DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
+/// Refresh-token sessions (httpOnly cookie holds the raw token; only its hash is stored).
+model Session {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ip               String?
+  createdAt        DateTime  @default(now())
+  lastUsedAt       DateTime  @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  /// When this session last passed the second step: the admin panel needs it, and changes
+  /// to the two-step sign-in need it from the last ten minutes.
+  secondFactorAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A connected app: the browser extension saves videos to its owner's shelf with this
+/// token instead of a session. It reaches only the routes marked for it (uploads and what the
+/// extension's form needs) and lives until revoked; only its SHA-256 is kept.
+model AppToken {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  userId     String    @db.Uuid
+  /// What the person sees in "Connected apps": the browser and system it was connected from.
+  name       String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  /// Written at most once an hour.
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  uploads UploadSession[]
+
+  @@index([userId])
+}
+
+/// A passkey kept as the second step of signing in, not instead of the password.
+model Passkey {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  userId       String    @db.Uuid
+  /// The credential's id, base64url, as the browser reports it.
+  credentialId String    @unique
+  publicKey    Bytes
+  counter      BigInt    @default(0)
+  transports   String[]
+  name         String
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// One-time codes for a lost phone or key: only a keyed hash is stored, each works once.
+model RecoveryCode {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmailToken {
+  id        String         @id @default(uuid(7)) @db.Uuid
+  userId    String         @db.Uuid
+  type      EmailTokenType
+  tokenHash String         @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime       @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+}
+
+/// Admin-editable site settings (tier limits, cooldowns, upload limits...). Key → JSON value.
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// videos, upload sessions, holdings
+// ---------------------------------------------------------------------------
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum VideoStatus {
+  QUEUED
+  PROCESSING
+  READY
+  FAILED
+}
+
+/// Worker stage while status = PROCESSING (progress is the overall percentage).
+enum ProcessingStage {
+  PROBE
+  FRAMES
+  SHEET
+  PACKAGE
+  ENCRYPT
+  UPLOAD
+  /// An edit of the video, or the making of an edited copy, is under way.
+  EDIT
+}
+
+enum AccessSource {
+  AUTHOR
+  EXCHANGE
+  SHARE
+  PUBLIC_ADD
+}
+
+enum DeleteReason {
+  USER
+  ACCOUNT_DELETED
+  ADMIN
+}
+
+/// Why a deleted video left its author's trash for good: from then on only the
+/// admin decides on it.
+enum TrashExit {
+  /// The author emptied the trash.
+  EMPTIED
+  /// The author deleted it from the trash.
+  REMOVED
+  /// Its time in the trash was over (the plan's trashRetentionDays).
+  EXPIRED
+  /// The author's account was blocked.
+  BANNED
+  ACCOUNT_DELETED
+  /// Removed by an admin: never in the author's trash.
+  ADMIN
+}
+
+enum UploadStatus {
+  ACTIVE
+  COMPLETED
+  ABORTED
+  EXPIRED
+}
+
+/// Holder's flat category list.
+model Category {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  ownerId      String   @db.Uuid
+  name         String
+  position     Int      @default(0)
+  hidden       Boolean  @default(false)
+  /// The video whose picture the category's card shows in the "Folders" view; null = the
+  /// latest four videos of it.
+  coverVideoId String?  @db.Uuid
+  /// Its own rows in "All videos" by category, 0 = all; null = the page's setting.
+  previewRows  Int?
+  /// Its own tile size (xs…xl); null = the page's setting.
+  tileScale    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner    User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  cover    Video?        @relation("CategoryCover", fields: [coverVideoId], references: [id], onDelete: SetNull)
+  holdings VideoAccess[]
+
+  @@unique([ownerId, name])
+  @@unique([id, ownerId])
+}
+
+/// Resumable browser → S3 multipart upload. The session id becomes the video id on completion.
+model UploadSession {
+  id                String       @id @default(uuid(7)) @db.Uuid
+  userId            String       @db.Uuid
+  key               String
+  s3UploadId        String
+  filename          String
+  mimeType          String?
+  /// Size announced by the client; reserved against the quota until the session ends.
+  declaredSize      BigInt
+  partSize          Int
+  status            UploadStatus @default(ACTIVE)
+  videoId           String?      @db.Uuid
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  expiresAt         DateTime
+  /// Started by the browser extension: counts toward its daily limit.
+  appTokenId        String?      @db.Uuid
+  /// The second track of a video that comes as separate video and audio (DASH): its own
+  /// multipart upload next to the first; the worker muxes the two before processing.
+  audioKey          String?
+  audioS3UploadId   String?
+  audioFilename     String?
+  audioDeclaredSize BigInt?
+  /// The declared sizes are the most the files can be, not their exact sizes: a stream saved by the
+  /// browser extension, whose length is known only at its end. Reserved as declared; the
+  /// finished files count as they are.
+  sizeIsMax         Boolean      @default(false)
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appToken AppToken? @relation(fields: [appTokenId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([status, expiresAt])
+  @@index([userId, appTokenId, createdAt])
+}
+
+model Video {
+  id                  String           @id @default(uuid(7)) @db.Uuid
+  /// Short public code for links, tapeshelf.com/<code>: 7 characters from
+  /// 23456789abcdefghjkmnpqrstuvwxyz with at least one digit, so it never reads as a page name.
+  code                String           @unique @default(dbgenerated("gen_video_code()")) @db.VarChar(7)
+  authorId            String           @db.Uuid
+  title               String
+  description         String?
+  visibility          Visibility       @default(PRIVATE)
+  /// Marked sensitive by the author: covers and previews are blurred until the viewer consents.
+  sensitive           Boolean          @default(false)
+  status              VideoStatus      @default(QUEUED)
+  stage               ProcessingStage?
+  /// Overall processing progress 0–100.
+  progress            Int              @default(0)
+  /// Machine-readable failure code (localized by clients); null when not failed.
+  failReason          String?
+  /// Raw diagnostic for admins (ffprobe/ffmpeg output excerpt).
+  failDetail          String?
+  originalKey         String
+  /// The audio of a video uploaded as two tracks, until the worker muxes it into the original.
+  audioKey            String?
+  audioSizeBytes      BigInt?
+  /// The page the video was saved from by the browser extension, when its owner keeps such links:
+  /// shown to the author alone, never to holders, visitors or in exchanges.
+  sourceUrl           String?
+  originalFilename    String
+  mimeType            String?
+  sizeBytes           BigInt
+  /// The size of the file as uploaded: sizeBytes changes when the file is cleaned of its
+  /// metadata; this one finds the same file uploaded again.
+  uploadedSize        BigInt?
+  durationSec         Float?
+  width               Int?
+  height              Int?
+  probe               Json?
+  /// What the uploaded file said about itself (tags of the file, its streams and chapters, streams not
+  /// kept), saved for admins before the file is cleaned of it; null = never cleaned (older).
+  sourceMetadata      Json?
+  /// Private-bucket prefix of the current HLS package (versioned with keyVersion).
+  hlsPrefix           String?
+  keyVersion          Int              @default(1)
+  segmentCount        Int?
+  /// Public-bucket prefix for frames/sheet/thumbnail (contains a random token: not guessable from the id).
+  assetPrefix         String?
+  contactSheetKey     String?
+  /// The same sheet without the link printed on it: shown where the author goes by an
+  /// anonymous link, so the video's own link (and through it the author) stays unseen.
+  plainSheetKey       String?
+  /// Which design of the contact sheet it carries (SHEET_VERSION in contact-sheet.ts): an older one is
+  /// drawn again when the worker starts (the link on it became the short one).
+  sheetVersion        Int              @default(0)
+  thumbnailKey        String?
+  /// Index of the frame used as thumbnail, or null when a custom timestamp was chosen.
+  thumbnailFrameIndex Int?
+  /// Small WebP copy of the thumbnail for tiles; null until generated.
+  thumbnailSmallKey   String?
+  /// Small WebP copies of the 16 frames exist as s00..s15.webp under assetPrefix (hover scrub, timeline).
+  smallFrames         Boolean          @default(false)
+  processingAttempts  Int              @default(0)
+  processedAt         DateTime?
+  /// The first time the video became READY: its place in "What's new".
+  readyAt             DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  deletedAt           DateTime?
+  deletedById         String?          @db.Uuid
+  deleteReason        DeleteReason?
+  /// When and why it left its author's trash for good; null while live or still restorable by
+  /// the author. Its files stay until the admin erases them.
+  trashExitAt         DateTime?
+  trashExit           TrashExit?
+  /// Real bytes in S3 (original, HLS, images), measured once the video is in the trash (it no longer changes).
+  storedBytes         BigInt?
+  purgedAt            DateTime?
+  /// SHA-256 of the original (hex), computed by the worker; the blocklist matches re-uploads by it.
+  originalSha256      String?          @db.Char(64)
+  /// The applied edit, always rendered from the original; null = the original as uploaded.
+  edit                Json?
+  /// The edited file the current HLS comes from (private bucket) and its size, counted in the quota.
+  renderKey           String?
+  renderBytes         BigInt?
+  /// While edited, the original's own HLS stays (editor preview, instant revert) under this key version…
+  sourceKeyVersion    Int?
+  /// …with what the original was (duration, size, segments, probe), put back on a revert.
+  sourceInfo          Json?
+  /// The edit waiting for its render or being rendered (mode, spec, who, progress, error); one at a time.
+  editJob             Json?
+  /// Bumped by every edit request and cancel: a render that finds another number throws its work away.
+  editRevision        Int              @default(0)
+  /// Statement of reasons of an admin removal (DSA): the rule broken and the admin's words to the author.
+  takedownRule        ReportReason?
+  takedownNote        String?
+
+  author            User                @relation("AuthoredVideos", fields: [authorId], references: [id], onDelete: Cascade)
+  frames            VideoFrame[]
+  downloads         DownloadEvent[]
+  blocks            BlockedFile[]
+  holdings          VideoAccess[]
+  stackCovers       VideoStack[]        @relation("StackCover")
+  categoryCovers    Category[]          @relation("CategoryCover")
+  shareLinkItems    ShareLinkItem[]
+  exchangeLinkItems ExchangeLinkItem[]
+  anonymousCodes    AnonymousCode[]
+  /// The deal a guest uploaded it for: only that deal's other side ever sees it.
+  dealId            String?             @db.Uuid
+  deal              VideoRequest?       @relation("DealUploads", fields: [dealId], references: [id], onDelete: SetNull)
+  offerItems        ExchangeOfferItem[]
+  messages          Message[]
+  reports           Report[]
+  supportTickets    SupportTicket[]
+
+  @@index([authorId, status])
+  @@index([authorId, readyAt])
+  @@index([deletedAt])
+  @@index([originalSha256])
+  @@index([dealId])
+}
+
+/// One of the 16 evenly spaced frames extracted at processing time (public bucket).
+model VideoFrame {
+  id           String @id @default(uuid(7)) @db.Uuid
+  videoId      String @db.Uuid
+  index        Int
+  timestampSec Float
+  key          String
+  width        Int
+  height       Int
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, index])
+}
+
+/// "Holding": who has this video in their collection and why. Authors hold their own videos too.
+model VideoAccess {
+  id                String       @id @default(uuid(7)) @db.Uuid
+  videoId           String       @db.Uuid
+  holderId          String       @db.Uuid
+  source            AccessSource
+  grantedById       String?      @db.Uuid
+  requestId         String?      @db.Uuid
+  categoryId        String?      @db.Uuid
+  /// The stack this holding sits in on the holder's shelf; null = on its own.
+  stackId           String?      @db.Uuid
+  position          Int          @default(0)
+  hidden            Boolean      @default(false)
+  /// Received by exchange or share and not opened by the holder yet: a quiet "new" on the tile.
+  unseen            Boolean      @default(false)
+  /// Its place in the owner's "Featured" strip, 0 first; null = not pinned. Shared with the
+  /// stacks' pins: the strip mixes both.
+  pinned            Int?
+  /// A new upload not sorted yet: it waits in the owner's "Inbox" while it has no category
+  /// and no stack; "keep without a category" in the triage clears it.
+  inbox             Boolean      @default(false)
+  /// The holder's own name and description for a video of someone else: shown only
+  /// where the video is part of this holder's shelf; the video, its link and author stay one.
+  customTitle       String?
+  customDescription String?
+  /// The author reached this holder through their anonymous link, directly or passed on:
+  /// wherever this copy shows, the author goes by that link, never by their name.
+  anonymousLinkId   String?      @db.Uuid
+  createdAt         DateTime     @default(now())
+
+  video         Video          @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  holder        User           @relation("Holdings", fields: [holderId], references: [id], onDelete: Cascade)
+  anonymousLink AnonymousLink? @relation(fields: [anonymousLinkId], references: [id], onDelete: SetNull)
+  /// Composite FK: a holding can only point at a category of its own holder.
+  category      Category?      @relation(fields: [categoryId, holderId], references: [id, ownerId], onDelete: NoAction, onUpdate: NoAction)
+  /// Composite FK: a holding can only sit in a stack of its own holder.
+  stack         VideoStack?    @relation(fields: [stackId, holderId], references: [id, ownerId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([videoId, holderId])
+  @@index([holderId, categoryId])
+  @@index([stackId])
+  /// The shelf's default order, newest first.
+  @@index([holderId, createdAt, id])
+}
+
+/// Several holdings folded into one tile on the holder's shelf, like an app folder on a
+/// phone. Its videos all share one category (kept by the service, not the schema); its place and the
+/// order inside follow the holdings' own positions, so every sort shows it where its first video is.
+model VideoStack {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  ownerId      String   @db.Uuid
+  /// Optional; a nameless stack shows its count.
+  name         String?
+  /// The video whose picture the stack shows; null = its first video.
+  coverVideoId String?  @db.Uuid
+  /// Its place in the owner's "Featured" strip, as `VideoAccess.pinned`.
+  pinned       Int?
+  createdAt    DateTime @default(now())
+
+  owner    User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  cover    Video?        @relation("StackCover", fields: [coverVideoId], references: [id], onDelete: SetNull)
+  holdings VideoAccess[]
+
+  @@unique([id, ownerId])
+  @@index([ownerId])
+}
+
+// ---------------------------------------------------------------------------
+// notifications and the transactional outbox
+// ---------------------------------------------------------------------------
+
+enum NotificationType {
+  REQUEST_RECEIVED
+  OFFER_RECEIVED
+  REQUEST_SHARED
+  EXCHANGE_COMPLETED
+  REQUEST_DECLINED
+  REQUEST_CANCELLED
+  REQUEST_INVALIDATED
+  NEW_FOLLOWER
+  FRIEND_ACCEPTED
+  FOLLOWED_NEW_VIDEO
+  NEW_MESSAGE
+  VIDEO_PROCESSED
+  VIDEO_FAILED
+  VIDEO_REMOVED
+  REPORT_RESOLVED
+  ADMIN_NOTICE
+  PLAN_EXPIRING
+  PLAN_EXPIRED
+  VIDEO_TAKEN_DOWN
+  PLAN_PAYMENT_FAILED
+  VIDEO_EDITED
+  VIDEO_EDIT_FAILED
+  /// Support answered a ticket, or marked it solved.
+  SUPPORT_REPLY
+  /// To admins: a new ticket, or a new message from its author.
+  SUPPORT_TICKET
+  /// To the sender: someone opened their temporary link for the first time.
+  LINK_OPENED
+  /// To the sender: someone put videos of their temporary link on their shelf.
+  LINK_SAVED
+}
+
+/// In-app notification; the payload shape depends on the type (notification.types.ts).
+model Notification {
+  id        String           @id @default(uuid(7)) @db.Uuid
+  userId    String           @db.Uuid
+  type      NotificationType
+  payload   Json
+  readAt    DateTime?
+  emailedAt DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, id])
+  /// News of one kind for one user lately; also the unread messages of a conversation.
+  @@index([userId, type, createdAt])
+}
+
+/// Per-type channel switches; missing rows mean the defaults (notification.types.ts).
+model NotificationPreference {
+  userId String           @db.Uuid
+  type   NotificationType
+  inApp  Boolean
+  email  Boolean
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, type])
+}
+
+/// Transactional outbox: written in the same transaction as the change, drained by the worker.
+model OutboxEvent {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  type          String
+  payload       Json
+  createdAt     DateTime  @default(now())
+  processedAt   DateTime?
+  attempts      Int       @default(0)
+  lastError     String?
+  /// A failed event waits until then before its next attempt (exponential backoff).
+  nextAttemptAt DateTime?
+
+  @@index([processedAt, id])
+}
+
+// ---------------------------------------------------------------------------
+// requests, negotiation, exchange, blocks
+// ---------------------------------------------------------------------------
+
+enum RequestStatus {
+  OPEN
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  BLOCKED
+  INVALIDATED
+  /// A guest's offer whose videos are still being processed: the holder sees it once they are ready.
+  DRAFT
+  /// A deal with a guest left three days without a new round.
+  EXPIRED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  SUPERSEDED
+  VOID
+}
+
+enum GivingSide {
+  HOLDER
+  REQUESTER
+}
+
+/// A request is a negotiation: round 0 is the request itself, later rounds are counter-offers.
+model VideoRequest {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  requesterId      String        @db.Uuid
+  holderId         String        @db.Uuid
+  status           RequestStatus @default(OPEN)
+  round            Int           @default(0)
+  /// The offer the awaiting side must answer (no FK: the offer points back at the request).
+  currentOfferId   String?       @db.Uuid
+  /// Who must act now; null once the request is closed.
+  awaitingUserId   String?       @db.Uuid
+  message          String?
+  declineComment   String?
+  resolvedById     String?       @db.Uuid
+  resolvedAt       DateTime?
+  /// Set when a lost video voided the current offer and the negotiation fell back to round 0.
+  resetAt          DateTime?
+  /// A deal with a guest ends three days after its last round; null = it never runs out.
+  expiresAt        DateTime?
+  /// Until then a guest watches and downloads what they received.
+  guestAccessUntil DateTime?
+  /// The exchange link it was started from.
+  exchangeLinkId   String?       @db.Uuid
+  /// Asked through the holder's anonymous link: the requester knows the holder only by it.
+  anonymousLinkId  String?       @db.Uuid
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  requester     User            @relation("RequestsSent", fields: [requesterId], references: [id], onDelete: Cascade)
+  holder        User            @relation("RequestsReceived", fields: [holderId], references: [id], onDelete: Cascade)
+  exchangeLink  ExchangeLink?   @relation(fields: [exchangeLinkId], references: [id], onDelete: SetNull)
+  anonymousLink AnonymousLink?  @relation(fields: [anonymousLinkId], references: [id], onDelete: SetNull)
+  offers        ExchangeOffer[]
+  /// What a guest uploaded for this deal.
+  uploads       Video[]         @relation("DealUploads")
+
+  @@index([awaitingUserId, status])
+  @@index([requesterId, status])
+  @@index([holderId, status])
+  @@index([status, expiresAt])
+}
+
+/// A standing invitation to exchange for some of the owner's videos: whoever opens it starts
+/// their own deal, a guest too; it works until the owner takes it back.
+model ExchangeLink {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  code      String    @unique
+  ownerId   String    @db.Uuid
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  owner    User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  items    ExchangeLinkItem[]
+  requests VideoRequest[]
+
+  @@index([ownerId])
+}
+
+/// A link to the owner's shelf that does not show who they are: /p/<code> opens the shelf as a
+/// visitor sees it, with the owner known only by their display name and picture. A deleted link is
+/// kept: what came of it (deals, received copies) goes on showing the owner by it.
+model AnonymousLink {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  /// 10 characters from 23456789abcdefghjkmnpqrstuvwxyz (anonymous-link-rules.ts).
+  code      String    @unique @db.VarChar(10)
+  ownerId   String    @db.Uuid
+  /// The owner's own note for it ("for Alex"), never shown to anyone else.
+  note      String?
+  /// The name the owner goes by through it; null = their display name, unless that gives away their
+  /// nickname (then the link must have one).
+  name      String?
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  owner    User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  codes    AnonymousCode[]
+  holdings VideoAccess[]
+  requests VideoRequest[]
+
+  @@index([ownerId])
+}
+
+/// A video's short link as seen through an anonymous link: looks like any /<code>, but opens
+/// the video with that link's owner masked. Given out the first time the video shows there.
+model AnonymousCode {
+  /// Shares the namespace of Video.code (gen_video_code checks both).
+  code      String   @id @default(dbgenerated("gen_video_code()")) @db.VarChar(7)
+  linkId    String   @db.Uuid
+  videoId   String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  link  AnonymousLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  video Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([linkId, videoId])
+  @@index([videoId])
+}
+
+model ExchangeLinkItem {
+  linkId   String @db.Uuid
+  videoId  String @db.Uuid
+  position Int
+
+  link  ExchangeLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  video Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([linkId, videoId])
+  @@index([videoId])
+}
+
+model ExchangeOffer {
+  id           String      @id @default(uuid(7)) @db.Uuid
+  requestId    String      @db.Uuid
+  round        Int
+  proposedById String      @db.Uuid
+  status       OfferStatus @default(PENDING)
+  message      String?
+  createdAt    DateTime    @default(now())
+  respondedAt  DateTime?
+
+  request VideoRequest        @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  items   ExchangeOfferItem[]
+
+  @@index([requestId, round])
+}
+
+/// Who gives which video in an offer (round 0: only HOLDER items = the requested videos).
+model ExchangeOfferItem {
+  offerId    String     @db.Uuid
+  videoId    String     @db.Uuid
+  givingSide GivingSide
+
+  offer ExchangeOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  video Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([offerId, videoId])
+  @@index([videoId])
+}
+
+/// no requests, messages or follows from the blocked side; the page stays visible.
+model Block {
+  blockerId String   @db.Uuid
+  blockedId String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  blocker User @relation("BlocksGiven", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlocksReceived", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+/// A temporary link: its sender's videos on a page at /t/<code> where anyone with
+/// the link (and the password, the emailed code, when set) watches them, downloads them without the
+/// tier's limits and puts them on their own shelf, until `expiresAt`; then it is a 404.
+model ShareLink {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  code         String    @unique
+  senderId     String    @db.Uuid
+  expiresAt    DateTime
+  /// The sender took it back before its time: it is a 404 from then on.
+  revokedAt    DateTime?
+  /// argon2 of the password; null = none.
+  passwordHash String?
+  /// Only for this address (lowercase): it opens with a code sent there, or to the account with it.
+  email        String?
+  /// Opened by someone else than the sender for the first time: the sender has been told.
+  openedAt     DateTime?
+  createdAt    DateTime  @default(now())
+
+  sender User            @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  items  ShareLinkItem[]
+
+  @@index([senderId, expiresAt])
+  @@index([expiresAt])
+}
+
+/// A video of a temporary link, in the order the sender picked them.
+model ShareLinkItem {
+  linkId   String @db.Uuid
+  videoId  String @db.Uuid
+  position Int
+
+  link  ShareLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  video Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([linkId, videoId])
+  @@index([videoId])
+}
+
+/// A link that makes friends: whoever opens it becomes the inviter's friend in one
+/// click, a newcomer once their email is confirmed. It lasts a while and serves a few people.
+model FriendInvite {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  code      String    @unique
+  inviterId String    @db.Uuid
+  maxUses   Int
+  uses      Int       @default(0)
+  expiresAt DateTime
+  /// Replaced by a new link: the old one stops working.
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  inviter User   @relation("InvitesSent", fields: [inviterId], references: [id], onDelete: Cascade)
+  waiting User[] @relation("PendingInvite")
+
+  @@index([inviterId, createdAt])
+}
+
+/// A signed-in visitor's visits to someone's shelf: what was added since the visit
+/// before this one is lit quietly. A visit lasts while the shelf is opened again within half an hour.
+model ShelfVisit {
+  visitorId  String    @db.Uuid
+  ownerId    String    @db.Uuid
+  /// The last time the visitor looked at the shelf.
+  lastSeenAt DateTime
+  /// Where the current visit draws the line: the end of the visit before it; null on a first visit.
+  newSince   DateTime?
+
+  visitor User @relation("ShelfVisitsMade", fields: [visitorId], references: [id], onDelete: Cascade)
+  owner   User @relation("ShelfVisitsReceived", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@id([visitorId, ownerId])
+}
+
+/// "Add as friend" = follow; two follows in opposite directions = friends.
+model Follow {
+  followerId String   @db.Uuid
+  followeeId String   @db.Uuid
+  createdAt  DateTime @default(now())
+
+  follower User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followee User @relation("Followers", fields: [followeeId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followeeId])
+  @@index([followeeId, createdAt])
+  @@index([followerId, createdAt])
+}
+
+/// One-to-one chat between two users. userAId < userBId, so a pair has exactly one row.
+/// Created with the first message; history stays when the friendship ends.
+model Conversation {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userAId       String    @db.Uuid
+  userBId       String    @db.Uuid
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  userA        User                      @relation("ConversationsA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB        User                      @relation("ConversationsB", fields: [userBId], references: [id], onDelete: Cascade)
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userBId])
+}
+
+/// Per-user state of a conversation: how far they have read (message ids are uuid v7, time-ordered).
+model ConversationParticipant {
+  conversationId    String  @db.Uuid
+  userId            String  @db.Uuid
+  lastReadMessageId String? @db.Uuid
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+}
+
+/// A chat message: text and/or one attached video shown as a card.
+model Message {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  conversationId String   @db.Uuid
+  senderId       String   @db.Uuid
+  body           String   @default("")
+  videoId        String?  @db.Uuid
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  video        Video?       @relation(fields: [videoId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, id])
+}
+
+/// After any decline the same person cannot request the same video again until `until`.
+model RequestCooldown {
+  requesterId String   @db.Uuid
+  videoId     String   @db.Uuid
+  until       DateTime
+
+  @@id([requesterId, videoId])
+}
+
+// ---------------------------------------------------------------------------
+// reports and the admin audit log
+// ---------------------------------------------------------------------------
+
+enum ReportTarget {
+  VIDEO
+  USER
+}
+
+enum ReportReason {
+  SPAM
+  ILLEGAL
+  COPYRIGHT
+  ABUSE
+  /// Sensitive content without the mark; the enum value keeps its old name.
+  UNMARKED_ADULT
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+/// A complaint about a video or a profile. `targetUserId` is the
+/// reported account, or the author of the reported video. One OPEN report per reporter and target.
+model Report {
+  id           String       @id @default(uuid(7)) @db.Uuid
+  reporterId   String       @db.Uuid
+  targetType   ReportTarget
+  targetUserId String       @db.Uuid
+  videoId      String?      @db.Uuid
+  reason       ReportReason
+  comment      String?
+  status       ReportStatus @default(OPEN)
+  /// What the admin did when resolving: VIDEO_DELETED, USER_BANNED or NONE.
+  action       String?
+  /// Internal admin note (never shown to the reporter).
+  note         String?
+  resolvedById String?      @db.Uuid
+  resolvedAt   DateTime?
+  createdAt    DateTime     @default(now())
+
+  reporter   User   @relation("ReportsFiled", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetUser User   @relation("ReportsAgainst", fields: [targetUserId], references: [id], onDelete: Cascade)
+  video      Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([status, id])
+  @@index([targetUserId])
+  @@index([videoId])
+  @@index([reporterId])
+}
+
+/// Every admin change and account deletions: who, what, on what, when, details.
+model AuditLog {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  actorId    String?  @db.Uuid
+  /// Dotted verb, e.g. user.ban, video.purge, settings.update.
+  action     String
+  targetType String
+  targetId   String?
+  meta       Json     @default("{}")
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, id])
+  @@index([targetType, targetId])
+  @@index([action, id])
+}
+
+// ---------------------------------------------------------------------------
+// downloads
+// ---------------------------------------------------------------------------
+
+/// One started download of an original. A limited tier counts these per calendar month (UTC).
+model DownloadEvent {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @db.Uuid
+  videoId   String   @db.Uuid
+  /// Effective tier at the time.
+  tier      Tier
+  /// Counts against the monthly limit: false for unlimited tiers and admins, and for the same video
+  /// again within an hour (a dropped connection, a retry).
+  counted   Boolean
+  startedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+  @@index([userId, videoId, startedAt])
+}
+
+// ---------------------------------------------------------------------------
+// blocklist of files removed for breaking the rules
+// ---------------------------------------------------------------------------
+
+/// A file that may not be uploaded again. `sha256` is null until the worker has hashed the
+/// original of `videoId` (videos processed before hashes existed).
+model BlockedFile {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  sha256      String?      @unique @db.Char(64)
+  videoId     String?      @unique @db.Uuid
+  rule        ReportReason
+  createdById String?      @db.Uuid
+  createdAt   DateTime     @default(now())
+
+  video     Video? @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  createdBy User?  @relation(fields: [createdById], references: [id], onDelete: SetNull)
+}
+
+// ---------------------------------------------------------------------------
+// Pro subscriptions: Paddle is the merchant of
+// record, its webhooks are the source of truth and are mirrored here. Cloud edition only.
+// ---------------------------------------------------------------------------
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  PAUSED
+  CANCELED
+}
+
+/// A Paddle subscription as its latest applied webhook described it.
+model Subscription {
+  /// Paddle id, sub_…
+  id              String             @id
+  userId          String             @db.Uuid
+  /// Paddle customer, ctm_…: the customer portal is opened for it.
+  customerId      String
+  status          SubscriptionStatus
+  priceId         String
+  /// Billing interval of the price: month or year.
+  interval        String
+  /// End of the current billing period (the next renewal).
+  periodEndsAt    DateTime?
+  /// When a scheduled cancel or pause takes effect; null = renews.
+  endsAt          DateTime?
+  /// First failed renewal of the current period: the grace period counts from here.
+  pastDueSince    DateTime?
+  /// The cancel at the end of the period was scheduled by a ban: an unban takes it back.
+  cancelledForBan Boolean            @default(false)
+  /// occurred_at of the latest applied event: older deliveries are ignored (webhooks are unordered).
+  eventAt         DateTime
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
+
+/// Paddle webhook events already handled: a redelivery with the same event id does nothing.
+model BillingEvent {
+  /// Paddle event id, evt_…
+  id         String   @id
+  type       String
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+
+  @@index([receivedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Support: users' tickets and the admins' answers
+// ---------------------------------------------------------------------------
+
+enum SupportTopic {
+  QUESTION
+  BUG
+  /// Account, and payment where there are plans (cloud).
+  ACCOUNT
+  IDEA
+}
+
+/// In this order on purpose: an admin list sorted by status puts what waits for support first.
+enum SupportStatus {
+  /// Waits for support: new, or its author wrote again.
+  OPEN
+  /// Support answered: waits for the author.
+  WAITING
+  RESOLVED
+  /// Closed by hand, or by itself 7 days after WAITING or RESOLVED with no word from the author.
+  CLOSED
+}
+
+enum SupportPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum SupportMessageKind {
+  /// From the ticket's author.
+  USER
+  /// An answer, signed "Support" for the author.
+  SUPPORT
+  /// Between admins only: never shown to the author, never notified.
+  NOTE
+}
+
+/// A user's request for help, bug report or idea. `number` is the #N everyone sees.
+model SupportTicket {
+  id         String          @id @default(uuid(7)) @db.Uuid
+  number     Int             @unique @default(autoincrement())
+  userId     String          @db.Uuid
+  topic      SupportTopic
+  subject    String
+  status     SupportStatus   @default(OPEN)
+  priority   SupportPriority @default(NORMAL)
+  /// One of the author's own videos the ticket is about.
+  videoId    String?         @db.Uuid
+  /// What the browser said about itself when a bug was reported (browser, screen, page, version).
+  context    Json?
+  /// "It helped" / "it did not", given after RESOLVED or CLOSED; cleared when the ticket opens again.
+  helped     Boolean?
+  /// When the current status began: CLOSED comes 7 days after WAITING or RESOLVED began.
+  statusAt   DateTime        @default(now())
+  /// The latest message of anyone but a note: lists are sorted by it.
+  activityAt DateTime        @default(now())
+  /// Support wrote (or marked it solved) since the author last opened the ticket.
+  unread     Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video    Video?           @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  messages SupportMessage[]
+
+  @@index([userId, activityAt])
+  @@index([status, statusAt])
+}
+
+model SupportMessage {
+  id        String             @id @default(uuid(7)) @db.Uuid
+  ticketId  String             @db.Uuid
+  /// The author, or the admin who answered or noted.
+  authorId  String             @db.Uuid
+  kind      SupportMessageKind
+  body      String
+  createdAt DateTime           @default(now())
+
+  ticket      SupportTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  attachments SupportAttachment[]
+
+  @@index([ticketId, id])
+}
+
+/// A picture sent with a message: re-encoded without its metadata, in the private bucket.
+model SupportAttachment {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  messageId   String   @db.Uuid
+  key         String
+  contentType String
+  size        Int
+  width       Int
+  height      Int
+  createdAt   DateTime @default(now())
+
+  message SupportMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+}

@@ -1,0 +1,501 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderNotificationMail > renders ADMIN_NOTICE in en 1`] = `
+"Message from the tapeshelf team
+
+Please add a description to your videos <b>soon</b>.
+
+Open notifications: https://tapeshelf.test/notifications
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders ADMIN_NOTICE in ru 1`] = `
+"Сообщение от команды tapeshelf
+
+Please add a description to your videos <b>soon</b>.
+
+Открыть уведомления: https://tapeshelf.test/notifications
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders EXCHANGE_COMPLETED in en 1`] = `
+"Exchange completed
+
+Your exchange with Ann is done: you received 1, gave 2. What you received is in your collection now.
+
+See what you received: https://tapeshelf.test/@ann?folder=others
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders EXCHANGE_COMPLETED in ru 1`] = `
+"Обмен состоялся
+
+Обмен с Ann состоялся: получено видео — 1, отдано — 2. Полученное уже в вашей коллекции.
+
+Посмотреть полученное: https://tapeshelf.test/@ann?folder=others
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders FRIEND_ACCEPTED in en 1`] = `
+"New friend
+
+You and Ann follow each other now. You can send each other messages and videos.
+
+Open their page: https://tapeshelf.test/@ann
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders FRIEND_ACCEPTED in ru 1`] = `
+"Новый друг
+
+Вы с Ann подписаны друг на друга. Теперь можно обмениваться сообщениями и видео.
+
+Открыть страницу: https://tapeshelf.test/@ann
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders LINK_OPENED in en 1`] = `
+"Link opened
+
+@bob opened your temporary link with 3 videos, starting with “Lake”.
+
+Open my links: https://tapeshelf.test/links
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders LINK_OPENED in ru 1`] = `
+"Ссылку открыли
+
+@bob открыл(а) вашу временную ссылку с 3 видео, начиная с «Lake».
+
+Открыть мои ссылки: https://tapeshelf.test/links
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders LINK_SAVED in en 1`] = `
+"Saved from your link
+
+@bob put “Lake” from your temporary link on their shelf.
+
+Open my links: https://tapeshelf.test/links
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders LINK_SAVED in ru 1`] = `
+"Сохранили по вашей ссылке
+
+@bob добавил(а) на свою полку «Lake» по вашей временной ссылке.
+
+Открыть мои ссылки: https://tapeshelf.test/links
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders NEW_FOLLOWER in en 1`] = `
+"New follower
+
+Bob now follows your collection. Add them back to become friends and message each other.
+
+Open their page: https://tapeshelf.test/@bob
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders NEW_FOLLOWER in ru 1`] = `
+"Новый подписчик
+
+Bob теперь следит за вашей коллекцией. Добавьте в друзья в ответ, чтобы стать друзьями и переписываться.
+
+Открыть страницу: https://tapeshelf.test/@bob
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders NEW_MESSAGE in en 1`] = `
+"New message
+
+Bob: “Have you seen the lake video?”
+
+Open chat: https://tapeshelf.test/messages/bob
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders NEW_MESSAGE in ru 1`] = `
+"Новое сообщение
+
+Bob: «Have you seen the lake video?»
+
+Открыть чат: https://tapeshelf.test/messages/bob
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders OFFER_RECEIVED in en 1`] = `
+"Counter-offer received
+
+Bob proposed an exchange (round 1). Accept it, decline, or make your own offer.
+
+Open the thread: https://tapeshelf.test/exchange/r1
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders OFFER_RECEIVED in ru 1`] = `
+"Встречное предложение
+
+Bob предложил(а) обмен (раунд 1). Примите, откажитесь или предложите свой вариант.
+
+Открыть переговоры: https://tapeshelf.test/exchange/r1
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_EXPIRED in en 1`] = `
+"Pro has ended
+
+Your shelf on tapeshelf now has the Free limits: 2.0 GiB per video and 30.0 GiB in total. Nothing was deleted.
+
+Open your plan: https://tapeshelf.test/settings/plan
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_EXPIRED in ru 1`] = `
+"Pro закончился
+
+Теперь на вашей полке на tapeshelf лимиты Free: 2.0 GiB на видео и 30.0 GiB всего. Ничего не удалено.
+
+Открыть тариф: https://tapeshelf.test/settings/plan
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_EXPIRING in en 1`] = `
+"Pro ends soon
+
+Your Pro plan on tapeshelf ends on 14 November 2026 at 09:30 (UTC). After that your shelf gets the Free limits; nothing is deleted.
+
+Open your plan: https://tapeshelf.test/settings/plan
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_EXPIRING in ru 1`] = `
+"Pro скоро закончится
+
+Тариф Pro на tapeshelf действует до 14 ноября 2026 г. в 09:30 (UTC). Потом на полке будут лимиты Free; ничего не удалится.
+
+Открыть тариф: https://tapeshelf.test/settings/plan
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_PAYMENT_FAILED in en 1`] = `
+"Payment failed
+
+The payment for your Pro plan on tapeshelf did not go through. Update your payment method by 21 November 2026 at 09:30 (UTC), or your shelf gets the Free limits; nothing is deleted.
+
+Update payment method: https://tapeshelf.test/settings/plan
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders PLAN_PAYMENT_FAILED in ru 1`] = `
+"Оплата не прошла
+
+Оплата тарифа Pro на tapeshelf не прошла. Обновите способ оплаты до 21 ноября 2026 г. в 09:30 (UTC), иначе на полке будут лимиты Free; ничего не удалится.
+
+Обновить способ оплаты: https://tapeshelf.test/settings/plan
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REPORT_RESOLVED in en 1`] = `
+"Report reviewed
+
+We reviewed your report about “Spam reel” and took action. Thank you for helping keep tapeshelf safe.
+
+Open notifications: https://tapeshelf.test/notifications
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REPORT_RESOLVED in ru 1`] = `
+"Жалоба рассмотрена
+
+Мы рассмотрели вашу жалобу на «Spam reel» и приняли меры. Спасибо, что помогаете сделать tapeshelf лучше.
+
+Открыть уведомления: https://tapeshelf.test/notifications
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_CANCELLED in en 1`] = `
+"Request withdrawn
+
+Bob cancelled their request for “Trip”.
+
+Open the request: https://tapeshelf.test/exchange/r1
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_CANCELLED in ru 1`] = `
+"Запрос отозван
+
+Bob отменил(а) свой запрос на «Trip».
+
+Открыть запрос: https://tapeshelf.test/exchange/r1
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_DECLINED in en 1`] = `
+"Request declined
+
+Ann declined. Not this one.
+
+Open the request: https://tapeshelf.test/exchange/r1
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_DECLINED in ru 1`] = `
+"Запрос отклонён
+
+Ann отказал(а). Not this one.
+
+Открыть запрос: https://tapeshelf.test/exchange/r1
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_INVALIDATED in en 1`] = `
+"Request updated by the system
+
+A video involved in the request for “Trip” is no longer available, so the negotiation was updated.
+
+Open the request: https://tapeshelf.test/exchange/r1
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_INVALIDATED in ru 1`] = `
+"Запрос обновлён системой
+
+Одно из видео в запросе на «Trip» больше недоступно, поэтому переговоры обновлены.
+
+Открыть запрос: https://tapeshelf.test/exchange/r1
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_RECEIVED in en 1`] = `
+"New video request
+
+Bob would like you to share 2 videos, starting with “Trip”. Share them for free, decline, or propose an exchange.
+
+Open the request: https://tapeshelf.test/exchange/r1
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_RECEIVED in ru 1`] = `
+"Новый запрос на видео
+
+Bob хочет, чтобы вы поделились 2 видео, начиная с «Trip». Поделитесь бесплатно, откажите или предложите обмен.
+
+Открыть запрос: https://tapeshelf.test/exchange/r1
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_SHARED in en 1`] = `
+"Shared with you
+
+Ann shared “Trip” with you for free. It is in your collection now.
+
+See what you received: https://tapeshelf.test/@ann?folder=others
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders REQUEST_SHARED in ru 1`] = `
+"С вами поделились
+
+Ann бесплатно поделился(ась) с вами видео «Trip». Оно уже в вашей коллекции.
+
+Посмотреть полученное: https://tapeshelf.test/@ann?folder=others
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders SUPPORT_REPLY in en 1`] = `
+"Support answered
+
+#12 “Upload stops at 99 %”: Thanks! Please try once more: we fixed it.
+
+Open the request: https://tapeshelf.test/support/0199d1c0-0000-7000-8000-000000000007
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders SUPPORT_REPLY in ru 1`] = `
+"Ответ поддержки
+
+#12 «Upload stops at 99 %»: Thanks! Please try once more: we fixed it.
+
+Открыть обращение: https://tapeshelf.test/support/0199d1c0-0000-7000-8000-000000000007
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders SUPPORT_TICKET in en 1`] = `
+"Support request #12
+
+@ann asks for help (bug report): “Upload stops at 99 %”. My upload stops at 99 % every time.
+
+Open in the admin: https://tapeshelf.test/admin/support/0199d1c0-0000-7000-8000-000000000007
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders SUPPORT_TICKET in ru 1`] = `
+"Обращение #12
+
+@ann просит помощи (ошибка): «Upload stops at 99 %». My upload stops at 99 % every time.
+
+Открыть в админке: https://tapeshelf.test/admin/support/0199d1c0-0000-7000-8000-000000000007
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_EDIT_FAILED in en 1`] = `
+"Edit not saved
+
+The edit of your video “Lake” could not be made. The video stays as it was; the editor keeps your changes, so you can try again.
+
+Open the editor: https://tapeshelf.test/edit/0199d1c0-0000-7000-8000-000000000005
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_EDIT_FAILED in ru 1`] = `
+"Монтаж не сохранён
+
+Не получилось смонтировать ваше видео «Lake». Видео осталось как было; правки ждут в редакторе — можно попробовать ещё раз.
+
+Открыть редактор: https://tapeshelf.test/edit/0199d1c0-0000-7000-8000-000000000005
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_EDITED in en 1`] = `
+"Video edited
+
+A moderator of tapeshelf edited your video “Lake” (for example, blurred part of it). The link and everything else stay the same.
+
+Open the video: https://tapeshelf.test/k3x9ab2
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_EDITED in ru 1`] = `
+"Видео изменено
+
+Модератор tapeshelf отредактировал ваше видео «Lake» (например, размыл часть кадра). Ссылка и всё остальное остались прежними.
+
+Открыть видео: https://tapeshelf.test/k3x9ab2
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_FAILED in en 1`] = `
+"Processing failed
+
+“Broken clip” could not be processed: the file is damaged or is not a video. You can upload the file again.
+
+Open my page: https://tapeshelf.test/@ann
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_FAILED in ru 1`] = `
+"Ошибка обработки
+
+Не удалось обработать «Broken clip»: файл повреждён или не является видео. Вы можете загрузить файл заново.
+
+Открыть мою страницу: https://tapeshelf.test/@ann
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_PROCESSED in en 1`] = `
+"Your video is ready
+
+“Holiday 2026” has been processed and can be watched now.
+
+Open video: https://tapeshelf.test/v/0199d1c0-0000-7000-8000-000000000001
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_PROCESSED in ru 1`] = `
+"Ваше видео готово
+
+«Holiday 2026» обработано, его уже можно смотреть.
+
+Открыть видео: https://tapeshelf.test/v/0199d1c0-0000-7000-8000-000000000001
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_REMOVED in en 1`] = `
+"A video left your collection
+
+Ann deleted “Shared clip”, which was in your collection. It is no longer available to anyone.
+
+Open notifications: https://tapeshelf.test/notifications
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_REMOVED in ru 1`] = `
+"Видео исчезло из вашей коллекции
+
+Ann удалил(а) «Shared clip» — оно было в вашей коллекции. Больше оно никому не доступно.
+
+Открыть уведомления: https://tapeshelf.test/notifications
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_TAKEN_DOWN in en 1`] = `
+"Video removed
+
+We removed your video “Lake” from tapeshelf: copyright violation. It is no longer available to anyone.
+
+Open notifications: https://tapeshelf.test/notifications
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders VIDEO_TAKEN_DOWN in ru 1`] = `
+"Видео удалено
+
+Мы удалили ваше видео «Lake» с tapeshelf: нарушение авторских прав. Оно больше никому не доступно.
+
+Открыть уведомления: https://tapeshelf.test/notifications
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;

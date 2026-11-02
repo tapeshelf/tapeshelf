@@ -1,0 +1,831 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/golos-text';
+@import '@fontsource-variable/unbounded';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* `focus-visible:` utilities follow the same keyboard-only rule as the base outline. */
+@custom-variant focus-visible (html[data-input='keyboard'] &:focus-visible);
+
+/*
+ * TapeShelf look: light "paper" canvas by default, ink outlines, flat orange
+ * and mint fills, hard offset shadows instead of blur, orange brush strokes for shelves. Theme is driven by data-theme on <html>
+ * (set by ThemeService); the dark theme keeps the same shapes with inverted ink/paper.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --vs-canvas: #f4f3ee;
+  --vs-surface: #ffffff;
+  --vs-surface-2: #ebeae3;
+  --vs-surface-3: #dedcd2;
+  --vs-ink: #171717;
+  --vs-border: rgb(23 23 23 / 0.16);
+  --vs-border-strong: #171717;
+  --vs-text: #171717;
+  --vs-text-muted: #5f625d;
+  --vs-text-faint: #696c66;
+  --vs-shelf: #d1e4db;
+  --vs-shelf-deep: #a9c9bb;
+  --vs-accent: #fc753e;
+  --vs-accent-hover: #ee6128;
+  /* Orange for text on paper: the brand orange itself is too light to read (WCAG AA). */
+  --vs-accent-text: #b3420f;
+  --vs-accent-fg: #171717;
+  --vs-accent-soft: rgb(252 117 62 / 0.16);
+  --vs-danger: #b13322;
+  --vs-success: #196944;
+  --vs-warning: #9a4510;
+  /* Outlines of cards, tiles, chips and buttons; the edge of the orange buttons; hard shadows. All
+     ink on paper; the dark theme gives each its own quiet tone. */
+  --vs-line: #171717;
+  --vs-accent-edge: #171717;
+  /* Panels set against the page (the selection docks, the request card, active tabs). */
+  --vs-inverse: #171717;
+  --vs-on-inverse: #f4f3ee;
+  /* Screens that stay dark in both themes (the sign-in poster, the download wait, a private frame). */
+  --vs-screen: #171717;
+  --vs-screen-deep: #0d0e0e;
+  --vs-on-screen: #f4f3ee;
+  --vs-shadow-color: #171717;
+  --vs-shadow: 6px 6px 0 0 var(--vs-shadow-color);
+  --vs-shadow-sm: 3px 3px 0 0 var(--vs-shadow-color);
+  --vs-grain: none;
+  --vs-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23171717' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  --vs-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23171717' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 8.5 3 3 6-7'/%3E%3C/svg%3E");
+}
+
+/*
+ * Dark: night in a cinema — a very dark neutral canvas with a film grain;
+ * cards, panels, menus and docks darker still, near black but not black; soft warm-grey text instead
+ * of white, outlines in a quiet grey that frame without glowing, the orange a touch calmer, its
+ * buttons edged in burnt orange. No green tint and no grey fills.
+ * Text stays at least 4.5:1, field frames 3:1.
+ */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --vs-canvas: #0e0e0f;
+  --vs-surface: #070708;
+  --vs-surface-2: #131315;
+  --vs-surface-3: #1b1b1e;
+  --vs-ink: #d6d5d0;
+  --vs-line: #4a4a4f;
+  --vs-inverse: #050506;
+  --vs-on-inverse: #e6e5e0;
+  --vs-screen: #050506;
+  --vs-screen-deep: #020203;
+  --vs-on-screen: #e6e5e0;
+  --vs-border: rgb(255 255 255 / 0.1);
+  --vs-border-strong: #68676c;
+  --vs-text: #d9d8d3;
+  --vs-text-muted: #a19f99;
+  --vs-text-faint: #8f8d88;
+  --vs-shelf: #1a1a1d;
+  --vs-shelf-deep: #131315;
+  --vs-accent: #f07e4f;
+  --vs-accent-hover: #f6926a;
+  --vs-accent-text: #f59a72;
+  --vs-accent-fg: #0e0e0f;
+  --vs-accent-soft: rgb(240 126 79 / 0.16);
+  --vs-accent-edge: #b8572f;
+  --vs-danger: #ef8170;
+  --vs-success: #63c49d;
+  --vs-warning: #e7a874;
+  --vs-shadow-color: #000000;
+  --vs-shadow: 6px 6px 0 0 var(--vs-shadow-color);
+  --vs-shadow-sm: 3px 3px 0 0 var(--vs-shadow-color);
+  --vs-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .7 0 0 0 0 .7 0 0 0 0 .7 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --vs-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23d9d8d3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  --vs-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%230e0e0f' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 8.5 3 3 6-7'/%3E%3C/svg%3E");
+}
+
+/* The dark theme's film grain on everything painted in the page colour: the page, the
+   sticky header, panels. None on paper. */
+html,
+.bg-canvas {
+  background-image: var(--vs-grain);
+}
+
+/* Map tokens into Tailwind so utilities like bg-surface / text-muted / border-ink follow the active theme. */
+@theme inline {
+  --color-canvas: var(--vs-canvas);
+  --color-surface: var(--vs-surface);
+  --color-surface-2: var(--vs-surface-2);
+  --color-surface-3: var(--vs-surface-3);
+  --color-ink: var(--vs-ink);
+  --color-line: var(--vs-line);
+  --color-inverse: var(--vs-inverse);
+  --color-on-inverse: var(--vs-on-inverse);
+  --color-screen: var(--vs-screen);
+  --color-screen-deep: var(--vs-screen-deep);
+  --color-on-screen: var(--vs-on-screen);
+  --color-accent-edge: var(--vs-accent-edge);
+  --color-border: var(--vs-border);
+  --color-border-strong: var(--vs-border-strong);
+  --color-text: var(--vs-text);
+  --color-muted: var(--vs-text-muted);
+  --color-faint: var(--vs-text-faint);
+  --color-shelf: var(--vs-shelf);
+  --color-shelf-deep: var(--vs-shelf-deep);
+  --color-accent: var(--vs-accent);
+  --color-accent-hover: var(--vs-accent-hover);
+  --color-accent-text: var(--vs-accent-text);
+  --color-accent-fg: var(--vs-accent-fg);
+  --color-accent-soft: var(--vs-accent-soft);
+  --color-danger: var(--vs-danger);
+  --color-success: var(--vs-success);
+  --color-warning: var(--vs-warning);
+  /* Under white text on a picture: badges and pills over thumbnails and the player. */
+  --color-scrim: rgb(0 0 0 / 0.65);
+  --font-sans: 'Golos Text Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Unbounded Variable', 'Golos Text Variable', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --shadow-panel: var(--vs-shadow);
+  --shadow-hard: var(--vs-shadow);
+  --shadow-hard-sm: var(--vs-shadow-sm);
+  /* Menus, small dialogs and the upload panel: a surface floating over the page. */
+  --shadow-float: 0 24px 48px -16px rgb(0 0 0 / 0.35);
+}
+
+/*
+ * Vietnamese: Golos Text has no Vietnamese letters, and a word drawn half in it, half in a
+ * fallback reads badly; the system's sans keeps each word in one face. Headings keep Unbounded,
+ * which has them. Scripts our fonts lack altogether (CJK, Thai, Devanagari) fall back as a whole.
+ */
+:lang(vi) {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * For elements that lift on hover (translate/rotate). Lifted, they slide out from under a cursor
+ * resting on their edge: hover drops, they settle back under it, hover returns — an endless jitter.
+ * While hovered, an invisible pseudo-element keeps covering the spot they lifted from. The lift
+ * itself makes the element its containing block; z-index -1 keeps it under the element's content,
+ * so clicks and pointer moves still reach the children.
+ */
+@utility lift-hitbox {
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0 -3px -6px -3px;
+    z-index: -1;
+  }
+}
+
+/* A long press on a tile selects it: no system menu over its picture (iOS shows one). */
+app-library-tile,
+app-stack-tile {
+  -webkit-touch-callout: none;
+}
+/* Small typographic label like the sticker on a tape spine. */
+/*
+ * The index: folders, categories and sections read like the contents of a magazine —
+ * display type, tight, with the count as a small superscript in the accent.
+ */
+@utility index-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 1rem + 0.6vw, 1.625rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+@utility index-tab {
+  font-family: var(--font-display);
+  font-weight: 600;
+  /* --fit: a row of tabs shrinks its type before it wraps (FitRowDirective). */
+  font-size: calc(clamp(1rem, 0.9rem + 0.35vw, 1.1875rem) * var(--fit, 1));
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+@utility index-count {
+  align-self: flex-start;
+  margin-top: 0.1em;
+  margin-left: 0.3em;
+  font-family: var(--font-mono);
+  font-size: calc(12px * max(var(--fit, 1), 0.85));
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+  vertical-align: top;
+  color: var(--vs-accent-text);
+}
+/* Quiet marks on a tile's picture: small frosted chips that read on any frame. */
+@utility tile-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.82);
+  color: #171717;
+  backdrop-filter: blur(6px);
+}
+/*
+ * A tile's quiet marks show only under the pointer or keyboard focus. Touch screens
+ * have no hover, so there they always show.
+ */
+@utility tile-reveal {
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+  :where(.group):hover &,
+  :where(.group):focus-visible &,
+  :where(.group):focus-within & {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+/*
+ * A video's name, always on its picture, with its length beside it, over a shade
+ * that reads on any frame.
+ */
+@utility tile-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 24px 8px 6px;
+  pointer-events: none;
+  color: #fff;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.3) 55%, transparent);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+}
+/* A stack's label: a solid strip, unlike a video's shade, so a stack reads at a glance. */
+@utility stack-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  pointer-events: none;
+  color: #fff;
+  background: rgb(23 23 23 / 0.9);
+}
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+@layer base {
+  /* Everything clickable shows the hand (Tailwind 4 leaves buttons on the arrow). `:where` keeps
+     these at zero specificity, so a `cursor-*` utility (grab, text) still wins. */
+  :where(
+    a[href],
+    button,
+    summary,
+    select,
+    [role='button'],
+    [role='checkbox'],
+    [role='option'],
+    [role='menuitem'],
+    [role='menuitemradio'],
+    [role='menuitemcheckbox'],
+    [role='tab'],
+    [role='switch'],
+    input[type='checkbox'],
+    input[type='radio'],
+    input[type='file'],
+    input[type='range'],
+    label:has(input[type='checkbox'], input[type='radio'])
+  ) {
+    cursor: pointer;
+  }
+  :where(button, select, input, [role='option'], [role='menuitem']):disabled,
+  :where([aria-disabled='true']) {
+    cursor: not-allowed;
+  }
+  html {
+    @apply bg-canvas text-text antialiased;
+    font-family: var(--font-sans);
+    /* No `scrollbar-gutter: stable`: with the thin pill on a transparent track a
+       reserved gutter is a blank strip in the canvas colour that nothing can paint over, and the bands
+       above the header looked cut short of the window's edge. The scrollbar takes its 10 px only on
+       pages that scroll; the width differs by that much between short and long pages. */
+  }
+  body {
+    @apply min-h-dvh;
+    /*
+     * A word longer than its box (a pasted link, a name without spaces) breaks instead of pushing
+     * the page wider. Lines with room are untouched; truncated text stays one line.
+     */
+    overflow-wrap: break-word;
+  }
+  /*
+   * A column as tall as the window, so the compact footer sits at the bottom of short pages
+   * (sign-in, 404) and under the content of long ones. Full-bleed bands (the landing) may reach
+   * past the page; clip, not scroll, so sticky still works.
+   */
+  app-root {
+    display: flex;
+    min-height: 100dvh;
+    flex-direction: column;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--vs-shelf);
+  }
+  /*
+   * Focus outlines for keyboard users only: the browser's :focus-visible also fires
+   * on focus moved by script (a dialog opening, the player after a click); <html data-input> says
+   * how the person last interacted (core/a11y/input-modality).
+   */
+  :focus-visible {
+    outline: none;
+  }
+  html[data-input='keyboard'] :focus-visible {
+    outline: 2px solid var(--vs-accent);
+    outline-offset: 2px;
+  }
+  /*
+   * Scrollbars: a thin ink pill on a transparent track, the page and every
+   * scrolling list alike, in both themes. WebKit browsers draw it with the pseudo-elements;
+   * Firefox gets the standard thin themed scrollbar (Chrome would ignore the pseudo-elements
+   * if the standard properties were set as well, hence the guard).
+   */
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background-color: color-mix(in srgb, var(--vs-ink) 32%, transparent);
+      background-clip: padding-box;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: color-mix(in srgb, var(--vs-ink) 55%, transparent);
+    }
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--vs-ink) 32%, transparent) transparent;
+    }
+  }
+  /* Checkboxes: same ink outline as the fields, orange fill with an ink tick when checked. */
+  input[type='checkbox'] {
+    appearance: none;
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    border: 2px solid var(--vs-border-strong);
+    border-radius: 4px;
+    background: var(--vs-surface) no-repeat center / 0.75rem;
+    vertical-align: -0.2em;
+    cursor: pointer;
+    transition:
+      background-color 0.1s,
+      box-shadow 0.1s;
+  }
+  input[type='checkbox']:hover:not(:disabled) {
+    box-shadow: 2px 2px 0 0 var(--vs-shadow-color);
+  }
+  input[type='checkbox']:checked {
+    background-color: var(--vs-accent);
+    background-image: var(--vs-check);
+  }
+  input[type='checkbox']:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  /* Colour picker: a swatch in the same 40 px outlined box as the fields. */
+  input[type='color'] {
+    height: 2.5rem;
+    width: 3.5rem;
+    padding: 3px;
+    border: 2px solid var(--vs-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--vs-surface);
+    cursor: pointer;
+  }
+  input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  input[type='color']::-webkit-color-swatch,
+  input[type='color']::-moz-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+}
+
+/*
+ * Text fields, selects and textareas (InputDirective). One look, two heights that match the
+ * buttons: 40 px by default, 32 px with appInput="sm". Height is fixed and vertical padding is
+ * zero, so text is centered by the browser and never clipped. Lives in the components layer, so
+ * width utilities on the element (w-auto, w-40, max-w-40) still win.
+ */
+@layer components {
+  .ts-control {
+    display: block;
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border: 2px solid var(--vs-border-strong);
+    border-radius: var(--radius-md);
+    background-color: var(--vs-surface);
+    color: var(--vs-text);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 450;
+    line-height: 1.25rem;
+    letter-spacing: normal;
+    text-transform: none;
+    transition:
+      box-shadow 0.12s,
+      border-color 0.12s,
+      background-color 0.12s;
+  }
+  /* The shelf search draws its own cross (ShelfSearchComponent). */
+  .ts-search::-webkit-search-cancel-button {
+    appearance: none;
+  }
+  .ts-control::placeholder {
+    color: var(--vs-text-faint);
+    opacity: 1;
+  }
+  .ts-control:hover:not(:disabled):not(:focus) {
+    background-color: color-mix(in srgb, var(--vs-surface) 70%, var(--vs-surface-2));
+  }
+  /* Text fields match :focus-visible on a click too; buttons (app-select) only from the keyboard. */
+  .ts-control:focus-visible {
+    outline: none;
+    box-shadow: 3px 3px 0 0 var(--vs-accent);
+  }
+  .ts-control:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: var(--vs-surface-2);
+  }
+  /*
+   * Optional fields (app-field [optional], or the class on a lone control): a faint grey frame and
+   * a quieter fill, so the eye goes to what has to be filled; the full ink frame while typing.
+   */
+  .ts-optional .ts-control,
+  .ts-control.ts-optional {
+    border-color: color-mix(in srgb, var(--vs-border-strong) 20%, transparent);
+    background-color: transparent;
+  }
+  .ts-optional .ts-control:focus,
+  .ts-control.ts-optional:focus {
+    border-color: var(--vs-border-strong);
+    background-color: var(--vs-surface);
+  }
+  /*
+   * Toolbar controls (the shelf's search and order): as quiet as the zoom beside them — a
+   * hairline frame in the border tone, no fill; the ink frame while in use.
+   */
+  .ts-quiet .ts-control,
+  .ts-control.ts-quiet {
+    border-width: 1px;
+    border-color: var(--vs-border);
+    background-color: transparent;
+  }
+  .ts-quiet .ts-control:focus,
+  .ts-control.ts-quiet:focus {
+    border-color: var(--vs-border-strong);
+  }
+  .ts-control[aria-invalid='true'] {
+    border-color: var(--vs-danger);
+  }
+  .ts-control[aria-invalid='true']:focus-visible {
+    box-shadow: 3px 3px 0 0 var(--vs-danger);
+  }
+  /* The trigger of app-select (shared/ui/select): a field with a chevron, held open with the focus shadow. */
+  .ts-select {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ts-select[aria-expanded='true'] {
+    box-shadow: 3px 3px 0 0 var(--vs-accent);
+  }
+  select.ts-control {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image: var(--vs-chevron);
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  select.ts-control option {
+    background-color: var(--vs-surface);
+    color: var(--vs-text);
+  }
+  textarea.ts-control {
+    height: auto;
+    min-height: 5rem;
+    padding-block: 0.5rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  input[type='search'].ts-control::-webkit-search-cancel-button {
+    cursor: pointer;
+  }
+
+  .ts-control-sm {
+    height: 2rem;
+    padding: 0 0.625rem;
+    font-size: 0.8125rem;
+    line-height: 1rem;
+  }
+  select.ts-control-sm {
+    padding-right: 1.875rem;
+    background-position: right 0.55rem center;
+    background-size: 0.75rem;
+  }
+  textarea.ts-control-sm {
+    height: auto;
+    min-height: 3.5rem;
+    padding-block: 0.375rem;
+    line-height: 1.4;
+  }
+}
+
+/*
+ * An icon sized in % of its box (size="36%"): ng-icon's svg inherits the width as written, so the
+ * percentage would apply twice and pin the glyph to the top-left corner; the svg fills its host.
+ */
+ng-icon.ic-fill > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* CDK dialog backdrop (overlay structural styles are injected by the CDK itself). */
+.vs-backdrop {
+  background: rgb(23 23 23 / 0.55);
+}
+
+/*
+ * Route transitions: the header stays put, the page content fades up, and a video
+ * grows out of the tile that was clicked (the shared name vs-video, see core/navigation/video-morph).
+ */
+.vt-header {
+  view-transition-name: site-header;
+}
+.vt-page {
+  view-transition-name: page;
+}
+/*
+ * Crossfade with overlap, never through an empty frame: the old page fades while the new one is
+ * already rising over it. The rest of the window (compact footer, banners) is the root snapshot;
+ * its old picture stays and the new one fades in on top, so nothing outside the page jumps.
+ */
+::view-transition-group(page) {
+  animation: none;
+}
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation: 220ms ease-out both ts-fade-in;
+}
+::view-transition-old(page) {
+  animation: 200ms ease-out both ts-page-out;
+}
+::view-transition-new(page) {
+  animation: 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both ts-page-in;
+}
+/*
+ * The frame glides between the whole window and a centred column: the header and
+ * the footer change width smoothly, and during a route transition the logo and the account capsule
+ * travel to their new places instead of jumping.
+ */
+.frame-glide {
+  transition:
+    max-width 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vt-logo {
+  view-transition-name: header-logo;
+}
+.vt-header-nav {
+  view-transition-name: header-nav;
+}
+::view-transition-group(header-logo),
+::view-transition-group(header-nav) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/*
+ * The side panel slides in from the right edge and back out, over a dim that fades;
+ * while only the panel changes, the page under it does not move at all (vt-panel-only). The curve
+ * starts quick and settles long, like a sheet pulled in by hand; leaving is shorter and accelerates.
+ */
+.vt-panel {
+  view-transition-name: panel;
+}
+.vt-panel-backdrop {
+  view-transition-name: panel-backdrop;
+}
+::view-transition-group(panel),
+::view-transition-group(panel-backdrop) {
+  animation: none;
+}
+::view-transition-new(panel) {
+  animation: 460ms cubic-bezier(0.32, 0.72, 0, 1) both ts-panel-in;
+}
+::view-transition-old(panel) {
+  animation: 300ms cubic-bezier(0.32, 0, 0.67, 0) both ts-panel-out;
+}
+::view-transition-new(panel-backdrop) {
+  animation: 460ms cubic-bezier(0.32, 0.72, 0, 1) both ts-fade-in;
+}
+::view-transition-old(panel-backdrop) {
+  animation: 300ms ease-in both ts-page-out;
+}
+/* One panel replacing another (messages → a request): the content crossfades in place. */
+html.vt-panel-swap::view-transition-new(panel) {
+  animation: 240ms ease-out both ts-fade-in;
+}
+html.vt-panel-swap::view-transition-old(panel) {
+  animation: 180ms ease-in both ts-page-out;
+}
+/*
+ * Changing the theme (ThemeService.toggle): one picture of the whole page, the new theme
+ * spreading over the old in a circle from the switch; no colour transition of its own anywhere
+ * meanwhile (they made elements change one after another).
+ */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+html.vt-theme * {
+  view-transition-name: none !important;
+}
+html.vt-theme::view-transition-old(root),
+html.vt-theme::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.vt-panel-only::view-transition-old(page),
+html.vt-panel-only::view-transition-new(page),
+html.vt-panel-only::view-transition-new(root) {
+  animation: none;
+}
+@keyframes ts-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ts-panel-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+::view-transition-group(vs-video) {
+  animation-duration: 480ms;
+  animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+::view-transition-old(vs-video),
+::view-transition-new(vs-video) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 480ms;
+}
+@keyframes ts-page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ts-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes ts-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Floating docks (bulk actions, request selection) slide up from the bottom edge. */
+@keyframes ts-dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+}
+@keyframes ts-dock-out {
+  to {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+}
+.dock-in {
+  animation: ts-dock-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.dock-out {
+  animation: ts-dock-out 160ms ease-in both;
+}
+/* The card lifted off the shelf and the pile a tile grows when it offers to stack. */
+@keyframes ts-ghost-in {
+  from {
+    opacity: 0;
+    transform: rotate(0deg) scale(1.08);
+  }
+}
+.ghost-in {
+  animation: ts-ghost-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes ts-pile-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.pile-in {
+  animation: ts-pile-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost-in,
+  .pile-in,
+  .dock-in,
+  .dock-out {
+    animation: none;
+  }
+}
+
+/* 404: a tracking line rolls down the dead channel, like a VHS out of sync. */
+@keyframes ts-tracking {
+  from {
+    top: -10%;
+  }
+  to {
+    top: 110%;
+  }
+}
+.tracking-line {
+  animation: ts-tracking 3.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tracking-line {
+    animation: none;
+    top: 40%;
+  }
+}
+
+/* A row of tabs on one line while its type can still shrink (FitRowDirective). */
+.fit-row[data-fit='one'],
+.fit-row[data-fit='one'] .fit-row-part {
+  flex-wrap: nowrap;
+}
+
+/* A phone's row of tabs scrolls sideways instead (FitRowDirective `scrollBelow`). */
+.fit-row[data-fit='scroll'] {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* room for the brush stroke under the open tab, which the scroll box would clip */
+  padding-bottom: 0.875rem;
+  /* and for the counts raised over the tabs, without moving the row down */
+  padding-top: 0.5rem;
+  margin-top: -0.5rem;
+}
+.fit-row[data-fit='scroll']::-webkit-scrollbar {
+  display: none;
+}
+.fit-row[data-fit='scroll'] > * {
+  flex-shrink: 0;
+}
+
+/* The space between tabs gives way faster than the type. */
+.fit-row,
+.fit-row .fit-row-part {
+  column-gap: calc(1.5rem * var(--fit, 1) * var(--fit, 1));
+}

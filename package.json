@@ -1,0 +1,15 @@
+{
+  "name": "tapeshelf",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "Root tooling only (git hooks). Apps live in backend/ and frontend/.",
+  "scripts": {
+    "dev": "bash dev.sh",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "prettier": "^3.9.10"
+  }
+}

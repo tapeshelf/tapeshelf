@@ -1,0 +1,17 @@
+name: Something's broken
+description: Tell us what went wrong
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you got instead.
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: Logs
+      description: The output of `./tapeshelf.sh status`, and of `./tapeshelf.sh logs` if it says anything useful. Check it for anything private first.
+      render: text
+  - type: input
+    attributes:
+      label: Your setup
+      placeholder: Ubuntu 24.04, on a server with a domain

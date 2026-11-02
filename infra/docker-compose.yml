@@ -1,0 +1,80 @@
+# Dev dependencies for TapeShelf. API, worker and frontend run on the host (see README).
+#   docker compose -f infra/docker-compose.yml up -d
+name: tapeshelf
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: tapeshelf
+      POSTGRES_PASSWORD: tapeshelf
+      POSTGRES_DB: tapeshelf
+    ports:
+      - '5433:5432' # 5432 is often taken by other local projects
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tapeshelf -d tapeshelf']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--save', '', '--appendonly', 'no']
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3-compatible storage. MinIO's free images were removed from Docker Hub in 2026, so dev,
+  # tests and CI use RustFS (Apache-2.0). Buckets, the public-read policy, lifecycle and browser CORS
+  # are applied by `npm run storage:init` (./dev.sh --init) and by the e2e global setup.
+  s3:
+    image: rustfs/rustfs:1.0.1
+    user: '1000:1000' # files in ./data/rustfs stay owned by the host user (adjust if your uid differs)
+    environment:
+      RUSTFS_ACCESS_KEY: minioadmin # kept from the MinIO days so existing .env files keep working
+      RUSTFS_SECRET_KEY: minioadmin
+      RUSTFS_OBS_LOG_DIRECTORY: /data/.rustfs-logs
+    ports:
+      - '9100:9000' # S3 API; 9000/9001 may be taken by other local projects
+      - '9101:9001' # web console
+    volumes:
+      - ./data/rustfs:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-sf', 'http://localhost:9000/health']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: '1'
+      MP_SMTP_AUTH_ALLOW_INSECURE: '1'
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+
+  pg-backup:
+    image: prodrigestivill/postgres-backup-local:17
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: tapeshelf
+      POSTGRES_USER: tapeshelf
+      POSTGRES_PASSWORD: tapeshelf
+      SCHEDULE: '@daily'
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 3
+      HEALTHCHECK_PORT: 8080
+    volumes:
+      - ./data/backups:/backups

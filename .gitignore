@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+# env
+.env
+.env.*
+!.env.example
+# build
+dist/
+*.tsbuildinfo
+.angular/
+coverage/
+# logs
+*.log
+# os / editor
+.DS_Store
+.idea/
+**/.vscode/*
+!**/.vscode/extensions.json
+# generated
+frontend/src/app/api/
+backend/test/fixtures/
+frontend/e2e/fixtures/
+frontend/test-results/
+frontend/playwright-report/
+
+# local data
+infra/data/*
+# the S3 data dir must exist before docker creates it as root (RustFS runs as the host user)
+!infra/data/rustfs/
+infra/data/rustfs/*
+!infra/data/rustfs/.gitkeep
+
+# committed test env (no secrets)
+!backend/.env.test
+

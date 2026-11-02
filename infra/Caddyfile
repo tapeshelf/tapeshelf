@@ -1,0 +1,68 @@
+# TapeShelf front door: TLS (Let's Encrypt for a real domain, Caddy's local CA for
+# localhost), security headers, the SPA, and /api + /ws to the api container.
+{
+	# "email <address>" for Let's Encrypt notices when ACME_EMAIL is set, nothing otherwise (optional).
+	{$ACME_EMAIL_OPTION}
+	servers {
+		# Behind another proxy on a private network, keep its X-Forwarded-For; a
+		# public peer is never trusted, so a visitor cannot spoof the address the API rate-limits on.
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
+	}
+}
+
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		# Which build of the app answered (the image's commit); the API adds X-Tapeshelf-Api.
+		X-Tapeshelf-Web "{$APP_VERSION:dev}"
+		-Server
+	}
+
+	# API and websockets: the api container sets its own headers (helmet). Never indexed.
+	handle /api/* {
+		header X-Robots-Tag "noindex, nofollow"
+		reverse_proxy api:3000
+	}
+	handle /ws* {
+		reverse_proxy api:3000
+	}
+
+
+	# The storage built into a self-hosted instance, behind this same address: browsers upload and
+	# stream straight from it, with the host they signed for. Nothing here unless it is set.
+	@storage {
+		expression `{env.STORAGE_UPSTREAM} != ""`
+		path /tapeshelf-private/* /tapeshelf-public/*
+	}
+	handle @storage {
+		reverse_proxy {$STORAGE_UPSTREAM:127.0.0.1:9} {
+			flush_interval -1
+		}
+	}
+
+	handle {
+		root * /srv
+		# The app is reachable by link only.
+		header X-Robots-Tag "noindex, nofollow"
+		# S3 origins: presigned uploads, HLS segments, images of the public bucket.
+		header Content-Security-Policy "default-src 'self'; script-src 'self' {$CSP_PADDLE_ORIGINS} {$CSP_CAPTCHA_ORIGINS}; style-src 'self' 'unsafe-inline' {$CSP_PADDLE_ORIGINS}; img-src 'self' data: blob: {$CSP_S3_ORIGINS} {$CSP_PADDLE_ORIGINS}; media-src 'self' blob: {$CSP_S3_ORIGINS}; connect-src 'self' {$CSP_S3_ORIGINS} {$CSP_PADDLE_ORIGINS}; frame-src 'self' {$CSP_PADDLE_FRAME} {$CSP_CAPTCHA_ORIGINS}; worker-src 'self' blob:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+		# Angular's bundles and fonts carry a content hash in their names and never change; the
+		# rest (index.html for every route, translations, icons) is revalidated on each visit.
+		@hashed path *.js *.css /media/*
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+		@other not path *.js *.css /media/*
+		header @other Cache-Control "no-cache"
+		try_files {path} /index.html
+		# The build ships brotli and gzip copies (frontend/scripts/precompress.mjs): served as they
+		# are, smaller than compressing on the fly and with no CPU per visit.
+		file_server {
+			precompressed br gzip
+		}
+	}
+}

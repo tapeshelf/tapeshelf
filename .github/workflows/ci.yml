@@ -1,0 +1,217 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # main finishes every run: pushes come faster than a run (~20 min), and only a whole run publishes images
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  backend:
+    name: Backend (lint, unit, e2e)
+    # Pinned: newer Ubuntu images ship ffmpeg 8, which renders
+    # captions differently and broke the backend's render tests; move on deliberately, not by surprise.
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: tapeshelf
+          POSTGRES_PASSWORD: tapeshelf
+          POSTGRES_DB: tapeshelf_test
+        ports: ['5433:5432']
+        options: >-
+          --health-cmd "pg_isready -U tapeshelf"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      mailpit: # e2e reads verification and notification mails from its API
+        image: axllent/mailpit:latest
+        ports: ['1025:1025', '8025:8025']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: npm 12 (the lockfiles and allowScripts are npm 12's)
+        run: npm install -g npm@12.2.0
+      # MinIO's free images were removed from Docker Hub in 2026; RustFS is an S3-compatible
+      # stand-in (Apache-2.0). Buckets, policy and CORS come from storage-init in the e2e global setup.
+      - name: Start S3 (RustFS)
+        run: |
+          docker run -d --name s3 -p 9100:9000 \
+            -e RUSTFS_ACCESS_KEY=minioadmin -e RUSTFS_SECRET_KEY=minioadmin \
+            rustfs/rustfs:1.0.1
+          for i in $(seq 1 30); do curl -sf http://localhost:9100/health && break; sleep 1; done
+      - name: Install ffmpeg (worker e2e suite)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fontconfig
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:e2e
+      - name: OpenAPI contract is up to date
+        run: |
+          cp .env.example .env
+          npm run openapi:export
+          git diff --exit-code -- openapi.json
+
+  frontend:
+    name: Frontend (lint, unit, build)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm install -g npm@12.2.0
+      - run: npm ci
+      - run: npm run api:gen
+      - run: npm run lint
+      - run: npx prettier --check "src/**/*.{ts,html,css,scss,json}"
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: Browser e2e (Playwright ${{ matrix.shard }}/3)
+    # The whole stack in a browser is slow: by the button only (Run workflow), in three parts at once,
+    # each with its own stack.
+    if: github.event_name == 'workflow_dispatch'
+    needs: [backend, frontend]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: tapeshelf
+          POSTGRES_PASSWORD: tapeshelf
+          POSTGRES_DB: tapeshelf_test
+        ports: ['5433:5432']
+        options: >-
+          --health-cmd "pg_isready -U tapeshelf"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+      mailpit:
+        image: axllent/mailpit:latest
+        ports: ['1025:1025', '8025:8025']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g npm@12.2.0
+      - name: Start S3 (RustFS; CORS for the e2e origin is applied by storage-init)
+        run: |
+          docker run -d --name s3 -p 9100:9000 \
+            -e RUSTFS_ACCESS_KEY=minioadmin -e RUSTFS_SECRET_KEY=minioadmin \
+            rustfs/rustfs:1.0.1
+          for i in $(seq 1 30); do curl -sf http://localhost:9100/health && break; sleep 1; done
+      - name: Install ffmpeg (worker and fixtures)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fontconfig
+      - name: Backend dependencies and buckets
+        working-directory: backend
+        run: |
+          npm ci
+          npx prisma migrate deploy
+          npx tsx --env-file=.env.test src/scripts/storage-init.ts
+        env:
+          DATABASE_URL: postgresql://tapeshelf:tapeshelf@localhost:5433/tapeshelf_test
+      - name: Frontend dependencies
+        working-directory: frontend
+        run: npm ci && npm run api:gen
+      - name: Playwright's Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Playwright (system Chrome plays H.264)
+        working-directory: frontend
+        run: npx playwright test --shard=${{ matrix.shard }}/3
+        env:
+          PLAYWRIGHT_BROWSER_PATH: /usr/bin/google-chrome-stable
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces-${{ matrix.shard }}
+          path: frontend/test-results
+
+  images:
+    name: Production images build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --target api -t tapeshelf-api backend
+      - run: docker build --target worker -t tapeshelf-worker backend
+      - run: docker build -f frontend/Dockerfile -t tapeshelf-web .
+      - name: Worker image has its tools
+        run: docker run --rm --entrypoint sh tapeshelf-worker -c 'f=$(ffmpeg -hide_banner -filters) && for x in zscale drawtext gblur loudnorm alimiter; do echo "$f" | grep -qw "$x" || { echo "no $x"; exit 1; }; done && test -f assets/fonts/JetBrainsMono-SemiBold.ttf && pg_dump --version'
+
+  # On main, once everything above passed: the images install.sh downloads.
+  publish:
+    name: Publish images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [backend, frontend, images]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: API
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          target: api
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: APP_VERSION=${{ github.sha }}
+          tags: ghcr.io/tapeshelf/tapeshelf-api:latest,ghcr.io/tapeshelf/tapeshelf-api:${{ github.sha }}
+      - name: Worker
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          target: worker
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: APP_VERSION=${{ github.sha }}
+          tags: ghcr.io/tapeshelf/tapeshelf-worker:latest,ghcr.io/tapeshelf/tapeshelf-worker:${{ github.sha }}
+      - name: Web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: APP_VERSION=${{ github.sha }}
+          tags: ghcr.io/tapeshelf/tapeshelf-web:latest,ghcr.io/tapeshelf/tapeshelf-web:${{ github.sha }}
