@@ -310,12 +310,7 @@ export class VideoPipelineService {
         return result(false);
       }
       if (err instanceof RejectedError) {
-        await this.fail(
-          videoId,
-          err.reason,
-          err.detail,
-          reporter,
-        );
+        await this.fail(videoId, err.reason, err.detail, reporter);
         await rm(work, { recursive: true, force: true });
         return result(true);
       }
@@ -324,12 +319,7 @@ export class VideoPipelineService {
         `Video ${videoId}: processing error (attempt ${job.attemptsMade + 1}/${job.maxAttempts}): ${firstLine(err)}`,
       );
       if (!final) throw err;
-      await this.fail(
-        videoId,
-        'internal',
-        firstLine(err),
-        reporter,
-      );
+      await this.fail(videoId, 'internal', firstLine(err), reporter);
       await rm(work, { recursive: true, force: true });
       return result(true);
     }

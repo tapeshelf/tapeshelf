@@ -3,11 +3,7 @@ import { Component, effect, inject, input, signal, untracked } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideArrowLeft,
-  lucideDownload,
-  lucideExternalLink,
-} from '@ng-icons/lucide';
+import { lucideArrowLeft, lucideDownload, lucideExternalLink } from '@ng-icons/lucide';
 
 import {
   Api,
@@ -272,7 +268,6 @@ import { OptionComponent, SelectComponent } from '../../shared/ui/select/select'
         </aside>
       </div>
 
-
       <section
         class="mt-6 rounded-lg border-2 border-line bg-surface p-4"
         data-testid="admin-source-meta"
@@ -383,7 +378,6 @@ export class AdminVideoPage {
   protected remove(v: AdminVideoDetailDto): Promise<void> {
     return this.act(() => this.actions.remove(v));
   }
-
 
   /** The actions show their own outcome; the page takes the video as it is now. */
   private async act(fn: () => Promise<AdminVideoDetailDto | null>): Promise<void> {

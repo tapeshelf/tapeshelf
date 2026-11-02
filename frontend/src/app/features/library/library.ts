@@ -2209,11 +2209,10 @@ export class LibraryComponent implements OnDestroy {
   }
 
   /** What a temporary link may carry of the picked: uploads and copies, ready. */
-  protected readonly linkCandidates = computed(
-    () =>
-      this.store
-        .selectedItems()
-        .filter((i) => i.source !== 'PUBLIC_ADD' && i.video.status === 'READY')
+  protected readonly linkCandidates = computed(() =>
+    this.store
+      .selectedItems()
+      .filter((i) => i.source !== 'PUBLIC_ADD' && i.video.status === 'READY'),
   );
   /** What an exchange link may offer: what a temporary link may carry, not hidden from visitors. */
   protected readonly exchangeCandidates = computed(() =>

@@ -104,8 +104,7 @@ export class UpdateProfileDto {
   theme?: Theme;
 
   @ApiPropertyOptional({
-    description:
-      'Show videos marked sensitive without the consent dialog',
+    description: 'Show videos marked sensitive without the consent dialog',
   })
   @IsOptional()
   @IsBoolean()
@@ -171,8 +170,7 @@ export class PageSettingsDto {
   @ApiProperty({
     minimum: 0,
     maximum: CATEGORY_ROWS_MAX,
-    description:
-      'Rows of each category in “All videos” by category, 0 = all',
+    description: 'Rows of each category in “All videos” by category, 0 = all',
   })
   categoryRows!: number;
   @ApiProperty({
@@ -271,8 +269,7 @@ export class PublicUserDto {
   })
   relation!: RelationDto | null;
   @ApiProperty({
-    description:
-      'Has Pro right now: a small badge by the name (cloud only)',
+    description: 'Has Pro right now: a small badge by the name (cloud only)',
   })
   pro!: boolean;
   @ApiProperty({

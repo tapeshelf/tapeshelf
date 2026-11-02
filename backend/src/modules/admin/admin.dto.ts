@@ -447,8 +447,6 @@ export class AdminVideoListDto {
   @ApiProperty() total!: number;
 }
 
-
-
 export class AdminFrameDto {
   @ApiProperty() index!: number;
   @ApiProperty() timestampSec!: number;
@@ -591,7 +589,6 @@ export class TrashResultDto {
   skipped!: string[];
 }
 
-
 /** The same removal for several videos: each author gets the rule and the message. */
 export class AdminDeleteVideosDto extends AdminDeleteVideoDto {
   @ApiProperty({ type: [String], minItems: 1, maxItems: 100 })
@@ -651,8 +648,7 @@ export class SiteSettingsDto {
   @ApiProperty({
     minimum: 0,
     maximum: 60,
-    description:
-      'Days Pro is kept after a failed renewal (cloud); 0 = none',
+    description: 'Days Pro is kept after a failed renewal (cloud); 0 = none',
   })
   @IsInt()
   @Min(0)

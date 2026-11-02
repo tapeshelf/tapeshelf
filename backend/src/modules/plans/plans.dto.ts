@@ -16,8 +16,7 @@ export class TierLimitsDto {
   @ApiProperty({
     minimum: 0,
     maximum: TiB,
-    description:
-      'Set per tier from 1 MiB; 0 = no limit (a self-hosted plan)',
+    description: 'Set per tier from 1 MiB; 0 = no limit (a self-hosted plan)',
   })
   @IsInt()
   @Min(MiB)
@@ -27,8 +26,7 @@ export class TierLimitsDto {
   @ApiProperty({
     minimum: 0,
     maximum: 100 * TiB,
-    description:
-      'Set per tier from 1 MiB; 0 = no limit (a self-hosted plan)',
+    description: 'Set per tier from 1 MiB; 0 = no limit (a self-hosted plan)',
   })
   @IsInt()
   @Min(MiB)

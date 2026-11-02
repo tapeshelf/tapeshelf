@@ -156,7 +156,6 @@ describe('notifications and outbox (e2e)', () => {
     });
   });
 
-
   it('deleting a video notifies every other holder, not the deleter; bulk delete too', async () => {
     const shared = await seed(authorId, 'shared');
     const second = await seed(authorId, 'second');

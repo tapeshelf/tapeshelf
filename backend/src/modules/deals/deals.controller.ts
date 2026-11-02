@@ -122,8 +122,7 @@ export class DealsController {
   @Public()
   @Get('exchange-offers/:holder/:code')
   @ApiOperation({
-    summary:
-      'One private video on a holder’s shelf, offered for an exchange',
+    summary: 'One private video on a holder’s shelf, offered for an exchange',
   })
   @ApiOkResponse({ type: ExchangeInviteDto })
   async single(

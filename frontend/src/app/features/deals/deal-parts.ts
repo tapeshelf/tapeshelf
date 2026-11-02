@@ -3,7 +3,6 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideHandshake, lucideShieldCheck, lucideTrash2 } from '@ng-icons/lucide';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-
 /**
  * "A fair exchange": what happens to one's video and why nobody can take without giving.
  * Shown wherever a deal starts or goes on; `guest` adds the three days and "no account needed".
@@ -85,4 +84,3 @@ export class ExchangePrefsComponent {
   readonly wants = input<string | null | undefined>(null);
   readonly avoid = input<string | null | undefined>(null);
 }
-

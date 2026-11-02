@@ -22,7 +22,6 @@ export interface ActionVideo {
   deletedAt: string | null;
 }
 
-
 /**
  * The admin's video tools in one place: the removal with a statement to the author. Each
  * resolves with the video as it is now, or null when the admin changed their mind or it failed (the
@@ -34,9 +33,6 @@ export class AdminVideoActions {
   private readonly t = inject(TranslocoService);
   private readonly takedown = inject(TakedownService);
   private readonly toast = inject(ToastService);
-
-
-
 
   async removeMany(videos: ActionVideo[]): Promise<boolean> {
     const live = videos.filter((v) => !v.deletedAt);
@@ -60,7 +56,6 @@ export class AdminVideoActions {
       (r) => this.t.translate('admin.bulk.removed', { count: r.done }),
     );
   }
-
 
   /** Runs a bulk call and tells how it went: done, and what was skipped. */
   private async report(
@@ -135,7 +130,6 @@ export class AdminVideoActionsComponent {
   readonly video = input.required<ActionVideo>();
   /** Something changed: the table reloads. */
   readonly changed = output<void>();
-
 
   protected async remove(): Promise<void> {
     if (await this.actions.remove(this.video())) this.changed.emit();

@@ -354,7 +354,6 @@ export class AdminTrashPage {
     return Math.max(0, Math.ceil((new Date(v.restorableUntil).getTime() - this.now()) / DAY_MS));
   }
 
-
   protected async purge(videos: AdminVideoRowDto[]): Promise<void> {
     if (!videos.length) return;
     const bytes = videos.reduce((n, v) => n + (v.storedBytes ?? v.sizeBytes), 0);

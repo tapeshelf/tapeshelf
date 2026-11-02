@@ -67,14 +67,7 @@ const SECTIONS = [
 /** /admin: one page with a section list, like settings. */
 @Component({
   selector: 'app-admin-layout',
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    RouterOutlet,
-    TranslocoPipe,
-    NgIcon,
-    PageHeadComponent,
-  ],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TranslocoPipe, NgIcon, PageHeadComponent],
   providers: [
     provideIcons({
       lucideArrowLeftRight,

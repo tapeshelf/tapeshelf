@@ -100,7 +100,6 @@ describe('plans (e2e)', () => {
     });
   });
 
-
   it('a new account is on BASIC with its limits and usage', async () => {
     const body = await me();
     expect(body.tier).toBe('BASIC');

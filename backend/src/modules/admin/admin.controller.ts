@@ -228,8 +228,7 @@ export class AdminUsersController {
   @Post(':id/two-factor/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary:
-      'Turn off two-step sign-in for a lost phone; the user is mailed',
+    summary: 'Turn off two-step sign-in for a lost phone; the user is mailed',
   })
   @ApiOkResponse({ type: OkDto })
   async resetTwoFactor(
@@ -275,9 +274,7 @@ export class AdminUsersController {
 @Roles('ADMIN')
 @Controller('admin/videos')
 export class AdminVideosController {
-  constructor(
-    private readonly videos: AdminVideosService,
-  ) {}
+  constructor(private readonly videos: AdminVideosService) {}
 
   @Get()
   @ApiOkResponse({ type: AdminVideoListDto })
@@ -298,7 +295,6 @@ export class AdminVideosController {
   ): Promise<AdminBulkResultDto> {
     return this.videos.deleteMany(admin.id, dto);
   }
-
 
   @Get(':id')
   @ApiOkResponse({ type: AdminVideoDetailDto })
@@ -342,7 +338,6 @@ export class AdminVideosController {
   ): Promise<AdminVideoDetailDto> {
     return this.videos.reprocess(admin.id, id);
   }
-
 }
 
 @ApiTags('admin')

@@ -54,8 +54,7 @@ export class RequestUserDto {
   })
   pageHidden!: boolean;
   @ApiProperty({
-    description:
-      'A guest without an account: shown as "Guest", no page',
+    description: 'A guest without an account: shown as "Guest", no page',
   })
   guest!: boolean;
   @ApiProperty({

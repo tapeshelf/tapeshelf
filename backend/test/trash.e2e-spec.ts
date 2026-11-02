@@ -167,7 +167,6 @@ describe('trash, removals and retention (e2e)', () => {
     expect(await used()).toBe(FREE_SHELF - BigInt(3 * MiB) + BigInt(2 * MiB));
   });
 
-
   it('time over: a video leaves the trash after the plan’s days (Free 30, Pro 90) and nothing is erased', async () => {
     const free = await seed('Free one');
     await ann.delete(`/api/videos/${free.id}`).expect(200);

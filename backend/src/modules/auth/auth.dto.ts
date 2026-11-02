@@ -172,8 +172,7 @@ export class MeDto {
   })
   pageHidden!: boolean;
   @ApiProperty({
-    description:
-      'May hide the page now: Pro or admin; everyone self-hosted',
+    description: 'May hide the page now: Pro or admin; everyone self-hosted',
   })
   canHidePage!: boolean;
   @ApiProperty({

@@ -70,8 +70,7 @@ export class CreateUploadDto {
 
   @ApiPropertyOptional({
     type: AudioTrackDto,
-    description:
-      'Audio as a second file, muxed with the video by the worker',
+    description: 'Audio as a second file, muxed with the video by the worker',
   })
   @IsOptional()
   @ValidateNested()

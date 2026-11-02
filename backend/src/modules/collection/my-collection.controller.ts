@@ -165,8 +165,7 @@ export class MyCollectionController {
 
   @Put('featured')
   @ApiOperation({
-    summary:
-      'The “Featured” strip of my page: pin, unpin and reorder in one',
+    summary: 'The “Featured” strip of my page: pin, unpin and reorder in one',
   })
   @ApiOkResponse({ type: OkDto })
   async setFeatured(

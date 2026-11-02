@@ -21,10 +21,7 @@ import {
 } from 'class-validator';
 
 import { trimText } from '../../common/validation/text.js';
-import {
-  AccessSource,
-  Visibility,
-} from '../../generated/prisma/enums.js';
+import { AccessSource, Visibility } from '../../generated/prisma/enums.js';
 import type { RequestBlocker } from '../access/access-policy.js';
 import { CategoryDto } from '../categories/categories.dto.js';
 import { RequestStateDto } from '../exchange/exchange.dto.js';
@@ -306,8 +303,7 @@ export class CollectionSummaryDto {
   @ApiProperty({ description: 'Stacks among the videos of “All”' })
   stacks!: number;
   @ApiProperty({
-    description:
-      'Owner only: own deleted videos that can still be restored',
+    description: 'Owner only: own deleted videos that can still be restored',
   })
   trash!: number;
   @ApiProperty({
@@ -324,8 +320,7 @@ export class CollectionSummaryDto {
   })
   newSince!: string | null;
   @ApiProperty({
-    description:
-      'How many videos are new to that visitor; 0 without newSince',
+    description: 'How many videos are new to that visitor; 0 without newSince',
   })
   newCount!: number;
 }
@@ -341,8 +336,7 @@ export class PageHolderDto {
   @ApiProperty({
     nullable: true,
     type: String,
-    description:
-      'What they look for in exchanges: shown by the request',
+    description: 'What they look for in exchanges: shown by the request',
   })
   exchangeWants!: string | null;
   @ApiProperty({ nullable: true, type: String }) exchangeAvoid!: string | null;
@@ -395,8 +389,7 @@ export class VideoPageHoldingDto {
   @ApiProperty({
     nullable: true,
     type: String,
-    description:
-      'The holder’s own name for the video, if they gave one',
+    description: 'The holder’s own name for the video, if they gave one',
   })
   customTitle!: string | null;
   @ApiProperty({ nullable: true, type: String })

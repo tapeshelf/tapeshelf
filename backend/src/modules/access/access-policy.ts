@@ -153,7 +153,6 @@ export function canHide(
   return holds(viewer, holding);
 }
 
-
 /**
  * Whether a holding shown on `holder`'s page is visible to this viewer: hidden and unfinished items only for the holder (and admins); a bookmark
  * of a public video only while it stays public.

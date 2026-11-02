@@ -125,7 +125,6 @@ export class QueueService implements OnApplicationShutdown {
     return !!state && LIVE_STATES.has(state);
   }
 
-
   async enqueueEdit(data: EditRenderJob): Promise<void> {
     await this.edit.add(JOB.editRender, data, {
       jobId: `edit_${data.videoId}_${data.revision}`,
