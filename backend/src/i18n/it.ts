@@ -295,6 +295,7 @@ export const it = {
       guest: 'Un ospite',
       anonymous: 'Anonimo',
       manage: 'Scegli quali notifiche ricevere: {{url}}',
+      unsubscribe: 'Non ricevere più email come questa: {{url}}',
       andMore_one: ' e un altro',
       andMore_many: ' e altri {{count}}',
       andMore_other: ' e altri {{count}}',

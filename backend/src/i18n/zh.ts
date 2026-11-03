@@ -242,6 +242,7 @@ export const zh = {
       guest: '一位游客',
       anonymous: '匿名用户',
       manage: '更改你接收的通知：{{url}}',
+      unsubscribe: '不再接收此类邮件：{{url}}',
       andMore_other: '及另外 {{count}} 个',
       REQUEST_RECEIVED: {
         subject: '{{name}} 想要“{{title}}”',

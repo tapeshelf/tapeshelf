@@ -275,6 +275,7 @@ export const vi = {
       guest: 'Một vị khách',
       anonymous: 'Người ẩn danh',
       manage: 'Thay đổi những thông báo bạn nhận: {{url}}',
+      unsubscribe: 'Ngừng nhận email như thế này: {{url}}',
       andMore_other: ' và {{count}} video khác',
       REQUEST_RECEIVED: {
         subject: '{{name}} yêu cầu “{{title}}”',

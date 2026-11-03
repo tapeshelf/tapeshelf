@@ -33,7 +33,7 @@ const WHEEL_STEP = 1.25;
 /**
  * The timeline: the original's whole length; what is trimmed away dimmed, the
  * cuts hatched; the blurs, timers and captions on their lanes. The playhead, the trim's ends and
- * every range can be dragged; a click seeks. The video's frames run along the track, and it can be
+ * every range, each on a layer of its own, can be dragged; a click seeks. The video's frames run along the track, and it can be
  * brought closer (the buttons, Ctrl+wheel, a pinch), when it scrolls and follows the playhead.
  */
 @Component({
@@ -152,6 +152,20 @@ const WHEEL_STEP = 1.25;
       border-radius: 50%;
       background: var(--vs-ink);
       box-shadow: 0 0 0 2px var(--vs-surface);
+    }
+    .lanes {
+      position: relative;
+    }
+    .lanes-head {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      margin-left: -1px;
+      background: var(--vs-ink);
+      box-shadow: 0 0 0 1px var(--vs-surface);
+      z-index: 1;
+      pointer-events: none;
     }
     .lane {
       position: relative;
@@ -273,11 +287,15 @@ const WHEEL_STEP = 1.25;
             ></span>
             <span class="playhead" [style.left.%]="pct(store.time())"></span>
           </div>
-          @for (lane of lanes; track lane.kind) {
-            @let items = itemsOf(s, lane.kind);
-            @if (items.length) {
-              <div class="lane" [attr.aria-label]="lane.label | transloco">
-                @for (item of items; track $index) {
+          <!-- Each area, timer and caption on a layer of its own, however many overlap in time. -->
+          <div class="lanes">
+            @for (lane of lanes; track lane.kind) {
+              @for (item of itemsOf(s, lane.kind); track $index) {
+                <div
+                  class="lane"
+                  [attr.aria-label]="(lane.label | transloco) + ' ' + ($index + 1)"
+                  [attr.data-testid]="'lane-' + lane.kind + '-' + $index"
+                >
                   @if (lane.kind === 'timer') {
                     <span
                       class="tail"
@@ -306,10 +324,14 @@ const WHEEL_STEP = 1.25;
                       (pointerdown)="grab(lane.kind, $index, 'end', $event)"
                     ></span>
                   </div>
-                }
-              </div>
+                </div>
+              }
             }
-          }
+            <!-- The playhead goes on through the layers: what is on at this moment shows at a glance. -->
+            @if (hasLayers(s)) {
+              <span class="lanes-head" [style.left.%]="pct(store.time())"></span>
+            }
+          </div>
         </div>
       </div>
       <div class="mt-4 flex items-start gap-3">
@@ -444,6 +466,10 @@ export class EditorTimelineComponent {
 
   protected itemsOf(s: EditSpec, lane: Lane): { start: number; end: number }[] {
     return lane === 'blur' ? s.blurs : lane === 'timer' ? s.timers : s.captions;
+  }
+
+  protected hasLayers(s: EditSpec): boolean {
+    return s.blurs.length + s.timers.length + s.captions.length > 0;
   }
 
   protected isSelected(kind: NonNullable<Selection>['kind'], index: number): boolean {

@@ -299,6 +299,7 @@ export const ru: Shape<typeof en> = {
       guest: 'Гость',
       anonymous: 'Аноним',
       manage: 'Настроить, какие уведомления получать: {{url}}',
+      unsubscribe: 'Отписаться от таких писем: {{url}}',
       andMore_one: ' и ещё {{count}}',
       andMore_few: ' и ещё {{count}}',
       andMore_many: ' и ещё {{count}}',

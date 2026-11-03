@@ -261,6 +261,7 @@ export const th = {
       guest: 'แขก',
       anonymous: 'นิรนาม',
       manage: 'เลือกการแจ้งเตือนที่ต้องการรับได้ที่: {{url}}',
+      unsubscribe: 'เลิกรับอีเมลแบบนี้: {{url}}',
       andMore_other: ' และอีก {{count}} รายการ',
       REQUEST_RECEIVED: {
         subject: '{{name}} ขอวิดีโอ “{{title}}”',

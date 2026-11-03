@@ -288,6 +288,7 @@ export const cs = {
       guest: 'Host',
       anonymous: 'Anonym',
       manage: 'Změnit, jaká oznámení dostáváte: {{url}}',
+      unsubscribe: 'Odhlásit takové e-maily: {{url}}',
       andMore_one: ' a {{count}} další',
       andMore_few: ' a {{count}} další',
       andMore_many: ' a {{count}} dalšího',

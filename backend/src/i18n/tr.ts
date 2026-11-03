@@ -289,6 +289,7 @@ export const tr = {
       guest: 'Bir misafir',
       anonymous: 'Anonim',
       manage: 'Hangi bildirimleri alacağınızı değiştirin: {{url}}',
+      unsubscribe: 'Bunun gibi e-postaları durdur: {{url}}',
       andMore_one: ' ve {{count}} video daha',
       andMore_other: ' ve {{count}} video daha',
       REQUEST_RECEIVED: {

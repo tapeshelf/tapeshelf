@@ -145,6 +145,7 @@
       "bannerText": "Confirm your email to unlock uploads, requests and messages.",
       "bannerAction": "Resend email",
       "bannerSent": "Email sent. Check your inbox.",
+      "checkSpam": "Can’t find the email? Look in Junk or Spam.",
       "continue": "Back to where you were"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "This connection link is incomplete. Start connecting from the extension.",
     "terms": "By connecting, you confirm that you save videos from other sites only when you have the right to keep them.",
     "termsLink": "Terms of Service"
+  },
+  "unsubscribe": {
+    "title": "Stop these emails?",
+    "ask": "You will no longer get emails about this:",
+    "stop": "Stop these emails",
+    "off": "Done. You will no longer get emails about this:",
+    "undo": "Turn them back on",
+    "manage": "All notification settings",
+    "invalid": "This link doesn’t work. You can change your emails in the notification settings."
   }
 }

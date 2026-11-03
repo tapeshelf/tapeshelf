@@ -293,6 +293,7 @@ export const nl = {
       guest: 'Een gast',
       anonymous: 'Anoniem',
       manage: 'Kies welke meldingen je krijgt: {{url}}',
+      unsubscribe: 'Stop met e-mails zoals deze: {{url}}',
       andMore_one: ' en nog {{count}}',
       andMore_other: ' en nog {{count}}',
       REQUEST_RECEIVED: {

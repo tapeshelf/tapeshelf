@@ -7,30 +7,33 @@ export interface ChannelPrefs {
 
 export const NOTIFICATION_TYPES = Object.values(NotificationType);
 
-/** Defaults from (table); the email column for non-request types is. */
+/**
+ * Defaults from (table). Email by default only for what needs an answer, ends
+ * something a person waits for, or concerns their money and account.
+ */
 export const DEFAULT_PREFERENCES: Record<NotificationType, ChannelPrefs> = {
   REQUEST_RECEIVED: { inApp: true, email: true },
   OFFER_RECEIVED: { inApp: true, email: true },
   REQUEST_SHARED: { inApp: true, email: true },
   EXCHANGE_COMPLETED: { inApp: true, email: true },
-  REQUEST_DECLINED: { inApp: true, email: true },
+  REQUEST_DECLINED: { inApp: true, email: false },
   REQUEST_CANCELLED: { inApp: true, email: false },
   REQUEST_INVALIDATED: { inApp: true, email: false },
-  NEW_FOLLOWER: { inApp: true, email: true },
-  FRIEND_ACCEPTED: { inApp: true, email: true },
-  FOLLOWED_NEW_VIDEO: { inApp: true, email: true },
+  NEW_FOLLOWER: { inApp: true, email: false },
+  FRIEND_ACCEPTED: { inApp: true, email: false },
+  FOLLOWED_NEW_VIDEO: { inApp: true, email: false },
   NEW_MESSAGE: { inApp: true, email: true },
   VIDEO_PROCESSED: { inApp: true, email: false },
-  VIDEO_FAILED: { inApp: true, email: true },
+  VIDEO_FAILED: { inApp: true, email: false },
   VIDEO_REMOVED: { inApp: true, email: false },
   REPORT_RESOLVED: { inApp: true, email: false },
   ADMIN_NOTICE: { inApp: true, email: true },
-  PLAN_EXPIRING: { inApp: true, email: true },
+  PLAN_EXPIRING: { inApp: true, email: false },
   PLAN_EXPIRED: { inApp: true, email: true },
   VIDEO_TAKEN_DOWN: { inApp: true, email: true },
   PLAN_PAYMENT_FAILED: { inApp: true, email: true },
-  VIDEO_EDITED: { inApp: true, email: true },
-  VIDEO_EDIT_FAILED: { inApp: true, email: true },
+  VIDEO_EDITED: { inApp: true, email: false },
+  VIDEO_EDIT_FAILED: { inApp: true, email: false },
   SUPPORT_REPLY: { inApp: true, email: true },
   SUPPORT_TICKET: { inApp: true, email: true },
   LINK_OPENED: { inApp: true, email: false },

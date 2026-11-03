@@ -27,7 +27,9 @@ import { AuthLayoutComponent } from '../auth-layout';
   template: `
     <app-auth-layout [title]="'auth.forgot.title' | transloco">
       @if (sent()) {
-        <app-alert kind="success">{{ 'auth.forgot.sent' | transloco }}</app-alert>
+        <app-alert kind="success"
+          >{{ 'auth.forgot.sent' | transloco }} {{ 'auth.verify.checkSpam' | transloco }}</app-alert
+        >
         <a
           routerLink="/login"
           class="mt-6 inline-block text-sm font-semibold text-text underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-text"

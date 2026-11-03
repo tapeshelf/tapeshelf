@@ -145,6 +145,7 @@
       "bannerText": "Bevestig je e-mailadres om te kunnen uploaden, video’s aan te vragen en berichten te sturen.",
       "bannerAction": "Mail opnieuw versturen",
       "bannerSent": "Mail verstuurd. Kijk in je inbox.",
+      "checkSpam": "E-mail niet gevonden? Kijk in je spammap.",
       "continue": "Terug naar waar je was"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Deze koppellink is onvolledig. Begin het koppelen vanuit de extensie.",
     "terms": "Door te koppelen bevestig je dat je video’s van andere sites alleen opslaat als je het recht hebt om ze te bewaren.",
     "termsLink": "Gebruiksvoorwaarden"
+  },
+  "unsubscribe": {
+    "title": "Deze e-mails stopzetten?",
+    "ask": "Je krijgt hierover geen e-mails meer:",
+    "stop": "Afmelden",
+    "off": "Klaar. Je krijgt hierover geen e-mails meer:",
+    "undo": "Weer inschakelen",
+    "manage": "Alle meldingsinstellingen",
+    "invalid": "Deze link werkt niet. Je kunt je e-mails wijzigen in de meldingsinstellingen."
   }
 }

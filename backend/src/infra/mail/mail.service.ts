@@ -11,6 +11,8 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   private readonly transporter: Transporter;
   private readonly from: string;
+  /** Mail goes out from an address nobody reads: an answer reaches the operator's contact. */
+  private readonly replyTo: string | undefined;
   /** The demo sends nothing, nor does an instance without an email account. */
   private readonly sink: boolean;
 
@@ -20,6 +22,7 @@ export class MailService {
       config.get('EMAIL_DISABLED', { infer: true });
     const user = config.get('SMTP_USER', { infer: true });
     this.from = config.get('SMTP_FROM', { infer: true });
+    this.replyTo = config.get('CONTACT_EMAIL', { infer: true }) || undefined;
     this.transporter = nodemailer.createTransport({
       host: config.get('SMTP_HOST', { infer: true }),
       port: config.get('SMTP_PORT', { infer: true }),
@@ -40,10 +43,12 @@ export class MailService {
     try {
       await this.transporter.sendMail({
         from: this.from,
+        ...(this.replyTo ? { replyTo: this.replyTo } : {}),
         to,
         subject: mail.subject,
         html: mail.html,
         text: mail.text,
+        ...(mail.headers ? { headers: mail.headers } : {}),
       });
       return true;
     } catch (err) {

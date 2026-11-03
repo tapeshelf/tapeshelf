@@ -103,6 +103,11 @@ export const routes: Routes = [
       import('./features/auth/reset-password/reset-password').then((m) => m.ResetPasswordPage),
   },
   {
+    path: 'unsubscribe',
+    loadComponent: () =>
+      import('./features/unsubscribe/unsubscribe-page').then((m) => m.UnsubscribePage),
+  },
+  {
     path: 'verify-email',
     loadComponent: () =>
       import('./features/auth/verify-email/verify-email').then((m) => m.VerifyEmailPage),

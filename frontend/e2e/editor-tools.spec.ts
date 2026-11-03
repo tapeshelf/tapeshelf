@@ -92,6 +92,40 @@ test.describe.serial('the editor’s timeline and keys', () => {
     await expect(page.getByText('The result is 0:03.0 long')).toBeVisible();
   });
 
+  test('each blur, timer and caption has a layer of its own; dragging one moves only it', async ({
+    page,
+  }) => {
+    await login(page, author);
+    await openEditor(page);
+    await page.getByTestId('editor-tab-blur').click();
+    await page.getByTestId('add-blur').click();
+    await page.getByTestId('add-blur').click();
+    await page.getByTestId('editor-tab-timer').click();
+    await page.getByTestId('add-timer').click();
+    await page.getByTestId('add-timer').click();
+
+    const lanes = ['lane-blur-0', 'lane-blur-1', 'lane-timer-0', 'lane-timer-1'];
+    const boxes = await Promise.all(lanes.map((l) => page.getByTestId(l).boundingBox()));
+    // Each lower than the one before: none shares a row with another.
+    for (let i = 1; i < boxes.length; i++)
+      expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.y + boxes[i - 1]!.height);
+
+    // The first blur, shortened from its end: the second, on the same moments, stays as it was.
+    const first = page.getByTestId('lane-blur-0').locator('.bar');
+    const second = page.getByTestId('lane-blur-1').locator('.bar');
+    await page.getByTestId('lane-timer-1').scrollIntoViewIfNeeded();
+    const before = (await second.boundingBox())!;
+    const bar = (await first.boundingBox())!;
+    await page.mouse.move(bar.x + bar.width - 4, bar.y + bar.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(bar.x + bar.width / 2, bar.y + bar.height / 2, { steps: 4 });
+    await page.mouse.up();
+    expect((await first.boundingBox())!.width).toBeLessThan(bar.width - 20);
+    expect(await second.boundingBox()).toEqual(before);
+    const shots = process.env['VS_EDITOR_SHOTS'];
+    if (shots) await page.screenshot({ path: `${shots}/editor-layers.png`, fullPage: true });
+  });
+
   test('unsaved changes outlive a reload and can be thrown away', async ({ page }) => {
     await login(page, author);
     await openEditor(page);

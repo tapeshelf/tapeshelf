@@ -145,6 +145,7 @@
       "bannerText": "Video yüklemek, istek ve mesaj göndermek için e-postanızı onaylayın.",
       "bannerAction": "E-postayı tekrar gönder",
       "bannerSent": "E-posta gönderildi. Gelen kutunuza bakın.",
+      "checkSpam": "E-postayı bulamadınız mı? Spam klasörüne bakın.",
       "continue": "Kaldığım yere dön"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Bu bağlantı eksik. Bağlama işlemini uzantıdan başlatın.",
     "terms": "Uzantıyı bağlayarak başka sitelerden yalnızca saklama hakkına sahip olduğunuz videoları kaydettiğinizi onaylamış olursunuz.",
     "termsLink": "Kullanım Koşulları"
+  },
+  "unsubscribe": {
+    "title": "Bu e-postalar durdurulsun mu?",
+    "ask": "Bununla ilgili artık e-posta almayacaksınız:",
+    "stop": "Aboneliği iptal et",
+    "off": "Tamam. Bununla ilgili artık e-posta almayacaksınız:",
+    "undo": "Yeniden aç",
+    "manage": "Tüm bildirim ayarları",
+    "invalid": "Bu bağlantı çalışmıyor. E-postalarınızı bildirim ayarlarından değiştirebilirsiniz."
   }
 }

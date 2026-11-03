@@ -145,6 +145,7 @@
       "bannerText": "Potvrďte e-mail, abyste mohli nahrávat videa, posílat žádosti a psát zprávy.",
       "bannerAction": "Poslat e-mail znovu",
       "bannerSent": "E-mail odeslán. Zkontrolujte schránku.",
+      "checkSpam": "Nevidíte e-mail? Podívejte se do složky se spamem.",
       "continue": "Zpět tam, kde jste byli"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Odkaz pro připojení je neúplný. Připojení spusťte z rozšíření.",
     "terms": "Připojením rozšíření potvrzujete, že videa z jiných webů ukládáte jen tehdy, když máte právo si je ponechat.",
     "termsLink": "Podmínky používání"
+  },
+  "unsubscribe": {
+    "title": "Odhlásit tyto e-maily?",
+    "ask": "Už nebudete dostávat e-maily o tomto:",
+    "stop": "Odhlásit",
+    "off": "Hotovo. Už nebudete dostávat e-maily o tomto:",
+    "undo": "Znovu zapnout",
+    "manage": "Všechna nastavení oznámení",
+    "invalid": "Tento odkaz nefunguje. E-maily můžete změnit v nastavení oznámení."
   }
 }

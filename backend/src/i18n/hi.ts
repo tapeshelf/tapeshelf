@@ -277,6 +277,7 @@ export const hi = {
       guest: 'एक मेहमान',
       anonymous: 'गुमनाम',
       manage: 'कौन-सी सूचनाएँ मिलें, यह यहाँ बदलें: {{url}}',
+      unsubscribe: 'ऐसे ईमेल बंद करें: {{url}}',
       andMore_one: ' और {{count}} अन्य',
       andMore_other: ' और {{count}} अन्य',
       REQUEST_RECEIVED: {

@@ -37,6 +37,8 @@ export interface MailLinks {
   username: string;
   /** Operator's contact (CONTACT_EMAIL), for those who disagree with a removal. */
   contactEmail?: string | null;
+  /** The page that stops this kind of email for this person; none = no such line. */
+  unsubscribeUrl?: string | null;
 }
 
 export function renderNotificationMail(
@@ -274,9 +276,12 @@ export function renderNotificationMail(
   const title = t(locale, `${base}.title`, vars);
   const body = t(locale, `${base}.${bodyKey}`, vars);
   const button = t(locale, `${base}.button`);
-  const manage = t(locale, 'mail.notifications.manage', {
+  const manageLine = t(locale, 'mail.notifications.manage', {
     url: `${publicUrl}/settings/notifications`,
   });
+  const manage = links.unsubscribeUrl
+    ? `${t(locale, 'mail.notifications.unsubscribe', { url: links.unsubscribeUrl })} ${manageLine}`
+    : manageLine;
   return {
     subject: t(locale, `${base}.subject`, vars),
     html: layout(

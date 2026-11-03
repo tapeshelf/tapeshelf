@@ -286,6 +286,7 @@ export const uk = {
       guest: 'Гість',
       anonymous: 'Анонім',
       manage: 'Вибрати, які сповіщення отримувати: {{url}}',
+      unsubscribe: 'Відписатися від таких листів: {{url}}',
       andMore_one: ' і ще {{count}}',
       andMore_few: ' і ще {{count}}',
       andMore_many: ' і ще {{count}}',

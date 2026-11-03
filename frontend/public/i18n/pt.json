@@ -145,6 +145,7 @@
       "bannerText": "Confirme seu e-mail para poder enviar vídeos, fazer pedidos e mandar mensagens.",
       "bannerAction": "Reenviar e-mail",
       "bannerSent": "E-mail enviado. Confira sua caixa de entrada.",
+      "checkSpam": "Não encontrou o e-mail? Veja na pasta de spam.",
       "continue": "Voltar para onde você estava"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Este link de conexão está incompleto. Comece a conexão pela extensão.",
     "terms": "Ao conectar a extensão, você confirma que só salva vídeos de outros sites quando tem o direito de guardá-los.",
     "termsLink": "Termos de Uso"
+  },
+  "unsubscribe": {
+    "title": "Parar de receber estes e-mails?",
+    "ask": "Você não receberá mais e-mails sobre isto:",
+    "stop": "Cancelar inscrição",
+    "off": "Pronto. Você não receberá mais e-mails sobre isto:",
+    "undo": "Reativar",
+    "manage": "Todas as configurações de notificações",
+    "invalid": "Este link não funciona. Você pode alterar seus e-mails nas configurações de notificações."
   }
 }

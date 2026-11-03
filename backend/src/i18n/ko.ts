@@ -271,6 +271,7 @@ export const ko = {
       guest: '게스트',
       anonymous: '익명',
       manage: '받을 알림 바꾸기: {{url}}',
+      unsubscribe: '이런 이메일 그만 받기: {{url}}',
       andMore_other: ' 외 {{count}}개',
       REQUEST_RECEIVED: {
         subject: '{{name}}님이 ‘{{title}}’ 동영상을 요청했어요',

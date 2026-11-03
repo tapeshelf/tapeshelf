@@ -145,6 +145,7 @@
       "bannerText": "Potwierdź e-mail, aby przesyłać filmy, wysyłać prośby i pisać wiadomości.",
       "bannerAction": "Wyślij e-mail ponownie",
       "bannerSent": "E-mail wysłany. Sprawdź skrzynkę.",
+      "checkSpam": "Nie widzisz e-maila? Sprawdź folder ze spamem.",
       "continue": "Wróć do poprzedniej strony"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Ten link do połączenia jest niekompletny. Zacznij łączenie w rozszerzeniu.",
     "terms": "Łącząc rozszerzenie, potwierdzasz, że zapisujesz filmy z innych stron tylko wtedy, gdy masz prawo je przechowywać.",
     "termsLink": "Regulamin"
+  },
+  "unsubscribe": {
+    "title": "Zrezygnować z tych e-maili?",
+    "ask": "Nie będziesz już dostawać e-maili w tej sprawie:",
+    "stop": "Zrezygnuj",
+    "off": "Gotowe. Nie będziesz już dostawać e-maili w tej sprawie:",
+    "undo": "Włącz ponownie",
+    "manage": "Wszystkie ustawienia powiadomień",
+    "invalid": "Ten link nie działa. E-maile możesz zmienić w ustawieniach powiadomień."
   }
 }

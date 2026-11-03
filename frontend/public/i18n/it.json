@@ -145,6 +145,7 @@
       "bannerText": "Conferma la tua email per sbloccare caricamenti, richieste e messaggi.",
       "bannerAction": "Invia di nuovo l’email",
       "bannerSent": "Email inviata. Controlla la posta.",
+      "checkSpam": "Non trovi l’email? Controlla la cartella spam.",
       "continue": "Torna dov’eri"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Il link per collegare l’estensione è incompleto. Ricomincia dall’estensione.",
     "terms": "Collegando l’estensione confermi di salvare video da altri siti solo quando hai il diritto di conservarli.",
     "termsLink": "Termini di servizio"
+  },
+  "unsubscribe": {
+    "title": "Non ricevere più queste email?",
+    "ask": "Non riceverai più email su questo:",
+    "stop": "Annulla iscrizione",
+    "off": "Fatto. Non riceverai più email su questo:",
+    "undo": "Riattivale",
+    "manage": "Tutte le impostazioni delle notifiche",
+    "invalid": "Questo link non funziona. Puoi modificare le tue email nelle impostazioni delle notifiche."
   }
 }

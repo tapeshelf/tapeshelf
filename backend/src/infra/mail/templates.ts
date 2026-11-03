@@ -9,6 +9,8 @@ export interface RenderedMail {
   subject: string;
   html: string;
   text: string;
+  /** Extra headers of the message (one-click unsubscribe). */
+  headers?: Record<string, string>;
 }
 
 export function layout(

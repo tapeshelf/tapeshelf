@@ -145,6 +145,7 @@
       "bannerText": "Bekräfta din e-postadress för att kunna ladda upp, skicka förfrågningar och meddelanden.",
       "bannerAction": "Skicka mejlet igen",
       "bannerSent": "Mejlet är skickat. Titta i din inkorg.",
+      "checkSpam": "Hittar du inte mejlet? Titta i skräpposten.",
       "continue": "Tillbaka dit du var"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Anslutningslänken är ofullständig. Starta anslutningen från tillägget.",
     "terms": "Genom att ansluta bekräftar du att du bara sparar videor från andra webbplatser när du har rätt att behålla dem.",
     "termsLink": "Användarvillkor"
+  },
+  "unsubscribe": {
+    "title": "Sluta få de här mejlen?",
+    "ask": "Du får inte längre mejl om detta:",
+    "stop": "Avsluta",
+    "off": "Klart. Du får inte längre mejl om detta:",
+    "undo": "Slå på igen",
+    "manage": "Alla aviseringsinställningar",
+    "invalid": "Den här länken fungerar inte. Du kan ändra dina mejl i aviseringsinställningarna."
   }
 }

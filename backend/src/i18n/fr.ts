@@ -305,6 +305,7 @@ export const fr = {
       guest: 'Un invité',
       anonymous: 'Anonyme',
       manage: 'Choisir les notifications que vous recevez : {{url}}',
+      unsubscribe: 'Ne plus recevoir ce type d’e-mail : {{url}}',
       andMore_one: ' et {{count}} autre',
       andMore_many: ' et {{count}} autres',
       andMore_other: ' et {{count}} autres',

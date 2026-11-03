@@ -74,3 +74,10 @@ export class UpdateNotificationPreferencesDto {
   @Type(() => NotificationPreferenceDto)
   items!: NotificationPreferenceDto[];
 }
+
+export class UnsubscribeInfoDto {
+  @ApiProperty({ enum: NotificationType, enumName: 'NotificationType' })
+  type!: NotificationType;
+  @ApiProperty({ description: 'This kind of email is on now' })
+  email!: boolean;
+}

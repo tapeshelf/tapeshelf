@@ -290,6 +290,7 @@ export const pl = {
       guest: 'Gość',
       anonymous: 'Anonim',
       manage: 'Zmień, jakie powiadomienia dostajesz: {{url}}',
+      unsubscribe: 'Zrezygnuj z takich e-maili: {{url}}',
       andMore_one: ' i jeszcze {{count}}',
       andMore_few: ' i jeszcze {{count}}',
       andMore_many: ' i jeszcze {{count}}',

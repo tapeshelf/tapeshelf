@@ -287,6 +287,7 @@ export const en = {
       guest: 'A guest',
       anonymous: 'Anonymous',
       manage: 'Change which notifications you receive: {{url}}',
+      unsubscribe: 'Stop emails like this one: {{url}}',
       andMore_one: ' and {{count}} more',
       andMore_other: ' and {{count}} more',
       REQUEST_RECEIVED: {

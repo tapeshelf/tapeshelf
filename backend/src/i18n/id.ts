@@ -287,6 +287,7 @@ export const id = {
       guest: 'Seorang tamu',
       anonymous: 'Anonim',
       manage: 'Ubah notifikasi yang Anda terima: {{url}}',
+      unsubscribe: 'Berhenti menerima email seperti ini: {{url}}',
       andMore_other: ' dan {{count}} lainnya',
       REQUEST_RECEIVED: {
         subject: '{{name}} meminta “{{title}}”',

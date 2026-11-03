@@ -293,6 +293,7 @@ export const ja = {
       guest: 'ゲスト',
       anonymous: '匿名',
       manage: '受け取る通知の設定はこちら：{{url}}',
+      unsubscribe: 'このようなメールを停止: {{url}}',
       andMore_other: 'ほか{{count}}本',
       REQUEST_RECEIVED: {
         subject: '{{name}}さんが「{{title}}」をリクエストしています',

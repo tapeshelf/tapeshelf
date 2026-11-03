@@ -20,6 +20,8 @@ export const RATE_LIMITS = {
   googleStart: { limit: 10, ttl: MIN },
   googleComplete: { limit: 10, ttl: MIN },
   deleteAccount: { limit: 5, ttl: MIN },
+  /** A link in a mail, signed: enough for a person and a mail provider behind one address. */
+  unsubscribe: { limit: 30, ttl: MIN },
   /** Codes, passkeys and the password of the two-step sign-in; misses lock it besides. */
   twoFactor: { limit: 10, ttl: MIN },
 

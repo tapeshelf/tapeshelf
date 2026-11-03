@@ -145,6 +145,7 @@
       "bannerText": "Konfirmasi email Anda untuk membuka fitur unggah, permintaan, dan pesan.",
       "bannerAction": "Kirim ulang email",
       "bannerSent": "Email terkirim. Periksa kotak masuk Anda.",
+      "checkSpam": "Email tidak ada? Periksa folder spam.",
       "continue": "Kembali ke halaman sebelumnya"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Tautan koneksi ini tidak lengkap. Mulailah menghubungkan dari ekstensi.",
     "terms": "Dengan menghubungkannya, Anda menyatakan bahwa Anda menyimpan video dari situs lain hanya jika Anda berhak menyimpannya.",
     "termsLink": "Ketentuan Layanan"
+  },
+  "unsubscribe": {
+    "title": "Berhenti menerima email ini?",
+    "ask": "Anda tidak akan lagi menerima email tentang ini:",
+    "stop": "Berhenti berlangganan",
+    "off": "Selesai. Anda tidak akan lagi menerima email tentang ini:",
+    "undo": "Aktifkan lagi",
+    "manage": "Semua pengaturan notifikasi",
+    "invalid": "Tautan ini tidak berfungsi. Anda dapat mengubah email di pengaturan notifikasi."
   }
 }

@@ -36,6 +36,20 @@ export async function waitForMail(
   );
 }
 
+/** The headers of the newest message sent to `to`, as Mailpit got them. */
+export async function mailHeaders(
+  to: string,
+): Promise<Record<string, string[]>> {
+  const res = await fetch(
+    `${MAILPIT}/search?query=${encodeURIComponent(`to:${to}`)}`,
+  );
+  const data = (await res.json()) as { messages: MailpitMessage[] };
+  const res2 = await fetch(
+    `${MAILPIT}/message/${data.messages[0]!.ID}/headers`,
+  );
+  return (await res2.json()) as Record<string, string[]>;
+}
+
 export function extractToken(text: string, path: string): string {
   const m = new RegExp(`${path}\\?token=([A-Za-z0-9_-]+)`).exec(text);
   if (!m) throw new Error(`No ${path} link in mail: ${text.slice(0, 200)}`);

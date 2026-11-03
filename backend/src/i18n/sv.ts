@@ -284,6 +284,7 @@ export const sv = {
       guest: 'En gäst',
       anonymous: 'Anonym',
       manage: 'Ändra vilka aviseringar du får: {{url}}',
+      unsubscribe: 'Sluta få mejl som detta: {{url}}',
       andMore_one: ' och {{count}} till',
       andMore_other: ' och {{count}} till',
       REQUEST_RECEIVED: {

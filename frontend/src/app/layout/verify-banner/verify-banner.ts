@@ -18,7 +18,10 @@ import { ToastService } from '../../shared/ui/toast/toast.service';
     @if (auth.user()?.emailVerified === false && !viewAs.active()) {
       <div class="border-b border-line/15 bg-shelf text-sm text-ink">
         <div class="flex flex-wrap items-center justify-between gap-2 py-2" [class]="frame">
-          <span>{{ 'auth.verify.bannerText' | transloco }}</span>
+          <span
+            >{{ 'auth.verify.bannerText' | transloco }}
+            {{ 'auth.verify.checkSpam' | transloco }}</span
+          >
           <button
             type="button"
             appButton

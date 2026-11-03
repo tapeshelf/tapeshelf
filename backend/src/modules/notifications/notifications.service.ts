@@ -1,3 +1,4 @@
+import type { NotificationType } from '../../generated/prisma/enums.js';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import type { Redis } from 'ioredis';
 
@@ -365,6 +366,37 @@ export class NotificationsService {
       ),
     );
     return this.getPreferences(userId, admin);
+  }
+
+  /** Email for one type on or off, the bell as it is: for a link in a mail, without signing in. */
+  async setEmailFor(
+    userId: string,
+    type: NotificationType,
+    email: boolean,
+  ): Promise<void> {
+    const rows = await this.prisma.notificationPreference.findMany({
+      where: { userId },
+    });
+    const { inApp } = resolvePreferences(rows)[type];
+    await this.prisma.notificationPreference.upsert({
+      where: { userId_type: { userId, type } },
+      create: { userId, type, inApp, email },
+      update: { email },
+    });
+  }
+
+  /** Whether this person gets email of this type now; null when there is no such person. */
+  async emailFor(
+    userId: string,
+    type: NotificationType,
+  ): Promise<boolean | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { notificationPreferences: true },
+    });
+    return user
+      ? resolvePreferences(user.notificationPreferences)[type].email
+      : null;
   }
 
   /** Stamp after the worker sent the email (best effort). */

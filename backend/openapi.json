@@ -6066,6 +6066,121 @@
         ]
       }
     },
+    "/api/mail/unsubscribe": {
+      "get": {
+        "operationId": "Unsubscribe_open",
+        "parameters": [
+          {
+            "name": "t",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A person following the mail header: on to the page that asks",
+        "tags": [
+          "notifications"
+        ]
+      },
+      "post": {
+        "operationId": "Unsubscribe_stop",
+        "parameters": [
+          {
+            "name": "t",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Stop this kind of email (RFC 8058 one-click, and the page)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/mail/resubscribe": {
+      "post": {
+        "operationId": "Unsubscribe_again",
+        "parameters": [
+          {
+            "name": "t",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Undo: this kind of email again",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/mail/unsubscribe/info": {
+      "get": {
+        "operationId": "Unsubscribe_info",
+        "parameters": [
+          {
+            "name": "t",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsubscribeInfoDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "What a link is about, for its page",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/api/me/whats-new": {
       "get": {
         "operationId": "WhatsNew_list",
@@ -15023,6 +15138,26 @@
         },
         "required": [
           "items"
+        ]
+      },
+      "UnsubscribeInfoDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationType"
+              }
+            ]
+          },
+          "email": {
+            "type": "boolean",
+            "description": "This kind of email is on now"
+          }
+        },
+        "required": [
+          "type",
+          "email"
         ]
       },
       "WhatsNewItemDto": {

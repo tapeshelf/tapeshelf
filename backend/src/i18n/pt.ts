@@ -290,6 +290,7 @@ export const pt = {
       guest: 'Um convidado',
       anonymous: 'Anônimo',
       manage: 'Escolha quais notificações você recebe: {{url}}',
+      unsubscribe: 'Parar de receber e-mails como este: {{url}}',
       andMore_one: ' e mais {{count}}',
       andMore_many: ' e mais {{count}}',
       andMore_other: ' e mais {{count}}',

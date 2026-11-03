@@ -301,6 +301,7 @@ export const de = {
       guest: 'Ein Gast',
       anonymous: 'Anonym',
       manage: 'Welche Benachrichtigungen du bekommst, änderst du hier: {{url}}',
+      unsubscribe: 'Solche E-Mails abbestellen: {{url}}',
       andMore_one: ' und {{count}} weiteres',
       andMore_other: ' und {{count}} weitere',
       REQUEST_RECEIVED: {

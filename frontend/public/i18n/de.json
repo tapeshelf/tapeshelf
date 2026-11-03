@@ -145,6 +145,7 @@
       "bannerText": "Bestätige deine E-Mail-Adresse, um Uploads, Anfragen und Nachrichten freizuschalten.",
       "bannerAction": "E-Mail erneut senden",
       "bannerSent": "E-Mail gesendet. Schau in dein Postfach.",
+      "checkSpam": "Keine E-Mail da? Schau im Spam-Ordner nach.",
       "continue": "Zurück zur vorherigen Seite"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Dieser Verbindungslink ist unvollständig. Starte das Verbinden in der Erweiterung.",
     "terms": "Mit dem Verbinden bestätigst du, dass du Videos von anderen Websites nur speicherst, wenn du sie behalten darfst.",
     "termsLink": "Nutzungsbedingungen"
+  },
+  "unsubscribe": {
+    "title": "Diese E-Mails abbestellen?",
+    "ask": "Du erhältst dazu keine E-Mails mehr:",
+    "stop": "Abbestellen",
+    "off": "Erledigt. Du erhältst dazu keine E-Mails mehr:",
+    "undo": "Wieder einschalten",
+    "manage": "Alle Benachrichtigungseinstellungen",
+    "invalid": "Dieser Link funktioniert nicht. Du kannst deine E-Mails in den Benachrichtigungseinstellungen ändern."
   }
 }

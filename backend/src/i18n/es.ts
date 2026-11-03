@@ -292,6 +292,7 @@ export const es = {
       guest: 'Un invitado',
       anonymous: 'Anónimo',
       manage: 'Elige qué notificaciones recibes: {{url}}',
+      unsubscribe: 'Dejar de recibir correos como este: {{url}}',
       andMore_one: ' y {{count}} más',
       andMore_many: ' y {{count}} más',
       andMore_other: ' y {{count}} más',

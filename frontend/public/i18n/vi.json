@@ -145,6 +145,7 @@
       "bannerText": "Hãy xác nhận email để mở khóa tải lên, yêu cầu và tin nhắn.",
       "bannerAction": "Gửi lại email",
       "bannerSent": "Đã gửi email. Hãy kiểm tra hộp thư.",
+      "checkSpam": "Không thấy email? Hãy xem trong thư mục thư rác.",
       "continue": "Quay lại chỗ bạn đang xem"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Liên kết kết nối này không đầy đủ. Hãy bắt đầu kết nối từ tiện ích mở rộng.",
     "terms": "Khi kết nối, bạn xác nhận rằng bạn chỉ lưu video từ các trang khác khi có quyền giữ chúng.",
     "termsLink": "Điều khoản dịch vụ"
+  },
+  "unsubscribe": {
+    "title": "Ngừng nhận các email này?",
+    "ask": "Bạn sẽ không còn nhận email về việc này:",
+    "stop": "Hủy đăng ký",
+    "off": "Xong. Bạn sẽ không còn nhận email về việc này:",
+    "undo": "Bật lại",
+    "manage": "Tất cả cài đặt thông báo",
+    "invalid": "Liên kết này không hoạt động. Bạn có thể thay đổi email trong cài đặt thông báo."
   }
 }

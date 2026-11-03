@@ -1,5 +1,7 @@
+import { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { Redis } from 'ioredis';
+import request from 'supertest';
 
 import { PrismaService } from '../src/infra/prisma/prisma.service.js';
 import { QueueService } from '../src/infra/queue/queue.service.js';
@@ -14,7 +16,8 @@ import {
   NotificationsService,
 } from '../src/modules/notifications/notifications.service.js';
 import { OutboxRelayService } from '../src/modules/notifications/outbox-relay.service.js';
-import { clearMailbox, waitForMail } from './utils/mailpit.js';
+import { unsubscribeToken } from '../src/modules/notifications/unsubscribe-token.js';
+import { clearMailbox, mailHeaders, waitForMail } from './utils/mailpit.js';
 import { client, createTestApp, resetDatabase } from './utils/test-app.js';
 import { signUp } from './utils/users.js';
 
@@ -239,13 +242,18 @@ describe('notifications and outbox (e2e)', () => {
         { type: 'REQUEST_RECEIVED', inApp: true, email: true },
         { type: 'REQUEST_CANCELLED', inApp: true, email: false },
         { type: 'VIDEO_PROCESSED', inApp: true, email: false },
-        { type: 'VIDEO_FAILED', inApp: true, email: true },
+        { type: 'VIDEO_FAILED', inApp: true, email: false },
         { type: 'VIDEO_REMOVED', inApp: true, email: false },
       ]),
     );
     await author
       .put('/api/me/notification-preferences')
-      .send({ items: [{ type: 'VIDEO_PROCESSED', inApp: false, email: true }] })
+      .send({
+        items: [
+          { type: 'VIDEO_PROCESSED', inApp: false, email: true },
+          { type: 'VIDEO_FAILED', inApp: true, email: true },
+        ],
+      })
       .expect(200);
     await author
       .put('/api/me/notification-preferences')
@@ -269,7 +277,7 @@ describe('notifications and outbox (e2e)', () => {
     expect(mail.text).toContain(`/v/${video.id}`);
     expect(mail.text).toContain('/settings/notifications');
 
-    // VIDEO_FAILED: in-app row and (by default) an email, stamped once sent.
+    // VIDEO_FAILED, its email turned on above: in-app row and an email, stamped once sent.
     await prisma.outboxEvent.create({
       data: {
         type: 'video.failed',
@@ -514,5 +522,105 @@ describe('notifications and outbox (e2e)', () => {
     expect(
       await prisma.notification.count({ where: { userId: otherId } }),
     ).toBe(1);
+  });
+
+  describe('stopping an email from the mail itself', () => {
+    const job = () => ({
+      userId: holderId,
+      username: 'holder',
+      to: 'holder@example.com',
+      locale: 'en' as const,
+      type: 'REQUEST_RECEIVED' as const,
+      payload: {
+        requestId: '00000000-0000-4000-8000-000000000001',
+        fromName: 'Author',
+        fromUsername: 'author',
+        count: 1,
+        title: 'Clip',
+      },
+      notificationId: null,
+    });
+    const emailOn = async () =>
+      (
+        await prisma.notificationPreference.findUnique({
+          where: {
+            userId_type: { userId: holderId, type: 'REQUEST_RECEIVED' },
+          },
+        })
+      )?.email ?? null;
+
+    it('the mail carries the one-click headers; a provider posts with nothing but the token', async () => {
+      await clearMailbox();
+      await mailer.sendJob(job());
+      const mail = await waitForMail('holder@example.com', 'Clip');
+      const raw = await mailHeaders('holder@example.com');
+      expect(raw['List-Unsubscribe-Post']).toEqual([
+        'List-Unsubscribe=One-Click',
+      ]);
+      // An answer to the mail reaches the operator's contact, not the unread sender.
+      expect(raw['Reply-To']).toHaveLength(1);
+      const address = /<([^>]+)>/.exec(raw['List-Unsubscribe']![0]!)![1]!;
+      const url = new URL(address);
+      expect(url.pathname).toBe('/api/mail/unsubscribe');
+      const t = url.searchParams.get('t')!;
+      expect(mail.text).toContain(`/unsubscribe?t=${encodeURIComponent(t)}`);
+
+      // Following the link changes nothing: mail scanners do that.
+      const opened = await request(app.getHttpServer())
+        .get('/api/mail/unsubscribe')
+        .query({ t });
+      expect(opened.status).toBe(302);
+      expect(opened.headers['location']).toBe(
+        `/unsubscribe?t=${encodeURIComponent(t)}`,
+      );
+      expect(await emailOn()).toBeNull();
+
+      // As RFC 8058 has it: a form post, no cookies, no CSRF header.
+      await request(app.getHttpServer())
+        .post('/api/mail/unsubscribe')
+        .query({ t })
+        .type('form')
+        .send('List-Unsubscribe=One-Click')
+        .expect(200);
+      expect(await emailOn()).toBe(false);
+      const info = await request(app.getHttpServer())
+        .get('/api/mail/unsubscribe/info')
+        .query({ t })
+        .expect(200);
+      expect(info.body).toEqual({ type: 'REQUEST_RECEIVED', email: false });
+
+      // Only this type, and the bell stays as it was.
+      const prefs = await prisma.notificationPreference.findMany({
+        where: { userId: holderId },
+      });
+      expect(prefs).toHaveLength(1);
+      expect(prefs[0]).toMatchObject({ inApp: true, email: false });
+
+      await request(app.getHttpServer())
+        .post('/api/mail/resubscribe')
+        .query({ t })
+        .expect(200);
+      expect(await emailOn()).toBe(true);
+    });
+
+    it('a token not signed by us, or for someone gone, does nothing', async () => {
+      const secret = app.get(ConfigService).getOrThrow<string>('JWT_SECRET');
+      const forged = unsubscribeToken(
+        'x'.repeat(40),
+        holderId,
+        'REQUEST_RECEIVED',
+      );
+      const nobody = unsubscribeToken(
+        secret,
+        '00000000-0000-4000-8000-00000000dead',
+        'REQUEST_RECEIVED',
+      );
+      for (const t of [forged, nobody, 'nonsense', ''])
+        await request(app.getHttpServer())
+          .post('/api/mail/unsubscribe')
+          .query({ t })
+          .expect(404);
+      expect(await emailOn()).toBeNull();
+    });
   });
 });

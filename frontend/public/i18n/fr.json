@@ -145,6 +145,7 @@
       "bannerText": "Confirmez votre adresse e-mail pour pouvoir importer, faire des demandes et envoyer des messages.",
       "bannerAction": "Renvoyer l’e-mail",
       "bannerSent": "E-mail envoyé. Consultez votre boîte mail.",
+      "checkSpam": "Vous ne trouvez pas l’e-mail ? Regardez dans les courriers indésirables.",
       "continue": "Revenir là où vous étiez"
     },
     "googleComplete": {
@@ -1734,5 +1735,14 @@
     "invalid": "Ce lien de connexion est incomplet. Recommencez depuis l’extension.",
     "terms": "En connectant l’extension, vous confirmez n’enregistrer des vidéos d’autres sites que si vous avez le droit de les conserver.",
     "termsLink": "Conditions d’utilisation"
+  },
+  "unsubscribe": {
+    "title": "Ne plus recevoir ces e-mails ?",
+    "ask": "Vous ne recevrez plus d’e-mails à ce sujet :",
+    "stop": "Se désabonner",
+    "off": "C’est fait. Vous ne recevrez plus d’e-mails à ce sujet :",
+    "undo": "Les réactiver",
+    "manage": "Tous les réglages de notifications",
+    "invalid": "Ce lien ne fonctionne pas. Vous pouvez gérer vos e-mails dans les réglages de notifications."
   }
 }
