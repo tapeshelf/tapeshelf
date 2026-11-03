@@ -10,6 +10,7 @@ const BOUNCE_WINDOW_MS = 1000;
  * goes, the shelf widens, grows taller again — at some window sizes and numbers of videos the two
  * fed each other and every tile flickered for good, reload or not. A widening that only takes back
  * a scrollbar-sized narrowing of a moment ago is ignored: the shelf stays at the narrower width.
+ * The editor's picture needs the same: its height follows its width.
  */
 export class WidthDamper {
   private current = 0;

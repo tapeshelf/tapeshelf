@@ -1,4 +1,4 @@
-import { type Page, expect, test } from '@playwright/test';
+import { type Locator, type Page, expect, test } from '@playwright/test';
 
 import { login, newUser, registerAndVerify, setTier } from './account';
 import { uploadSampleAndWaitReady } from './videos';
@@ -90,9 +90,27 @@ test.describe.serial('the editor’s timeline and keys', () => {
       );
     });
     await expect(page.getByText('The result is 0:03.0 long')).toBeVisible();
+
+    // With a timer picked, I and O move its ends, and the trim stays where it is.
+    const trimEnd = (await page.getByTestId('trim-end').boundingBox())!;
+    await page.getByTestId('editor-tab-timer').click();
+    await page.getByTestId('add-timer').click();
+    const bar = page.getByTestId('lane-timer').locator('.bar');
+    await expect(bar).toHaveClass(/selected/);
+    const whole = (await bar.boundingBox())!;
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('KeyO');
+    await expect.poll(async () => (await bar.boundingBox())!.width).toBeLessThan(whole.width - 10);
+    expect(await page.getByTestId('trim-end').boundingBox()).toEqual(trimEnd);
+    // Nothing picked: the trim again.
+    await page.getByTestId('editor-stage').click({ position: { x: 4, y: 4 } });
+    await page.keyboard.press('KeyO');
+    await expect
+      .poll(async () => (await page.getByTestId('trim-end').boundingBox())!.x)
+      .toBeLessThan(trimEnd.x);
   });
 
-  test('each blur, timer and caption has a layer of its own; dragging one moves only it', async ({
+  test('each blur and caption has a layer of its own, all the timers one; dragging one moves only it', async ({
     page,
   }) => {
     await login(page, author);
@@ -103,25 +121,47 @@ test.describe.serial('the editor’s timeline and keys', () => {
     await page.getByTestId('editor-tab-timer').click();
     await page.getByTestId('add-timer').click();
     await page.getByTestId('add-timer').click();
+    await page.getByTestId('editor-tab-caption').click();
+    await page.getByTestId('add-caption').click();
+    await page.getByTestId('add-caption').click();
 
-    const lanes = ['lane-blur-0', 'lane-blur-1', 'lane-timer-0', 'lane-timer-1'];
+    const lanes = ['lane-blur-0', 'lane-blur-1', 'lane-timer', 'lane-caption-0', 'lane-caption-1'];
     const boxes = await Promise.all(lanes.map((l) => page.getByTestId(l).boundingBox()));
     // Each lower than the one before: none shares a row with another.
     for (let i = 1; i < boxes.length; i++)
       expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.y + boxes[i - 1]!.height);
+    await expect(page.getByTestId('lane-timer').locator('.bar')).toHaveCount(2);
 
     // The first blur, shortened from its end: the second, on the same moments, stays as it was.
     const first = page.getByTestId('lane-blur-0').locator('.bar');
     const second = page.getByTestId('lane-blur-1').locator('.bar');
-    await page.getByTestId('lane-timer-1').scrollIntoViewIfNeeded();
+    await page.getByTestId('lane-caption-1').scrollIntoViewIfNeeded();
     const before = (await second.boundingBox())!;
-    const bar = (await first.boundingBox())!;
-    await page.mouse.move(bar.x + bar.width - 4, bar.y + bar.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(bar.x + bar.width / 2, bar.y + bar.height / 2, { steps: 4 });
-    await page.mouse.up();
-    expect((await first.boundingBox())!.width).toBeLessThan(bar.width - 20);
+    const shorten = async (bar: Locator) => {
+      const box = (await bar.boundingBox())!;
+      await page.mouse.move(box.x + box.width - 4, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+      await page.mouse.up();
+      expect((await bar.boundingBox())!.width).toBeLessThan(box.width - 20);
+    };
+    // Dragging an end shows the range, not the frame: the playhead stays put.
+    const time = await page.getByTestId('editor-time').innerText();
+    await shorten(first);
     expect(await second.boundingBox()).toEqual(before);
+    await expect(page.getByTestId('editor-time')).toHaveText(time);
+
+    // Two timers on the same moments lie one on the other: the one picked is on top and moves
+    // alone; shortened, it uncovers the other, which can be taken there.
+    const timers = page.getByTestId('lane-timer').locator('.bar');
+    await page.getByTestId('editor-tab-timer').click();
+    await timers.nth(1).click();
+    await expect(timers.nth(1)).toHaveClass(/selected/);
+    const under = (await timers.nth(0).boundingBox())!;
+    await shorten(timers.nth(1));
+    expect(await timers.nth(0).boundingBox()).toEqual(under);
+    await page.mouse.click(under.x + under.width - 12, under.y + under.height / 2);
+    await expect(timers.nth(0)).toHaveClass(/selected/);
     const shots = process.env['VS_EDITOR_SHOTS'];
     if (shots) await page.screenshot({ path: `${shots}/editor-layers.png`, fullPage: true });
   });

@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import {
   Component,
   computed,
+  linkedSignal,
   effect,
   inject,
   input,
@@ -56,6 +57,7 @@ import { VideosStore } from '../../core/videos/videos.store';
 import { BytesPipe } from '../../shared/pipes/bytes.pipe';
 import { DurationPipe } from '../../shared/pipes/duration.pipe';
 import { ButtonDirective } from '../../shared/ui/button/button.directive';
+import { TileGhostComponent } from '../../shared/ui/mosaic/tile-ghost';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner';
 import { DEFAULT_ASPECT, aspectOf } from '../../shared/ui/mosaic/mosaic-layout';
 import { StrokeComponent, hashString } from '../../shared/ui/stroke/stroke';
@@ -107,6 +109,7 @@ import { PageTitle } from '../../core/i18n/title.strategy';
     DurationPipe,
     ButtonDirective,
     SpinnerComponent,
+    TileGhostComponent,
     NotFoundPage,
     VideoPlayerComponent,
     RequestButtonComponent,
@@ -170,141 +173,161 @@ import { PageTitle } from '../../core/i18n/title.strategy';
         >
           <!-- 1. What you came for: the player, or the preview when you cannot play it -->
           <section class="min-w-0 lg:col-start-1 lg:row-start-1" [class.lg:row-span-3]="tall()">
-            @if (page.value(); as p) {
-              @if (gated()) {
-                <!-- Marked sensitive: the picture stays blurred until the viewer agrees -->
-                <!-- on a phone the box grows around the card; from sm it keeps the player's 16:9 -->
-                <div
-                  class="relative mx-auto overflow-hidden rounded-lg bg-black sm:[aspect-ratio:var(--frame-aspect)]"
-                  [style.width]="frameWidth()"
-                  [style.view-transition-name]="growing() ? morphName : null"
-                  data-testid="sensitive-gate"
-                >
-                  @if (p.video.thumbnailUrl; as src) {
-                    <img
-                      [src]="src"
-                      alt=""
-                      class="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl"
-                    />
-                  }
-                  <div class="relative flex items-center justify-center p-4 sm:absolute sm:inset-0">
-                    <div
-                      class="w-[min(26rem,100%)] rounded-xl bg-surface p-5 text-text shadow-[0_24px_48px_-16px_rgb(0_0_0/0.45)]"
-                    >
-                      <div class="flex items-center gap-3">
-                        <span
-                          class="flex h-10 w-10 shrink-0 -rotate-3 items-center justify-center rounded-md bg-accent text-accent-fg"
-                          aria-hidden="true"
-                          ><ng-icon name="lucideTriangleAlert" size="20"
-                        /></span>
-                        <h2 class="font-display text-lg leading-tight font-bold tracking-tight">
-                          {{ 'sensitive.title' | transloco }}
-                        </h2>
-                      </div>
-                      <p class="mt-3 text-sm leading-relaxed text-muted">
+            @let p = page.value();
+            @if (p && gated()) {
+              <!-- Marked sensitive: the picture stays blurred until the viewer agrees -->
+              <!-- on a phone the box grows around the card; from sm it keeps the player's 16:9 -->
+              <div
+                class="relative mx-auto overflow-hidden rounded-lg bg-black sm:[aspect-ratio:var(--frame-aspect)]"
+                [style.width]="frameWidth()"
+                [style.view-transition-name]="growing() ? morphName : null"
+                data-testid="sensitive-gate"
+              >
+                @if (p.video.thumbnailUrl; as src) {
+                  <img
+                    [src]="src"
+                    alt=""
+                    class="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl"
+                  />
+                }
+                <div class="relative flex items-center justify-center p-4 sm:absolute sm:inset-0">
+                  <div
+                    class="w-[min(26rem,100%)] rounded-xl bg-surface p-5 text-text shadow-[0_24px_48px_-16px_rgb(0_0_0/0.45)]"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span
+                        class="flex h-10 w-10 shrink-0 -rotate-3 items-center justify-center rounded-md bg-accent text-accent-fg"
+                        aria-hidden="true"
+                        ><ng-icon name="lucideTriangleAlert" size="20"
+                      /></span>
+                      <h2 class="font-display text-lg leading-tight font-bold tracking-tight">
+                        {{ 'sensitive.title' | transloco }}
+                      </h2>
+                    </div>
+                    <p class="mt-3 text-sm leading-relaxed text-muted">
+                      {{
+                        (auth.isAuthenticated() ? 'sensitive.text' : 'sensitive.textGuest')
+                          | transloco
+                      }}
+                    </p>
+                    <div class="mt-5 flex flex-wrap gap-2">
+                      <button type="button" appButton (click)="sensitive.agree()">
                         {{
-                          (auth.isAuthenticated() ? 'sensitive.text' : 'sensitive.textGuest')
+                          (auth.isAuthenticated() ? 'sensitive.confirm' : 'sensitive.confirmGuest')
                             | transloco
                         }}
-                      </p>
-                      <div class="mt-5 flex flex-wrap gap-2">
-                        <button type="button" appButton (click)="sensitive.agree()">
-                          {{
-                            (auth.isAuthenticated()
-                              ? 'sensitive.confirm'
-                              : 'sensitive.confirmGuest'
-                            ) | transloco
-                          }}
-                        </button>
-                        <button type="button" appButton variant="ghost" (click)="back()">
-                          {{ 'sensitive.decline' | transloco }}
-                        </button>
-                      </div>
+                      </button>
+                      <button type="button" appButton variant="ghost" (click)="back()">
+                        {{ 'sensitive.decline' | transloco }}
+                      </button>
                     </div>
                   </div>
                 </div>
-              } @else if (p.viewer.canStream) {
+              </div>
+            } @else if (p && p.viewer.canStream) {
+              <div
+                class="mx-auto overflow-hidden rounded-lg bg-black [aspect-ratio:var(--frame-aspect)]"
+                [style.width]="frameWidth()"
+                [style.view-transition-name]="growing() ? morphName : null"
+              >
+                <app-video-player
+                  class="h-full"
+                  [class.soft-in]="!poster()"
+                  [videoId]="p.video.id"
+                  [frames]="p.video.frames"
+                  [poster]="playerPoster(p.video)"
+                  [still]="poster()"
+                />
+              </div>
+            } @else if (p || previewAhead()) {
+              <!-- Where the tile said so, from the first paint: nothing here ever looks like a player. -->
+              <figure data-testid="private-preview" [class.soft-in]="!poster()">
+                <!-- The sheet is a 4×4 grid of the video's frames: it has the video's shape. -->
                 <div
-                  class="mx-auto overflow-hidden rounded-lg bg-black [aspect-ratio:var(--frame-aspect)]"
+                  class="relative mx-auto overflow-hidden rounded-lg bg-screen [aspect-ratio:var(--frame-aspect)]"
                   [style.width]="frameWidth()"
                   [style.view-transition-name]="growing() ? morphName : null"
                 >
-                  <app-video-player
-                    class="h-full"
-                    [videoId]="p.video.id"
-                    [frames]="p.video.frames"
-                    [poster]="playerPoster(p.video)"
-                  />
-                </div>
-              } @else {
-                <figure data-testid="private-preview">
-                  <!-- The sheet is a 4×4 grid of the video's frames: it has the video's shape. -->
-                  <div
-                    class="relative mx-auto overflow-hidden rounded-lg bg-screen [aspect-ratio:var(--frame-aspect)]"
-                    [style.width]="frameWidth()"
-                    [style.view-transition-name]="growing() ? morphName : null"
-                  >
-                    @if (p.video.contactSheetUrl) {
-                      <!-- Full screen on a click. -->
-                      <button
-                        type="button"
-                        class="block h-full w-full cursor-zoom-in"
-                        [attr.aria-label]="'lightbox.zoom' | transloco"
-                        (click)="openSheet(p.video)"
-                      >
-                        <img
-                          [src]="p.video.contactSheetUrl"
-                          [alt]="'video.preview' | transloco"
-                          class="block h-full w-full object-contain"
-                          data-testid="contact-sheet"
-                        />
-                      </button>
-                    } @else {
-                      <div class="relative h-full w-full">
-                        @if (p.video.thumbnailUrl) {
-                          <img
-                            [src]="p.video.thumbnailUrl"
-                            alt=""
-                            class="h-full w-full scale-110 object-cover opacity-70 blur-md"
-                          />
-                        }
-                        <span
-                          class="absolute inset-0 flex items-center justify-center text-on-screen"
-                        >
-                          <ng-icon name="lucideLock" size="32" />
-                        </span>
-                      </div>
+                  @if (sheet(); as src) {
+                    <!-- The tile's picture until the sheet is in; the sheet fades over it. -->
+                    @if (poster(); as under) {
+                      <img
+                        [src]="under"
+                        alt=""
+                        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out"
+                        [class.opacity-0]="sheetIn()"
+                      />
                     }
-                  </div>
-                  <figcaption
-                    class="mx-auto mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"
-                    [style.width]="frameWidth()"
-                  >
-                    <h2 class="font-display text-lg font-bold tracking-tight">
-                      {{ 'video.preview' | transloco }}
-                    </h2>
-                    <span class="label-mono text-muted">{{ 'video.previewHint' | transloco }}</span>
-                  </figcaption>
-                </figure>
-              }
+                    <!-- Full screen on a click. -->
+                    <button
+                      type="button"
+                      class="relative block h-full w-full cursor-zoom-in"
+                      [attr.aria-label]="'lightbox.zoom' | transloco"
+                      (click)="p && openSheet(p.video)"
+                    >
+                      <img
+                        [src]="src"
+                        [alt]="'video.preview' | transloco"
+                        class="block h-full w-full object-contain transition-opacity duration-300 ease-out"
+                        [class.opacity-0]="!sheetIn()"
+                        data-testid="contact-sheet"
+                        (load)="sheetIn.set(true)"
+                      />
+                    </button>
+                  } @else {
+                    <div class="relative h-full w-full">
+                      @if (p?.video.thumbnailUrl ?? poster(); as src) {
+                        <img
+                          [src]="src"
+                          alt=""
+                          class="h-full w-full scale-110 object-cover opacity-70 blur-md"
+                        />
+                      }
+                      <span
+                        class="absolute inset-0 flex items-center justify-center text-on-screen"
+                      >
+                        <ng-icon name="lucideLock" size="32" />
+                      </span>
+                    </div>
+                  }
+                </div>
+                <figcaption
+                  class="mx-auto mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"
+                  [style.width]="frameWidth()"
+                >
+                  <h2 class="font-display text-lg font-bold tracking-tight">
+                    {{ 'video.preview' | transloco }}
+                  </h2>
+                  <span class="label-mono text-muted">{{ 'video.previewHint' | transloco }}</span>
+                </figcaption>
+              </figure>
             } @else {
+              <!-- Not known yet what this will be: the tile's picture if there is one, a neutral
+                     shape if not, and a spinner only for a long wait. -->
               <div
-                class="relative mx-auto overflow-hidden rounded-lg bg-black [aspect-ratio:var(--frame-aspect)]"
+                class="relative mx-auto overflow-hidden rounded-lg [aspect-ratio:var(--frame-aspect)]"
+                [class]="poster() ? 'bg-black' : 'bg-surface-2'"
                 [style.width]="frameWidth()"
                 [style.view-transition-name]="growing() ? morphName : null"
               >
                 @if (poster(); as src) {
                   <img [src]="src" alt="" class="h-full w-full object-cover" />
+                } @else if (!loadError()) {
+                  <app-tile-ghost class="absolute inset-0" data-testid="video-ghost" />
                 }
-                <div class="absolute inset-0 flex items-center justify-center text-white/90">
-                  @if (loadError()) {
+                @if (loadError()) {
+                  <div class="absolute inset-0 flex items-center justify-center">
                     <span class="rounded-md bg-canvas px-3 py-1 text-sm text-text">{{
                       errorMessage()
                     }}</span>
-                  } @else {
+                  </div>
+                } @else if (poster()) {
+                  <div
+                    class="late-in absolute inset-0 flex items-center justify-center text-white/90"
+                  >
                     <app-spinner />
-                  }
-                </div>
+                  </div>
+                }
               </div>
             }
           </section>
@@ -312,7 +335,7 @@ import { PageTitle } from '../../core/i18n/title.strategy';
           @if (page.value(); as p) {
             <!-- 2. What it is and whose -->
             <header
-              class="min-w-0"
+              class="soft-in min-w-0"
               [class]="
                 tall() ? 'lg:col-start-2 lg:row-start-1 lg:pt-2' : 'lg:col-start-1 lg:row-start-2'
               "
@@ -389,7 +412,7 @@ import { PageTitle } from '../../core/i18n/title.strategy';
 
             <!-- 3. What you can do: next to the picture on wide screens -->
             <aside
-              class="flex flex-col gap-5 self-start"
+              class="soft-in flex flex-col gap-5 self-start"
               [class]="
                 tall()
                   ? 'max-w-sm lg:col-start-2 lg:row-start-2'
@@ -742,7 +765,7 @@ import { PageTitle } from '../../core/i18n/title.strategy';
             <!-- 4. The rest of the story -->
             @if (p.video.description || (p.holding.customDescription && p.original?.description)) {
               <div
-                class="max-w-3xl"
+                class="soft-in max-w-3xl"
                 [class]="tall() ? 'lg:col-start-2 lg:row-start-3' : 'lg:col-start-1 lg:row-start-3'"
               >
                 @if (p.video.description) {
@@ -930,9 +953,25 @@ export class VideoPage {
       : (video.posterUrl ?? video.thumbnailUrl);
   }
   /** The tile's picture while the page loads, so the morph lands on the same image. */
-  protected readonly poster = computed(() => {
+  protected readonly poster = computed(() => this.pendingHere()?.poster ?? null);
+  /** What the clicked tile knew about this video. */
+  private readonly pendingHere = computed(() => {
     const pending = this.morph.pending();
-    return pending?.code === this.ref() ? pending.poster : null;
+    return pending?.code === this.ref() ? pending : null;
+  });
+  /** The tile said this viewer cannot play it: the preview stands from the first paint, no player. */
+  protected readonly previewAhead = computed(
+    () => !this.loadError() && this.pendingHere()?.playable === false,
+  );
+  /** The tile's address first: the same picture stays through the page's answer. */
+  protected readonly sheet = computed(
+    () =>
+      this.pendingHere()?.sheet ??
+      (this.page.hasValue() ? this.page.value().video.contactSheetUrl : null),
+  );
+  protected readonly sheetIn = linkedSignal(() => {
+    this.sheet();
+    return false;
   });
   protected readonly seed = computed(() => hashString(this.videoId()));
   /**

@@ -21,6 +21,7 @@ import { formatDuration } from '../../shared/pipes/duration.pipe';
 import { qualityLabel } from '../../shared/pipes/quality.pipe';
 import { type LightboxItem, Lightbox } from '../../shared/ui/lightbox/lightbox';
 import { aspectOf } from '../../shared/ui/mosaic/mosaic-layout';
+import { WidthDamper } from '../../shared/ui/mosaic/width-damper';
 import { MosaicComponent } from '../../shared/ui/mosaic/mosaic';
 
 /** The exchange board's tiles: a long strip's height, the width a caption needs, the gap. */
@@ -236,7 +237,13 @@ export class DealGalleryComponent {
   );
 
   constructor() {
-    const measure = (w: number) => this.width.set(Math.floor(w));
+    // Fewer pixels across, lower tiles: the page's scrollbar must not bring that back and forth,
+    // shaking the page for good (the shelf's own trouble).
+    const damper = new WidthDamper();
+    const measure = (w: number) => {
+      const next = damper.next(Math.floor(w), performance.now());
+      if (next !== null) this.width.set(next);
+    };
     let observer: ResizeObserver | undefined;
     if (typeof ResizeObserver !== 'undefined') {
       observer = new ResizeObserver((entries) => measure(entries[0]?.contentRect.width ?? 0));

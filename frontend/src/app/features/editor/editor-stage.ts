@@ -15,6 +15,7 @@ import Hls, { Events } from 'hls.js/light';
 
 import { Api, type RectDto, streamingPlayback } from '../../api';
 import { toApiError } from '../../core/api/api-error';
+import { WidthDamper } from '../../shared/ui/mosaic/width-damper';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner';
 import {
   type EditSpec,
@@ -38,7 +39,11 @@ type Target =
   { kind: 'crop' } | { kind: 'blur'; index: number } | { kind: 'timer' | 'caption'; index: number };
 
 const HANDLES: Handle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-const MAX_STAGE_VH = 0.62;
+/** However little room is left, the picture stays this big: a low window scrolls instead. */
+const MIN_STAGE_PX = 320;
+const MIN_STAGE_SHARE = 0.45;
+/** Between the card with the timeline and the window's lower edge. */
+const BELOW_CARD_PX = 16;
 
 /**
  * The picture being edited: the video's playback turned and flipped as the
@@ -48,7 +53,7 @@ const MAX_STAGE_VH = 0.62;
 @Component({
   selector: 'app-editor-stage',
   imports: [TranslocoPipe, SpinnerComponent],
-  host: { class: 'block' },
+  host: { class: 'block', '(window:resize)': 'measureWindow()' },
   styles: `
     .stage {
       position: relative;
@@ -341,6 +346,8 @@ export class EditorStageComponent {
   readonly result = input(false);
   /** The crop is being edited (the "Frame" tools are open). */
   readonly cropTool = input(false);
+  /** The card holding the picture and the timeline: all of it should fit in the window. */
+  readonly card = input<HTMLElement | null>(null);
 
   protected readonly handles = HANDLES;
   protected readonly timerAt = timerAt;
@@ -348,6 +355,10 @@ export class EditorStageComponent {
   protected readonly ready = signal(false);
   protected readonly error = signal<string | null>(null);
   private readonly wrapWidth = signal(0);
+  /** Not `innerHeight`: that changes as a phone's address bar hides, in the middle of a scroll. */
+  private readonly windowHeight = signal(document.documentElement.clientHeight);
+  /** What has to fit in the window besides the picture: all above it, the timeline below it. */
+  private readonly around = signal(0);
   private hls: Hls | null = null;
   /** Gone before the playback address came back: nothing may be attached after that. */
   private destroyed = false;
@@ -380,7 +391,8 @@ export class EditorStageComponent {
     const t = this.turned();
     const c = this.result() ? this.exactCrop() : { w: 1, h: 1 };
     const ratio = (c.w * t.w) / Math.max(1, c.h * t.h);
-    const maxH = Math.max(200, window.innerHeight * MAX_STAGE_VH);
+    const room = this.windowHeight();
+    const maxH = Math.max(MIN_STAGE_PX, room * MIN_STAGE_SHARE, room - this.around());
     const w = Math.min(this.wrapWidth() || 640, maxH * ratio);
     return { w: Math.round(w), h: Math.round(w / ratio) };
   });
@@ -430,9 +442,25 @@ export class EditorStageComponent {
     inject(DestroyRef).onDestroy(() => (this.destroyed = true));
     afterNextRender(() => {
       const wrap = this.wrapRef().nativeElement;
-      const observer = new ResizeObserver(() => this.wrapWidth.set(wrap.clientWidth));
+      // A narrower picture is a lower one, which can take the page's scrollbar away and bring it
+      // back for good, the whole page shaking with it (the shelf's own trouble).
+      const damper = new WidthDamper();
+      const measureWidth = () => {
+        const width = damper.next(wrap.clientWidth, performance.now());
+        if (width !== null) this.wrapWidth.set(width);
+      };
+      const observer = new ResizeObserver(measureWidth);
       observer.observe(wrap);
-      this.wrapWidth.set(wrap.clientWidth);
+      measureWidth();
+      // More layers on the timeline, a render's progress above the card: less room for the picture.
+      const roomObserver = new ResizeObserver(() => this.measureAround());
+      const card = this.card();
+      if (card) {
+        roomObserver.observe(card);
+        if (card.parentElement?.parentElement)
+          roomObserver.observe(card.parentElement.parentElement);
+      }
+      this.measureAround();
       const video = this.videoRef().nativeElement;
       this.store.attachVideo(video);
       video.addEventListener('play', () => {
@@ -451,6 +479,7 @@ export class EditorStageComponent {
       void this.load();
       this.destroyRef.onDestroy(() => {
         observer.disconnect();
+        roomObserver.disconnect();
         cancelAnimationFrame(this.raf);
         this.hls?.destroy();
         this.store.attachVideo(null);
@@ -468,6 +497,20 @@ export class EditorStageComponent {
   }
 
   private readonly destroyRef = inject(DestroyRef);
+
+  protected measureWindow(): void {
+    this.windowHeight.set(document.documentElement.clientHeight);
+  }
+
+  /** None of this depends on the picture's own height, so measuring it can't feed back. */
+  private measureAround(): void {
+    const box = this.card()?.getBoundingClientRect();
+    if (!box) return;
+    const stage = this.stageRef().nativeElement.getBoundingClientRect();
+    const above = stage.top + window.scrollY;
+    const below = box.bottom - stage.bottom;
+    this.around.set(Math.ceil(above + below + BELOW_CARD_PX));
+  }
 
   protected inRange(item: { start: number; end: number }): boolean {
     const t = this.store.time();

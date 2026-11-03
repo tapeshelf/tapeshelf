@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "No need to wait on this page: you can leave it or close the tab, the edit finishes without you.",
     "previewCuts": "Play without the cut parts",
     "result": "Result",
-    "keys": "Space plays and pauses · ← → move by a second, with Shift by a tenth · , . move by a frame · I O set the start and the end · Delete removes what is picked",
+    "keys": "Space plays and pauses · ← → move by a second, with Shift by a tenth · , . move by a frame · I O set the start and the end of what is picked, or of the video · Delete removes what is picked",
     "zoomIn": "Bring the timeline closer",
     "zoomOut": "Move the timeline further",
     "draftRestored": "Your unsaved changes are back.",

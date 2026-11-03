@@ -241,9 +241,9 @@ import { BylinePipe } from '../../shared/pipes/byline.pipe';
           >
         }
         @if (context(); as where) {
-          <!-- Where a search found it: the video's category, always in sight. -->
+          <!-- Where a search found it: the video's category, under the pointer. -->
           <span
-            class="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] items-center gap-1 rounded-sm bg-scrim px-1.5 py-0.5 font-mono text-[10px] leading-none text-white"
+            class="tile-reveal pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] items-center gap-1 rounded-sm bg-scrim px-1.5 py-0.5 font-mono text-[10px] leading-none text-white"
             data-testid="tile-context"
             ><ng-icon name="lucideFolder" size="11" class="shrink-0" /><span class="truncate">{{
               where
@@ -303,7 +303,7 @@ import { BylinePipe } from '../../shared/pipes/byline.pipe';
             />
           </div>
         } @else {
-          <div class="tile-caption">
+          <div class="tile-caption tile-reveal">
             <span class="min-w-0 flex-1 truncate text-[12.5px] leading-4 font-medium">{{
               item().video.title
             }}</span>

@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "Non serve aspettare su questa pagina: puoi uscire o chiudere la scheda, la modifica si completa anche senza di te.",
     "previewCuts": "Riproduci senza le parti tagliate",
     "result": "Risultato",
-    "keys": "Spazio avvia e mette in pausa · ← → spostano di un secondo, con Shift di un decimo · , . spostano di un fotogramma · I O impostano inizio e fine · Canc rimuove l’elemento selezionato",
+    "keys": "Spazio avvia e mette in pausa · ← → spostano di un secondo, con Shift di un decimo · , . spostano di un fotogramma · I O impostano inizio e fine dell’elemento selezionato o del video · Canc rimuove l’elemento selezionato",
     "zoomIn": "Avvicina la timeline",
     "zoomOut": "Allontana la timeline",
     "draftRestored": "Le modifiche non salvate sono tornate.",

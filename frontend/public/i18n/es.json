@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "No hace falta esperar en esta página: puedes salir o cerrar la pestaña, la edición termina sin ti.",
     "previewCuts": "Reproducir sin los cortes",
     "result": "Resultado",
-    "keys": "Espacio reproduce y pausa · ← → mueven un segundo, con Mayús una décima · , . mueven un fotograma · I O fijan el inicio y el final · Supr quita lo seleccionado",
+    "keys": "Espacio reproduce y pausa · ← → mueven un segundo, con Mayús una décima · , . mueven un fotograma · I O fijan el inicio y el final de lo seleccionado o del vídeo · Supr quita lo seleccionado",
     "zoomIn": "Acercar la línea de tiempo",
     "zoomOut": "Alejar la línea de tiempo",
     "draftRestored": "Tus cambios sin guardar han vuelto.",

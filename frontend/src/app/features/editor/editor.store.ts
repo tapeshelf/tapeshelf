@@ -14,11 +14,12 @@ import { AuthStore } from '../../core/auth/auth.store';
 import { WsService } from '../../core/ws/ws.service';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import {
-  type EditSpec,
   clamp,
   cloneSpec,
   editable,
+  type EditSpec,
   isIdentity,
+  MIN_RANGE_SEC,
   outputDuration,
   playableFrom,
 } from './edit-model';
@@ -344,6 +345,21 @@ export class EditorStore {
     this.change((s) => {
       if (end === 'start') s.trim.start = clamp(t, 0, s.trim.end - 1);
       else s.trim.end = clamp(t, s.trim.start + 1, d);
+    });
+  }
+
+  /** I and O: the start or the end of what is picked moves to `t`; nothing picked, the trim's. */
+  rangeTo(end: 'start' | 'end', t: number): void {
+    const sel = this.selected();
+    if (!sel || sel.kind === 'crop') return this.trimTo(end, t);
+    const d = this.duration();
+    this.change((s) => {
+      const item = { cut: s.cuts, blur: s.blurs, timer: s.timers, caption: s.captions }[sel.kind][
+        sel.index
+      ];
+      if (!item) return;
+      if (end === 'start') item.start = clamp(t, 0, item.end - MIN_RANGE_SEC);
+      else item.end = clamp(t, item.start + MIN_RANGE_SEC, d);
     });
   }
 

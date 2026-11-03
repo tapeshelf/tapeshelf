@@ -79,6 +79,7 @@ import { EditorStore } from './editor.store';
     }),
   ],
   host: {
+    class: 'block',
     '(document:keydown)': 'onKey($event)',
     '(window:beforeunload)': 'onLeave($event)',
   },
@@ -191,12 +192,16 @@ import { EditorStore } from './editor.store';
       }
 
       <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div class="min-w-0 overflow-hidden rounded-xl border-2 border-line bg-surface shadow-hard">
+        <div
+          #card
+          class="min-w-0 overflow-hidden rounded-xl border-2 border-line bg-surface shadow-hard"
+          data-testid="editor-card"
+        >
           <!-- The picture on a dark monitor, whichever the page's theme: its colours read true. -->
           <div class="bg-[#0d0d0e] p-3">
             <!-- A new one for each version of the video: after a save it plays the new one. -->
             @for (version of [store.generation()]; track version) {
-              <app-editor-stage [result]="result()" [cropTool]="tab() === 'frame'" />
+              <app-editor-stage [result]="result()" [cropTool]="tab() === 'frame'" [card]="card" />
             }
           </div>
           <div class="flex items-center gap-3 border-t-2 border-line px-4 py-3">
@@ -379,7 +384,7 @@ export class EditorPage {
       this.store.redo();
     } else if (!mod && !e.altKey && (e.code === 'KeyI' || e.code === 'KeyO')) {
       e.preventDefault();
-      this.store.trimTo(e.code === 'KeyI' ? 'start' : 'end', this.store.time());
+      this.store.rangeTo(e.code === 'KeyI' ? 'start' : 'end', this.store.time());
     } else if (!mod && !e.altKey && (e.code === 'Comma' || e.code === 'Period')) {
       e.preventDefault();
       this.store.video?.pause();

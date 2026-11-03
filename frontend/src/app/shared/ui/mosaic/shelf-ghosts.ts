@@ -20,6 +20,12 @@ const LINES_PER_ROW = 3;
     :host {
       animation: 240ms ease-out 120ms both come;
     }
+    .bar {
+      display: inline-block;
+      width: 9rem;
+      border-radius: 4px;
+      background: var(--vs-surface-2);
+    }
     @keyframes come {
       from {
         opacity: 0;
@@ -32,6 +38,19 @@ const LINES_PER_ROW = 3;
     }
   `,
   template: `
+    <!-- The real headings' own type, so the tiles land exactly where their placeholders stood. -->
+    @if (section()) {
+      <div class="index-title mb-5">
+        <span class="bar">&nbsp;</span><sup class="index-count">&nbsp;</sup>
+      </div>
+    }
+    @if (month()) {
+      <div
+        class="mb-3 flex items-start font-display text-base leading-tight font-bold tracking-tight sm:text-lg"
+      >
+        <span class="bar">&nbsp;</span><sup class="index-count">&nbsp;</sup>
+      </div>
+    }
     @if (list()) {
       <div class="flex flex-col gap-1.5">
         @for (ghost of lines(); track ghost) {
@@ -56,6 +75,10 @@ const LINES_PER_ROW = 3;
 })
 export class ShelfGhostsComponent {
   readonly rows = input(2);
+  /** A section's heading stands over the tiles that come. */
+  readonly section = input(false);
+  /** A month's heading stands over the tiles that come. */
+  readonly month = input(false);
   /** Tiles on the whole shelf, which decides their size; not known yet, a shelf of many. */
   readonly count = input<number | null>(null);
   readonly zoom = input(1);

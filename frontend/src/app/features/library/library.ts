@@ -459,6 +459,7 @@ const LONG_PRESS_MS = 450;
                 [count]="store.tileCount()"
                 [zoom]="zoom.factor()"
                 [list]="layout() === 'list'"
+                [month]="store.sort() === 'added' && !store.search()"
               />
             </div>
           }
@@ -481,10 +482,10 @@ const LONG_PRESS_MS = 450;
               <!-- The browser extension, where the site that describes it is in front. -->
               @if (site.edition() === 'cloud' && site.siteUrl()) {
                 <!-- No space between the two: Chinese and Japanese need none after their "？". -->
-                <p class="mx-auto mt-5 max-w-md text-muted" data-testid="extension-hint">
+                <p class="mx-auto mt-5 max-w-md text-xs text-muted" data-testid="extension-hint">
                   {{ 'videos.extensionHint' | transloco
                   }}<a
-                    class="ms-1 font-semibold text-text underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-text [&:lang(ja)]:ms-0 [&:lang(zh)]:ms-0"
+                    class="ms-1 underline underline-offset-2 hover:text-text [&:lang(ja)]:ms-0 [&:lang(zh)]:ms-0"
                     [href]="site.siteUrl() + '/downloader'"
                     target="_blank"
                     rel="noopener"
@@ -2108,6 +2109,8 @@ export class LibraryComponent implements OnDestroy {
       code: item.video.code,
       poster: item.video.thumbnailUrl,
       aspect: aspectOf(item.video.width, item.video.height),
+      sheet: item.video.contactSheetUrl,
+      playable: true,
     });
     void this.router.navigate(videoLink(item.video.code), { state: videoState(this.username()) });
   }

@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "Du behöver inte vänta på den här sidan: du kan lämna den eller stänga fliken, redigeringen blir klar ändå.",
     "previewCuts": "Spela upp utan de bortklippta delarna",
     "result": "Resultat",
-    "keys": "Mellanslag spelar upp och pausar · ← → flyttar en sekund, med Skift en tiondel · , . flyttar en bildruta · I O anger start och slut · Delete tar bort det markerade",
+    "keys": "Mellanslag spelar upp och pausar · ← → flyttar en sekund, med Skift en tiondel · , . flyttar en bildruta · I O anger start och slut för det markerade eller för videon · Delete tar bort det markerade",
     "zoomIn": "Zooma in tidslinjen",
     "zoomOut": "Zooma ut tidslinjen",
     "draftRestored": "Dina osparade ändringar är tillbaka.",

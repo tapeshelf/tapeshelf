@@ -8,6 +8,8 @@ import type { EditSourceDto, EditSpecDto, RectDto, TimeRangeDto } from '../../ap
  */
 export type EditSpec = EditSpecDto & { crop: RectDto | null };
 
+/** The shortest a cut, an area, a timer or a caption can be, seconds. */
+export const MIN_RANGE_SEC = 0.1;
 export const TIMER_HOLD_SEC = 5;
 export const MIN_CROP = 0.05;
 export const MIN_PIECE_SEC = 0.05;

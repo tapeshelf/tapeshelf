@@ -80,9 +80,13 @@ const BUFFER_AHEAD_SEC = 30;
       (keydown)="onKey($event)"
       (pointerleave)="hideSoon()"
     >
+      <!-- The picture the tile showed, under the video: never black between the two. -->
+      @if (still(); as src) {
+        <img [src]="src" alt="" class="absolute inset-0 h-full w-full object-contain" />
+      }
       <video
         #video
-        class="h-full w-full object-contain"
+        class="relative h-full w-full object-contain"
         playsinline
         preload="metadata"
         [attr.poster]="poster()"
@@ -117,9 +121,9 @@ const BUFFER_AHEAD_SEC = 30;
             {{ 'player.retry' | transloco }}
           </button>
         </div>
-      } @else if (buffering() && playing()) {
+      } @else if (starting() || (buffering() && playing())) {
         <div
-          class="pointer-events-none absolute inset-0 flex items-center justify-center text-white"
+          class="late-in pointer-events-none absolute inset-0 flex items-center justify-center text-white"
         >
           <app-spinner [size]="44" />
         </div>
@@ -140,8 +144,8 @@ const BUFFER_AHEAD_SEC = 30;
 
       <div
         class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-3 pt-10 pb-2 text-white transition-opacity focus-within:pointer-events-auto focus-within:opacity-100"
-        [class.opacity-0]="!controlsVisible()"
-        [class.pointer-events-none]="!controlsVisible()"
+        [class.opacity-0]="!controlsVisible() || starting()"
+        [class.pointer-events-none]="!controlsVisible() || starting()"
       >
         <!-- Shown while a control has the keyboard's focus: they hid under it. -->
         <div
@@ -249,6 +253,8 @@ export class VideoPlayerComponent {
   readonly videoId = input.required<string>();
   readonly frames = input<TimelineFrame[]>([]);
   readonly poster = input<string | null>(null);
+  /** What is already on screen for this video (the tile's picture), until poster and video are in. */
+  readonly still = input<string | null>(null);
   /**
    * Where the playlist comes from instead of the video's own playback: a temporary link's page
    * whose token is the link's.
@@ -262,6 +268,8 @@ export class VideoPlayerComponent {
   protected readonly rates = PLAYBACK_RATES;
   protected readonly playing = signal(false);
   protected readonly buffering = signal(false);
+  /** On its way to start by itself: no Play button or controls for a moment before it does. */
+  protected readonly starting = signal(false);
   protected readonly currentTime = signal(0);
   protected readonly duration = signal(0);
   protected readonly buffered = signal(0);
@@ -342,12 +350,14 @@ export class VideoPlayerComponent {
   private async load(): Promise<void> {
     this.error.set(null);
     this.autoplayPending = true;
+    this.starting.set(true);
     try {
       const { playlistUrl } = await this.playlist();
       if (this.destroyed) return;
       this.attach(playlistUrl);
     } catch (e) {
       if (this.destroyed) return;
+      this.starting.set(false);
       const err = toApiError(e);
       this.error.set(
         err.statusCode === 403
@@ -516,6 +526,7 @@ export class VideoPlayerComponent {
         video.muted = false;
       }
     }
+    this.starting.set(false);
   }
 
   protected unmute(): void {

@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "Du musst nicht auf dieser Seite warten: Du kannst sie verlassen oder den Tab schließen, die Bearbeitung wird trotzdem fertig.",
     "previewCuts": "Ohne die herausgeschnittenen Teile abspielen",
     "result": "Ergebnis",
-    "keys": "Leertaste: Wiedergabe und Pause · ← →: eine Sekunde weiter, mit Shift eine Zehntelsekunde · , . bewegen um ein Bild · I O setzen Anfang und Ende · Entf: Auswahl löschen",
+    "keys": "Leertaste: Wiedergabe und Pause · ← →: eine Sekunde weiter, mit Shift eine Zehntelsekunde · , . bewegen um ein Bild · I O setzen Anfang und Ende der Auswahl oder des Videos · Entf: Auswahl löschen",
     "zoomIn": "Zeitleiste vergrößern",
     "zoomOut": "Zeitleiste verkleinern",
     "draftRestored": "Deine ungespeicherten Änderungen sind wieder da.",

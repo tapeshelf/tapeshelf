@@ -3,6 +3,7 @@ import {
   Component,
   type Type,
   computed,
+  linkedSignal,
   effect,
   inject,
   input,
@@ -16,7 +17,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideEyeOff, lucideUserPlus } from '@ng-icons/lucide';
 
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
-import { Api, usersGetPublicProfile } from '../../api';
+import { Api, type PublicUserDto, usersGetPublicProfile } from '../../api';
 import { AuthStore } from '../../core/auth/auth.store';
 import { ClipboardService } from '../../core/clipboard/clipboard.service';
 import { VisitorPreview } from '../../core/preview/visitor-preview.service';
@@ -58,7 +59,7 @@ import { ExchangePrefsComponent } from '../deals/deal-parts';
   template: `
     @if (profile.error()) {
       <app-not-found />
-    } @else if (profile.value(); as user) {
+    } @else if (person(); as user) {
       @if (user.pageSettings.showCover) {
         <div
           class="relative mb-8 h-32 overflow-hidden rounded-lg bg-surface-2 sm:h-44 lg:h-52"
@@ -269,17 +270,28 @@ export class ProfilePage {
     params: () => ({ username: this.handle(), asGuest: this.preview.active() }),
     loader: ({ params }) => this.api.invoke(usersGetPublicProfile, { username: params.username }),
   });
+  /** The same person stays on screen while their page is asked for again: no blank page between. */
+  protected readonly person = linkedSignal<
+    { handle: string; user: PublicUserDto | undefined },
+    PublicUserDto | undefined
+  >({
+    source: () => ({
+      handle: this.handle(),
+      user: this.profile.hasValue() ? this.profile.value() : undefined,
+    }),
+    computation: (now, was) =>
+      now.user ?? (was?.source.handle === now.handle ? was.value : undefined),
+  });
   /** Through an anonymous link the owner sees what anyone would. */
   protected readonly isOwn = computed(
-    () => !this.anonymous() && this.auth.user()?.id === this.profile.value()?.id,
+    () => !this.anonymous() && this.auth.user()?.id === this.person()?.id,
   );
   /** Whether the owner's file manager shows, as far as known: the address until the profile is in. */
   private readonly ownShelf = computed(() => {
     const me = this.auth.user();
     if (!me || this.preview.active() || this.anonymous()) return false;
-    return this.profile.hasValue()
-      ? me.id === this.profile.value().id
-      : me.username === this.handle().toLowerCase();
+    const user = this.person();
+    return user ? me.id === user.id : me.username === this.handle().toLowerCase();
   });
   /**
    * The shelf's code, fetched while the profile loads: a visitor no longer downloads the
@@ -298,7 +310,7 @@ export class ProfilePage {
   protected readonly countLinks = ['friends', 'followers', 'following'] as const;
   private readonly t = inject(TranslocoService);
   protected readonly initials = computed(() =>
-    (this.profile.value()?.displayName || this.t.translate('common.anonymous') || '?')
+    (this.person()?.displayName || this.t.translate('common.anonymous') || '?')
       .trim()
       .slice(0, 1)
       .toUpperCase(),

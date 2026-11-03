@@ -10,18 +10,38 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideZoomIn, lucideZoomOut } from '@ng-icons/lucide';
 
-import { type EditSpec, TIMER_HOLD_SEC, clamp, formatTime } from './edit-model';
+import { type EditSpec, MIN_RANGE_SEC, TIMER_HOLD_SEC, clamp, formatTime } from './edit-model';
 import { EDITOR_ICON_BUTTON } from './editor-panel';
 import { EditorStore, type Selection } from './editor.store';
 
 type Lane = 'blur' | 'timer' | 'caption';
 type Grab = 'start' | 'end' | 'body';
+interface Range {
+  start: number;
+  end: number;
+}
 
-const MIN_RANGE = 0.1;
+/** One row of the timeline and what lies on it. */
+interface Row {
+  id: string;
+  kind: Lane;
+  label: string;
+  color: string;
+  /** Said with its label when the row holds that one item alone. */
+  number?: number;
+  entries: { item: Range; index: number }[];
+}
+
+const LANES: Record<Lane, { label: string; color: string }> = {
+  blur: { label: 'editor.blurItem', color: '#6b5bd6' },
+  timer: { label: 'editor.timerItem', color: '#e0702f' },
+  caption: { label: 'editor.captionItem', color: '#2f8f6b' },
+};
+
 /** Steps of the ruler, seconds: the first that gives at most six of them. */
 const TICK_STEPS = [0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
 /** The closest view shows this many seconds across, but a long video stops at MAX_ZOOM. */
@@ -32,9 +52,10 @@ const WHEEL_STEP = 1.25;
 
 /**
  * The timeline: the original's whole length; what is trimmed away dimmed, the
- * cuts hatched; the blurs, timers and captions on their lanes. The playhead, the trim's ends and
- * every range, each on a layer of its own, can be dragged; a click seeks. The video's frames run along the track, and it can be
- * brought closer (the buttons, Ctrl+wheel, a pinch), when it scrolls and follows the playhead.
+ * cuts hatched; the blurs and captions each on a layer of its own, the timers together on one. The
+ * playhead, the trim's ends and every range can be dragged; a click seeks. The video's frames run
+ * along the track, and it can be brought closer (the buttons, Ctrl+wheel, a pinch), when it scrolls
+ * and follows the playhead.
  */
 @Component({
   selector: 'app-editor-timeline',
@@ -42,10 +63,11 @@ const WHEEL_STEP = 1.25;
   providers: [provideIcons({ lucideZoomIn, lucideZoomOut })],
   host: { class: 'block select-none' },
   styles: `
-    /* Room around the track for what stands out of it: the grips and the playhead. */
+    /* Room around the track for what stands out of it, or the view scrolls for no reason: the
+       playhead and the grips, up to 16 px with their wider target under the pointer. */
     .scroller {
-      margin: -12px -8px -8px;
-      padding: 12px 8px 8px;
+      margin: -12px -16px -8px;
+      padding: 12px 16px 8px;
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: thin;
@@ -191,9 +213,17 @@ const WHEEL_STEP = 1.25;
     .bar:active {
       cursor: grabbing;
     }
+    /* The one picked stands out (a click on a bar picks it); above the others, as timers on the
+       same moments lie on one another. */
+    .lane .bar {
+      opacity: 0.86;
+    }
     .bar.selected {
+      z-index: 1;
+      opacity: 1;
       outline: 2px solid var(--vs-ink);
       outline-offset: 1px;
+      box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.9);
     }
     .bar .end {
       position: absolute;
@@ -287,45 +317,45 @@ const WHEEL_STEP = 1.25;
             ></span>
             <span class="playhead" [style.left.%]="pct(store.time())"></span>
           </div>
-          <!-- Each area, timer and caption on a layer of its own, however many overlap in time. -->
+          <!-- Each area and caption on a layer of its own, however many overlap in time; the timers on one. -->
           <div class="lanes">
-            @for (lane of lanes; track lane.kind) {
-              @for (item of itemsOf(s, lane.kind); track $index) {
-                <div
-                  class="lane"
-                  [attr.aria-label]="(lane.label | transloco) + ' ' + ($index + 1)"
-                  [attr.data-testid]="'lane-' + lane.kind + '-' + $index"
-                >
-                  @if (lane.kind === 'timer') {
+            @for (row of rows(); track row.id) {
+              <div class="lane" [attr.aria-label]="rowLabel(row)" [attr.data-testid]="row.id">
+                @if (row.kind === 'timer') {
+                  @for (entry of row.entries; track entry.index) {
                     <span
                       class="tail"
-                      [style.background]="lane.color"
-                      [style.left.%]="pct(item.end)"
-                      [style.width.%]="pct(Math.min(duration(), item.end + hold)) - pct(item.end)"
+                      [style.background]="row.color"
+                      [style.left.%]="pct(entry.item.end)"
+                      [style.width.%]="
+                        pct(Math.min(duration(), entry.item.end + hold)) - pct(entry.item.end)
+                      "
                     ></span>
                   }
+                }
+                @for (entry of row.entries; track entry.index) {
                   <div
                     class="bar"
-                    [class.selected]="isSelected(lane.kind, $index)"
-                    [style.background]="lane.color"
-                    [style.left.%]="pct(item.start)"
-                    [style.width.%]="pct(item.end) - pct(item.start)"
-                    (pointerdown)="grab(lane.kind, $index, 'body', $event)"
+                    [class.selected]="isSelected(row.kind, entry.index)"
+                    [style.background]="row.color"
+                    [style.left.%]="pct(entry.item.start)"
+                    [style.width.%]="pct(entry.item.end) - pct(entry.item.start)"
+                    (pointerdown)="grab(row.kind, entry.index, 'body', $event)"
                   >
-                    {{ lane.label | transloco }} {{ $index + 1 }}
+                    {{ row.label | transloco }} {{ entry.index + 1 }}
                     <span
                       class="end"
                       style="left: 0"
-                      (pointerdown)="grab(lane.kind, $index, 'start', $event)"
+                      (pointerdown)="grab(row.kind, entry.index, 'start', $event)"
                     ></span>
                     <span
                       class="end"
                       style="right: 0"
-                      (pointerdown)="grab(lane.kind, $index, 'end', $event)"
+                      (pointerdown)="grab(row.kind, entry.index, 'end', $event)"
                     ></span>
                   </div>
-                </div>
-              }
+                }
+              </div>
             }
             <!-- The playhead goes on through the layers: what is on at this moment shows at a glance. -->
             @if (hasLayers(s)) {
@@ -366,6 +396,7 @@ const WHEEL_STEP = 1.25;
 })
 export class EditorTimelineComponent {
   protected readonly store = inject(EditorStore);
+  private readonly t = inject(TranslocoService);
   private readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
   private readonly scrollerRef = viewChild<ElementRef<HTMLDivElement>>('scroller');
   private readonly innerRef = viewChild<ElementRef<HTMLDivElement>>('inner');
@@ -383,11 +414,24 @@ export class EditorTimelineComponent {
   protected readonly duration = this.store.duration;
   protected readonly hold = TIMER_HOLD_SEC;
   protected readonly Math = Math;
-  protected readonly lanes: { kind: Lane; label: string; color: string }[] = [
-    { kind: 'blur', label: 'editor.blurItem', color: '#6b5bd6' },
-    { kind: 'timer', label: 'editor.timerItem', color: '#e0702f' },
-    { kind: 'caption', label: 'editor.captionItem', color: '#2f8f6b' },
-  ];
+  /** A row for each blurred area and each caption; all the timers on one. */
+  protected readonly rows = computed<Row[]>(() => {
+    const s = this.spec();
+    if (!s) return [];
+    const entries = (items: readonly Range[]) => items.map((item, index) => ({ item, index }));
+    const each = (kind: Lane, items: readonly Range[]): Row[] =>
+      entries(items).map((entry) => ({
+        ...LANES[kind],
+        kind,
+        id: `lane-${kind}-${entry.index}`,
+        number: entry.index + 1,
+        entries: [entry],
+      }));
+    const timers: Row[] = s.timers.length
+      ? [{ ...LANES.timer, kind: 'timer', id: 'lane-timer', entries: entries(s.timers) }]
+      : [];
+    return [...each('blur', s.blurs), ...timers, ...each('caption', s.captions)];
+  });
 
   private readonly tickStep = computed(() => {
     const d = this.duration();
@@ -434,13 +478,14 @@ export class EditorTimelineComponent {
     const next = Math.max(1, Math.min(this.maxZoom(), this.shownZoom() * factor));
     const box = scroller.getBoundingClientRect();
     const was = inner.clientWidth;
-    const x = atX === undefined ? null : atX - box.left + scroller.scrollLeft;
+    const pad = inner.getBoundingClientRect().left - box.left + scroller.scrollLeft;
+    const x = atX === undefined ? null : atX - box.left + scroller.scrollLeft - pad;
     const share = x === null ? this.store.time() / d : x / Math.max(1, was);
     const onScreen = x === null ? scroller.clientWidth / 2 : (atX as number) - box.left;
     // Set here as well as in the template: the scroll below needs the new width now.
     inner.style.width = `${next * 100}%`;
     this.zoom.set(next);
-    scroller.scrollLeft = share * inner.clientWidth - onScreen;
+    scroller.scrollLeft = share * inner.clientWidth + pad - onScreen;
   }
 
   private keepInView(t: number): void {
@@ -464,7 +509,12 @@ export class EditorTimelineComponent {
     return this.tickStep() < 1 ? text : text.replace(/\.\d$/, '');
   }
 
-  protected itemsOf(s: EditSpec, lane: Lane): { start: number; end: number }[] {
+  protected rowLabel(row: Row): string {
+    const label = this.t.translate(row.label);
+    return row.number ? `${label} ${row.number}` : label;
+  }
+
+  protected itemsOf(s: EditSpec, lane: Lane): Range[] {
     return lane === 'blur' ? s.blurs : lane === 'timer' ? s.timers : s.captions;
   }
 
@@ -524,11 +574,14 @@ export class EditorTimelineComponent {
           const len = was.end - was.start;
           item.start = clamp(was.start + d, 0, max - len);
           item.end = item.start + len;
-        } else if (part === 'start') item.start = clamp(was.start + d, 0, item.end - MIN_RANGE);
-        else item.end = clamp(was.end + d, item.start + MIN_RANGE, max);
+        } else if (part === 'start') item.start = clamp(was.start + d, 0, item.end - MIN_RANGE_SEC);
+        else item.end = clamp(was.end + d, item.start + MIN_RANGE_SEC, max);
       });
-      const now = (kind === 'cut' ? this.spec()!.cuts : this.itemsOf(this.spec()!, kind))[index]!;
-      this.store.seek(part === 'end' ? now.end : now.start);
+      // A cut's edge is a frame to look at; an area, a timer or a caption is only a range.
+      if (kind === 'cut') {
+        const now = this.spec()!.cuts[index]!;
+        this.store.seek(part === 'end' ? now.end : now.start);
+      }
     };
     this.follow(move, () => this.store.endDrag(drag));
   }

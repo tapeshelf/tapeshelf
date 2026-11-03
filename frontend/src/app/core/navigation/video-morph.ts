@@ -9,6 +9,10 @@ export interface MorphSource {
   poster: string | null;
   /** Width over height of the picture (`aspectOf`): the page's frame takes this shape at once. */
   aspect: number;
+  /** Its sheet of frames: what one who cannot play it sees, from the very first paint. */
+  sheet: string | null;
+  /** This viewer can play it, as far as the tile knows; if not, no player is drawn even for a moment. */
+  playable: boolean;
 }
 
 /**

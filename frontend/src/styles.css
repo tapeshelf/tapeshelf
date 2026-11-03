@@ -244,8 +244,9 @@ app-stack-tile {
   }
 }
 /*
- * A video's name, always on its picture, with its length beside it, over a shade
- * that reads on any frame.
+ * A video's name with its length beside it, over a shade that reads on any frame. With `tile-reveal`:
+ * under the pointer or keyboard focus only, a picture says nothing until then (in place of);
+ * touch screens have no hover, so there it stays.
  */
 @utility tile-caption {
   position: absolute;
@@ -699,15 +700,27 @@ html.vt-panel-only::view-transition-new(root) {
     transform: translateX(100%);
   }
 }
+/* The picture travels slowly; tile and frame blend early, so it is never two images for long. */
 ::view-transition-group(vs-video) {
-  animation-duration: 480ms;
-  animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 ::view-transition-old(vs-video),
 ::view-transition-new(vs-video) {
   height: 100%;
   object-fit: cover;
-  animation-duration: 480ms;
+  animation-duration: 240ms;
+}
+/*
+ * What arrives once the page's answer is in fades up, in place; `backwards` so that it leaves no
+ * stacking context behind for menus and sticky bars.
+ */
+.soft-in {
+  animation: 260ms ease-out backwards ts-fade-in;
+}
+/* A spinner only for a wait that is really long: a quick answer never shows it. */
+.late-in {
+  animation: 240ms ease-out 450ms backwards ts-fade-in;
 }
 @keyframes ts-page-out {
   to {
@@ -726,6 +739,8 @@ html.vt-panel-only::view-transition-new(root) {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .soft-in,
+  .late-in,
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {

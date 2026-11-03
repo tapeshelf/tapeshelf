@@ -133,7 +133,7 @@ import { BylinePipe } from '../../shared/pipes/byline.pipe';
         }
       } @else {
         <!-- The picture is the tile: the video's own shape, square corners;
-             its name and length show on hover (always on touch screens). -->
+             its name shows on hover (always on touch screens); at rest it says nothing. -->
         <div class="relative overflow-hidden bg-surface-2" [style.height.px]="height()" data-morph>
           <div
             class="h-full w-full transition-transform duration-300 ease-out"
@@ -179,9 +179,9 @@ import { BylinePipe } from '../../shared/pipes/byline.pipe';
             ></span>
           }
           @if (context(); as where) {
-            <!-- Where a search found it: the video's category, always in sight. -->
+            <!-- Where a search found it: the video's category, under the pointer. -->
             <span
-              class="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] items-center gap-1 rounded-sm bg-scrim px-1.5 py-0.5 font-mono text-[10px] leading-none text-white"
+              class="tile-reveal pointer-events-none absolute top-2 left-2 z-10 flex max-w-[70%] items-center gap-1 rounded-sm bg-scrim px-1.5 py-0.5 font-mono text-[10px] leading-none text-white"
               data-testid="tile-context"
               ><ng-icon name="lucideFolder" size="11" class="shrink-0" /><span class="truncate">{{
                 where
@@ -204,7 +204,7 @@ import { BylinePipe } from '../../shared/pipes/byline.pipe';
               </span>
             }
           </div>
-          <div class="tile-caption">
+          <div class="tile-caption tile-reveal">
             <span class="min-w-0 flex-1 truncate text-[12.5px] leading-4 font-medium">{{
               item().video.title
             }}</span>
@@ -259,11 +259,23 @@ export class VideoCardComponent {
    * Blurred until the viewer agrees — unless it is the viewer's own shelf: what they
    * hold they may watch, and that is never blurred.
    */
-  protected readonly restricted = computed(() => {
-    const own = !this.preview.active() && this.auth.user()?.username === this.username();
-    return !own && this.sensitive.blurs(this.item().video);
-  });
+  protected readonly restricted = computed(
+    () => !this.own() && this.sensitive.blurs(this.item().video),
+  );
   private readonly preview = inject(VisitorPreview);
+  private readonly own = computed(
+    () => !this.preview.active() && this.auth.user()?.username === this.username(),
+  );
+
+  /** As far as a tile can tell (a private one this viewer holds is a pleasant surprise). */
+  private mayPlay(): boolean {
+    const video = this.item().video;
+    return (
+      video.visibility === 'PUBLIC' ||
+      this.own() ||
+      (!this.preview.active() && video.author.id === this.auth.user()?.id)
+    );
+  }
 
   protected onClick(e: Event): void {
     const id = this.item().video.id;
@@ -281,10 +293,13 @@ export class VideoCardComponent {
       return;
     }
     if (mouse && !modified && mouse.button === 0) {
+      const video = this.item().video;
       this.morph.from(this.picture(), {
-        code: this.item().video.code,
-        poster: this.item().video.thumbnailUrl,
-        aspect: aspectOf(this.item().video.width, this.item().video.height),
+        code: video.code,
+        poster: video.thumbnailUrl,
+        aspect: aspectOf(video.width, video.height),
+        sheet: video.contactSheetUrl,
+        playable: this.mayPlay(),
       });
     }
   }

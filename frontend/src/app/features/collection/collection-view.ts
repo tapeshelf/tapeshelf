@@ -338,16 +338,21 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
     } @else if (!loaded() && showFolders()) {
       <div class="flex justify-center py-10 text-muted"><app-spinner /></div>
     } @else if (!loaded()) {
-      <!-- The whole shelf comes at once, in its final place; until then its shape holds the page. -->
-      <div data-testid="shelf-ghosts" role="status">
-        <span class="sr-only">{{ 'common.loading' | transloco }}</span>
-        <app-shelf-ghosts
-          [rows]="4"
-          [count]="sizeCount()"
-          [zoom]="zoomOf(null)"
-          [list]="settings().layout === 'list'"
-        />
-      </div>
+      <!-- The whole shelf comes at once, in its final place; until then its shape holds the page.
+           Not before the summary: the search above them and the tiles' size depend on it. -->
+      @if (summary() || summaryFailed()) {
+        <div data-testid="shelf-ghosts" role="status">
+          <span class="sr-only">{{ 'common.loading' | transloco }}</span>
+          <app-shelf-ghosts
+            [rows]="4"
+            [count]="sizeCount()"
+            [zoom]="zoomOf(null)"
+            [list]="settings().layout === 'list'"
+            [section]="!!(parts()[0]?.titleKey || parts()[0]?.title)"
+            [month]="settings().sort === 'added' && !search()"
+          />
+        </div>
+      }
     } @else if (showFolders()) {
       <ng-container *ngTemplateOutlet="newSinceLine" />
       <app-shelf-folders [folders]="folders()" (picked)="openFolder($event)" />
@@ -367,7 +372,7 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
           {{ 'collection.search.wholeShelf' | transloco: { count: total() } }}
         </p>
       }
-      <div appShelfZoomGestures>
+      <div class="soft-in" appShelfZoomGestures>
         @if (featuredSlots().length) {
           <!-- What the owner put on top of "All videos": one row that scrolls sideways. -->
           <section class="mb-16" data-testid="featured">

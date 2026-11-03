@@ -1452,7 +1452,7 @@
     "leaveHintForeign": "Inutile d’attendre sur cette page : vous pouvez la quitter ou fermer l’onglet, le montage se termine sans vous.",
     "previewCuts": "Lire sans les coupes",
     "result": "Résultat",
-    "keys": "Espace : lecture et pause · ← → : une seconde, un dixième avec Maj · , . avancent d’une image · I O fixent le début et la fin · Suppr : retirer la sélection",
+    "keys": "Espace : lecture et pause · ← → : une seconde, un dixième avec Maj · , . avancent d’une image · I O fixent le début et la fin de la sélection ou de la vidéo · Suppr : retirer la sélection",
     "zoomIn": "Rapprocher la frise",
     "zoomOut": "Éloigner la frise",
     "draftRestored": "Vos modifications non enregistrées sont de retour.",
