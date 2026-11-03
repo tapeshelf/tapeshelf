@@ -61,7 +61,7 @@ Videos play from encrypted segments, and the player never gets a link to the fil
 
 ## Good to know
 
-**Email is optional.** Without an email account, sign-ups work straight away, but nobody can reset a forgotten password or get email notifications. To add one later, open the settings with `nano .env`, then set `EMAIL_DISABLED=false`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `SMTP_FROM`, save, and run `./tapeshelf.sh restart`. Use `SMTP_SECURE=true` with port 465.
+**Email is optional.** Without an email account, sign-ups work straight away, but nobody can reset a forgotten password, get email notifications or open links that send a code by email. To add one later, open the settings with `nano .env`, then set `EMAIL_DISABLED=false`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `SMTP_FROM`, save, and run `./tapeshelf.sh restart`. Use `SMTP_SECURE=true` with port 465.
 
 **Your own proxy.** If nginx or Traefik already uses ports 80 and 443 on your server, the installer notices and offers to go behind it, and shows you what to add to your proxy's settings. You can also ask for it directly: `bash install.sh --behind-proxy video.example.com`.
 
