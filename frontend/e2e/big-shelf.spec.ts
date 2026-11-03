@@ -147,9 +147,9 @@ test.describe.serial('a shelf bigger than a page', () => {
       await guest.goto(`/@${owner.username}`);
       const more = guest.getByTestId('more-PUBLIC');
       await expect(more).toHaveCount(1);
-      // Near the end: the page is asked for, the spinner turns, the footer waits.
+      // Near the end: the page is asked for, its rows stand as placeholders, the footer waits.
       await guest.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      await expect(more.locator('app-spinner')).toBeVisible();
+      await expect(more.locator('app-tile-ghost').first()).toBeVisible();
       await expect(guest.locator('app-compact-footer footer')).toHaveCount(0);
       const where = () =>
         guest.evaluate(() => ({

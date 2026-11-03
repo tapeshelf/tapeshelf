@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Api, type EditStateDto, editorState } from '../../api';
 import { WsService } from '../../core/ws/ws.service';
@@ -8,11 +8,12 @@ import { provideTranslocoTesting } from '../../testing/transloco-testing';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import { EditorStore } from './editor.store';
 
-const SOURCE = { width: 640, height: 360, durationSec: 4, hasAudio: true };
+const SOURCE = { width: 640, height: 360, durationSec: 4, hasAudio: true, fps: 25 };
 
 function state(job: EditStateDto['job']): EditStateDto {
   return {
     videoId: 'v1',
+    frameUrls: [],
     code: 'k3x9ab2',
     title: 'Trip',
     source: SOURCE,
@@ -59,13 +60,18 @@ const flush = () => new Promise((r) => setTimeout(r, 0));
 describe('EditorStore', () => {
   let api: FakeApi;
   let ws: FakeWs;
-  let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
+  let toast: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    withAction: ReturnType<typeof vi.fn>;
+  };
   let store: EditorStore;
 
   beforeEach(() => {
     api = new FakeApi();
     ws = new FakeWs();
-    toast = { success: vi.fn(), error: vi.fn() };
+    localStorage.clear();
+    toast = { success: vi.fn(), error: vi.fn(), withAction: vi.fn() };
     TestBed.configureTestingModule({
       imports: [provideTranslocoTesting()],
       providers: [
@@ -77,6 +83,67 @@ describe('EditorStore', () => {
       ],
     });
     store = TestBed.inject(EditorStore);
+  });
+
+  describe('the draft', () => {
+    const KEY = 'vs.editDraft..v1';
+    const drafted = () =>
+      JSON.parse(localStorage.getItem(KEY) ?? 'null') as { spec?: unknown } | null;
+
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    async function ready(): Promise<void> {
+      api.current = state(null);
+      const loaded = store.load('v1');
+      await vi.advanceTimersByTimeAsync(0);
+      await loaded;
+      TestBed.tick();
+    }
+
+    it('keeps what leaving would lose and brings it back, one undo from the video', async () => {
+      await ready();
+      store.change((s) => void (s.volume = 0.5));
+      TestBed.tick();
+      await vi.advanceTimersByTimeAsync(500);
+      expect(drafted()?.spec).toMatchObject({ volume: 0.5 });
+
+      const again = TestBed.runInInjectionContext(() => new EditorStore());
+      api.current = state(null);
+      const loaded = again.load('v1');
+      await vi.advanceTimersByTimeAsync(0);
+      await loaded;
+      expect(again.spec()?.volume).toBe(0.5);
+      expect(toast.withAction).toHaveBeenCalledTimes(1);
+      again.undo();
+      expect(again.spec()?.volume).toBe(1);
+    });
+
+    it('leaves none once there is nothing to lose', async () => {
+      await ready();
+      store.change((s) => void (s.volume = 0.5));
+      TestBed.tick();
+      await vi.advanceTimersByTimeAsync(500);
+      store.undo();
+      TestBed.tick();
+      await vi.advanceTimersByTimeAsync(500);
+      expect(drafted()).toBeNull();
+    });
+
+    it('does not offer a draft of another version of the video', async () => {
+      await ready();
+      localStorage.setItem(
+        KEY,
+        JSON.stringify({ at: Date.now(), base: 'older', spec: { ...store.spec(), volume: 0.5 } }),
+      );
+      const again = TestBed.runInInjectionContext(() => new EditorStore());
+      api.current = state(null);
+      const loaded = again.load('v1');
+      await vi.advanceTimersByTimeAsync(0);
+      await loaded;
+      expect(again.spec()?.volume).toBe(1);
+      expect(toast.withAction).not.toHaveBeenCalled();
+    });
   });
 
   it('tells the end of a render once, whatever order the answers come in', async () => {

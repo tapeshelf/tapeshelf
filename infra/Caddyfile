@@ -24,6 +24,7 @@
 		-Server
 	}
 
+
 	# API and websockets: the api container sets its own headers (helmet). Never indexed.
 	handle /api/* {
 		header X-Robots-Tag "noindex, nofollow"

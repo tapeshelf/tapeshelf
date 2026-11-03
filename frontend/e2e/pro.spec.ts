@@ -136,7 +136,7 @@ test('Pro: yearly first, checkout for this account, Pro after the webhook, porta
   await expect(welcome).toContainText('Pro is on');
   await expect(welcome).toContainText('Videos up to 5.0 GB');
   await expect(welcome).toContainText('The video editor');
-  await expect(welcome).toContainText('90 days to change your mind');
+  await expect(welcome).toContainText('30 days to change your mind');
   await shot(page, 'pro-02-welcome');
   await audit(page, 'pro welcome');
   await welcome.getByTestId('pro-welcome-close').click();

@@ -6,10 +6,12 @@ import { t } from '../../common/i18n/i18n.js';
 import { formatBytes } from '../processing/contact-sheet.js';
 import { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../infra/prisma/prisma.service.js';
+import { StorageService } from '../../infra/storage/storage.service.js';
 import { QueueService } from '../../infra/queue/queue.service.js';
 import { WsGateway } from '../../infra/ws/ws.gateway.js';
 import { canUseEditor, isAdmin } from '../access/access-policy.js';
 import { AuditService } from '../audit/audit.service.js';
+import { FRAME_COUNT, frameKey } from '../collection/video-card.js';
 import { overLimit } from '../plans/plan.js';
 import { PlansService } from '../plans/plans.service.js';
 import { toViewer } from '../streaming/streaming.service.js';
@@ -53,6 +55,9 @@ const VIDEO_SELECT = {
   sizeBytes: true,
   renderBytes: true,
   editJob: true,
+  assetPrefix: true,
+  smallFrames: true,
+  contactSheetKey: true,
 } as const;
 type EditorVideo = Prisma.VideoGetPayload<{ select: typeof VIDEO_SELECT }>;
 
@@ -70,6 +75,7 @@ export class EditorService {
     private readonly audit: AuditService,
     private readonly ws: WsGateway,
     private readonly videos: VideosService,
+    private readonly storage: StorageService,
   ) {}
 
   async state(user: RequestUser, videoId: string): Promise<EditStateDto> {
@@ -301,7 +307,14 @@ export class EditorService {
       videoId: video.id,
       code: video.code,
       title: video.title,
-      source: sourceOf(video),
+      source: { ...sourceOf(video), fps: fpsOf(video.probe) },
+      // The tile's own frames, which exist once its contact sheet does.
+      frameUrls:
+        video.assetPrefix && video.contactSheetKey
+          ? Array.from({ length: FRAME_COUNT }, (_, i) =>
+              this.storage.publicUrl(frameKey(video, i)),
+            )
+          : [],
       job: job
         ? {
             mode: job.mode,
@@ -330,6 +343,12 @@ function sourceOf(video: EditorVideo): EditSource {
     hasAudio: !!(video.probe as { audio?: unknown } | null)?.audio,
     ...displaySize(video.probe),
   };
+}
+
+/** Frames per second of a probed file, when the probe says it. */
+function fpsOf(probe: unknown): number | null {
+  const fps = (probe as { video?: { fps?: unknown } } | null)?.video?.fps;
+  return typeof fps === 'number' && fps > 0 ? fps : null;
 }
 
 /** The display size of a probed file (its own rotation applied), when the probe says it. */

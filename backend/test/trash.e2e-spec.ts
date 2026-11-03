@@ -114,13 +114,13 @@ describe('trash, removals and retention (e2e)', () => {
     await ann.delete(`/api/videos/${v.id}`).expect(200);
     expect(await used()).toBe(0n);
     const trash = (await ann.get('/api/me/trash').expect(200)).body;
-    expect(trash.retentionDays).toBe(30);
+    expect(trash.retentionDays).toBe(7);
     expect(trash.items).toHaveLength(1);
     const item = trash.items[0];
     expect(item.video).toMatchObject({ id: v.id, title: 'Lake' });
     expect(
       new Date(item.purgeAt).getTime() - new Date(item.deletedAt).getTime(),
-    ).toBe(30 * DAY);
+    ).toBe(7 * DAY);
     expect(
       (await ann.get('/api/users/ann/collection/summary').expect(200)).body
         .trash,
@@ -167,12 +167,12 @@ describe('trash, removals and retention (e2e)', () => {
     expect(await used()).toBe(FREE_SHELF - BigInt(3 * MiB) + BigInt(2 * MiB));
   });
 
-  it('time over: a video leaves the trash after the plan’s days (Free 30, Pro 90) and nothing is erased', async () => {
+  it('time over: a video leaves the trash after the plan’s days (Free 7, Pro 30) and nothing is erased', async () => {
     const free = await seed('Free one');
     await ann.delete(`/api/videos/${free.id}`).expect(200);
     const trash = app.get(TrashService);
-    expect(await trash.sweep(new Date(Date.now() + 29 * DAY))).toBe(0);
-    expect(await trash.sweep(new Date(Date.now() + 31 * DAY))).toBe(1);
+    expect(await trash.sweep(new Date(Date.now() + 6 * DAY))).toBe(0);
+    expect(await trash.sweep(new Date(Date.now() + 8 * DAY))).toBe(1);
     const gone = await prisma.video.findUniqueOrThrow({
       where: { id: free.id },
     });
@@ -206,9 +206,9 @@ describe('trash, removals and retention (e2e)', () => {
     ).toMatchObject({ trashExit: 'ADMIN', purgedAt: null });
     expect(
       (await ann.get('/api/me/trash').expect(200)).body.retentionDays,
-    ).toBe(90);
-    expect(await trash.sweep(new Date(Date.now() + 89 * DAY))).toBe(0);
-    expect(await trash.sweep(new Date(Date.now() + 91 * DAY))).toBe(1);
+    ).toBe(30);
+    expect(await trash.sweep(new Date(Date.now() + 29 * DAY))).toBe(0);
+    expect(await trash.sweep(new Date(Date.now() + 31 * DAY))).toBe(1);
     expect(
       await prisma.video.findUniqueOrThrow({ where: { id: kept.id } }),
     ).toMatchObject({ trashExit: 'EXPIRED', purgedAt: null });
@@ -367,7 +367,7 @@ describe('trash, removals and retention (e2e)', () => {
     expect(
       new Date(last.restorableUntil).getTime() -
         new Date(last.deletedAt).getTime(),
-    ).toBe(30 * DAY);
+    ).toBe(7 * DAY);
     expect(list.items[0].restorableUntil).toBeNull();
     const out = (await admin.get('/api/admin/trash?state=out').expect(200))
       .body;

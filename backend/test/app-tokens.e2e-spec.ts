@@ -275,7 +275,7 @@ describe('connected apps (e2e)', () => {
       limits: { freeBytes: -1, perDay: 0, maxFileBytes: 0 },
     });
     for (let i = 0; i < 4; i++) await start().expect(200);
-    // No file size limit either (Free's is 1 GiB): 3 GiB goes.
+    // No file size limit either (Free's is 500 MiB): 3 GiB goes.
     await ext(token)
       .post('/api/uploads')
       .send({ filename: 'big.mp4', size: 3 * 1024 ** 3 })

@@ -8,7 +8,7 @@ import { isGuestUsername } from '../deals/guest-keys.js';
 import { smallFrameKey } from '../videos/video-previews.js';
 import type { VideoCardDto } from './collection.dto.js';
 
-const FRAME_COUNT = 16;
+export const FRAME_COUNT = 16;
 
 /** The columns a tile needs (a Prisma `Video` row satisfies it). */
 export interface CardVideo {

@@ -1,7 +1,21 @@
-import { Component, type ElementRef, computed, inject, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  type ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideZoomIn, lucideZoomOut } from '@ng-icons/lucide';
 
 import { type EditSpec, TIMER_HOLD_SEC, clamp, formatTime } from './edit-model';
+import { EDITOR_ICON_BUTTON } from './editor-panel';
 import { EditorStore, type Selection } from './editor.store';
 
 type Lane = 'blur' | 'timer' | 'caption';
@@ -10,29 +24,65 @@ type Grab = 'start' | 'end' | 'body';
 const MIN_RANGE = 0.1;
 /** Steps of the ruler, seconds: the first that gives at most six of them. */
 const TICK_STEPS = [0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
+/** The closest view shows this many seconds across, but a long video stops at MAX_ZOOM. */
+const CLOSEST_VIEW_SEC = 5;
+const MAX_ZOOM = 64;
+/** The zoom's buttons double it; a turn of the wheel takes this step. */
+const WHEEL_STEP = 1.25;
 
 /**
  * The timeline: the original's whole length; what is trimmed away dimmed, the
  * cuts hatched; the blurs, timers and captions on their lanes. The playhead, the trim's ends and
- * every range can be dragged; a click seeks.
+ * every range can be dragged; a click seeks. The video's frames run along the track, and it can be
+ * brought closer (the buttons, Ctrl+wheel, a pinch), when it scrolls and follows the playhead.
  */
 @Component({
   selector: 'app-editor-timeline',
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, NgIcon],
+  providers: [provideIcons({ lucideZoomIn, lucideZoomOut })],
   host: { class: 'block select-none' },
   styles: `
+    /* Room around the track for what stands out of it: the grips and the playhead. */
+    .scroller {
+      margin: -12px -8px -8px;
+      padding: 12px 8px 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+    }
+    .film {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      overflow: hidden;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    .film img {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      object-fit: cover;
+    }
     .track {
       position: relative;
-      height: 44px;
-      border-radius: 6px;
+      height: 52px;
+      border-radius: 8px;
       background: var(--vs-surface-2);
       cursor: pointer;
     }
+    /* Rounded with the track, whichever end it lies at. */
     .gone {
       position: absolute;
       top: 0;
       bottom: 0;
-      background: rgb(0 0 0 / 0.55);
+      background: rgb(0 0 0 / 0.5);
+    }
+    .gone.first {
+      border-radius: 8px 0 0 8px;
+    }
+    .gone.last {
+      border-radius: 0 8px 8px 0;
     }
     .cut {
       position: absolute;
@@ -43,179 +93,270 @@ const TICK_STEPS = [0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600
         rgb(220 60 40 / 0.55) 0 6px,
         rgb(220 60 40 / 0.2) 6px 12px
       );
-      outline: 1px solid rgb(220 60 40 / 0.8);
+      box-shadow: inset 0 0 0 1px rgb(220 60 40 / 0.8);
     }
     .cut.selected {
-      outline: 2px solid var(--vs-accent);
+      box-shadow: inset 0 0 0 2px var(--vs-accent);
     }
     .grip {
       position: absolute;
       top: -4px;
       bottom: -4px;
-      width: 10px;
-      margin-left: -5px;
-      border-radius: 3px;
+      width: 14px;
+      margin-left: -7px;
+      border-radius: 5px;
       background: var(--vs-accent);
-      border: 2px solid var(--vs-line);
+      border: 2px solid var(--vs-accent-edge);
       cursor: ew-resize;
       z-index: 2;
+      transition: transform 100ms ease-out;
+    }
+    .grip:hover {
+      transform: scaleX(1.2);
+    }
+    /* Its ribbing: this is the part to take. */
+    .grip::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 16px;
+      transform: translate(-50%, -50%);
+      border-radius: 1px;
+      background: rgb(255 255 255 / 0.85);
+    }
+    .grip::after {
+      content: '';
+      position: absolute;
+      inset: -4px -6px;
     }
     .playhead {
       position: absolute;
-      top: -8px;
-      bottom: -8px;
+      top: -9px;
+      bottom: -9px;
       width: 2px;
       margin-left: -1px;
       background: var(--vs-ink);
+      box-shadow: 0 0 0 1px var(--vs-surface);
       z-index: 3;
       pointer-events: none;
     }
     .playhead::before {
       content: '';
       position: absolute;
-      top: -2px;
+      top: -3px;
       left: -5px;
-      border: 6px solid transparent;
-      border-top-color: var(--vs-ink);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--vs-ink);
+      box-shadow: 0 0 0 2px var(--vs-surface);
     }
     .lane {
       position: relative;
-      height: 22px;
-      margin-top: 6px;
-      border-radius: 4px;
+      height: 28px;
+      margin-top: 8px;
+      border-radius: 6px;
       background: var(--vs-surface-2);
     }
     .bar {
       position: absolute;
       top: 2px;
       bottom: 2px;
-      border-radius: 3px;
+      border-radius: 5px;
       cursor: grab;
-      font-size: 10px;
-      line-height: 18px;
-      padding: 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 24px;
+      padding: 0 10px;
       overflow: hidden;
       white-space: nowrap;
       color: #fff;
     }
+    .bar:active {
+      cursor: grabbing;
+    }
     .bar.selected {
       outline: 2px solid var(--vs-ink);
+      outline-offset: 1px;
     }
     .bar .end {
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 8px;
+      width: 10px;
       cursor: ew-resize;
     }
-    .tail {
+    /* The ends of the one picked show where to take them. */
+    .bar.selected .end::after {
+      content: '';
       position: absolute;
       top: 6px;
       bottom: 6px;
-      border-radius: 0 3px 3px 0;
+      left: 4px;
+      width: 2px;
+      border-radius: 1px;
+      background: rgb(255 255 255 / 0.9);
+    }
+    .tail {
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      border-radius: 0 4px 4px 0;
       opacity: 0.4;
       pointer-events: none;
     }
   `,
   template: `
     @if (spec(); as s) {
-      <div class="relative mb-1 h-4 font-mono text-[11px] text-muted" aria-hidden="true">
-        @for (tick of ticks(); track tick) {
-          <span
-            class="absolute top-0 whitespace-nowrap"
-            [style.left.%]="pct(tick)"
-            [style.transform]="
-              'translateX(' + (pct(tick) < 3 ? 0 : pct(tick) > 97 ? -100 : -50) + '%)'
-            "
-            >{{ format(tick) }}</span
-          >
-        }
-      </div>
-      <div #track class="track" data-testid="timeline" (pointerdown)="seekAt($event)">
-        <div class="gone" style="left: 0" [style.width.%]="pct(s.trim.start)"></div>
-        <div class="gone" style="right: 0" [style.width.%]="100 - pct(s.trim.end)"></div>
-        @for (c of s.cuts; track $index) {
-          <div
-            class="cut"
-            [class.selected]="isSelected('cut', $index)"
-            [style.left.%]="pct(c.start)"
-            [style.width.%]="pct(c.end) - pct(c.start)"
-            [attr.title]="'editor.cut' | transloco"
-            (pointerdown)="grab('cut', $index, 'body', $event)"
-          >
-            @if (isSelected('cut', $index)) {
+      <div #scroller class="scroller" data-testid="timeline-scroller">
+        <div #inner [style.width.%]="shownZoom() * 100" data-testid="timeline-inner">
+          <div class="relative mb-2 h-4 font-mono text-xs text-muted" aria-hidden="true">
+            @for (tick of ticks(); track tick) {
               <span
-                class="grip"
-                style="left: 0"
-                (pointerdown)="grab('cut', $index, 'start', $event)"
-              ></span>
-              <span
-                class="grip"
-                style="left: 100%"
-                (pointerdown)="grab('cut', $index, 'end', $event)"
-              ></span>
+                class="absolute top-0 whitespace-nowrap"
+                [style.left.%]="pct(tick)"
+                [style.transform]="
+                  'translateX(' + (pct(tick) < 3 ? 0 : pct(tick) > 97 ? -100 : -50) + '%)'
+                "
+                >{{ format(tick) }}</span
+              >
             }
           </div>
-        }
-        <span
-          class="grip"
-          [style.left.%]="pct(s.trim.start)"
-          data-testid="trim-start"
-          [attr.aria-label]="'editor.trimStart' | transloco"
-          (pointerdown)="grabTrim('start', $event)"
-        ></span>
-        <span
-          class="grip"
-          [style.left.%]="pct(s.trim.end)"
-          data-testid="trim-end"
-          [attr.aria-label]="'editor.trimEnd' | transloco"
-          (pointerdown)="grabTrim('end', $event)"
-        ></span>
-        <span class="playhead" [style.left.%]="pct(store.time())"></span>
-      </div>
-      @for (lane of lanes; track lane.kind) {
-        @let items = itemsOf(s, lane.kind);
-        @if (items.length) {
-          <div class="lane" [attr.aria-label]="lane.label | transloco">
-            @for (item of items; track $index) {
-              @if (lane.kind === 'timer') {
-                <span
-                  class="tail"
-                  [style.background]="lane.color"
-                  [style.left.%]="pct(item.end)"
-                  [style.width.%]="pct(Math.min(duration(), item.end + hold)) - pct(item.end)"
-                ></span>
-              }
-              <div
-                class="bar"
-                [class.selected]="isSelected(lane.kind, $index)"
-                [style.background]="lane.color"
-                [style.left.%]="pct(item.start)"
-                [style.width.%]="pct(item.end) - pct(item.start)"
-                (pointerdown)="grab(lane.kind, $index, 'body', $event)"
-              >
-                {{ lane.label | transloco }} {{ $index + 1 }}
-                <span
-                  class="end"
-                  style="left: 0"
-                  (pointerdown)="grab(lane.kind, $index, 'start', $event)"
-                ></span>
-                <span
-                  class="end"
-                  style="right: 0"
-                  (pointerdown)="grab(lane.kind, $index, 'end', $event)"
-                ></span>
+          <div #track class="track" data-testid="timeline" (pointerdown)="seekAt($event)">
+            @if (frames().length) {
+              <div class="film" aria-hidden="true" data-testid="timeline-film">
+                @for (url of frames(); track url) {
+                  <img [src]="url" alt="" draggable="false" />
+                }
               </div>
             }
+            <div class="gone first" style="left: 0" [style.width.%]="pct(s.trim.start)"></div>
+            <div class="gone last" style="right: 0" [style.width.%]="100 - pct(s.trim.end)"></div>
+            @for (c of s.cuts; track $index) {
+              <div
+                class="cut"
+                [class.selected]="isSelected('cut', $index)"
+                [style.left.%]="pct(c.start)"
+                [style.width.%]="pct(c.end) - pct(c.start)"
+                [attr.title]="'editor.cut' | transloco"
+                (pointerdown)="grab('cut', $index, 'body', $event)"
+              >
+                @if (isSelected('cut', $index)) {
+                  <span
+                    class="grip"
+                    style="left: 0"
+                    (pointerdown)="grab('cut', $index, 'start', $event)"
+                  ></span>
+                  <span
+                    class="grip"
+                    style="left: 100%"
+                    (pointerdown)="grab('cut', $index, 'end', $event)"
+                  ></span>
+                }
+              </div>
+            }
+            <span
+              class="grip"
+              [style.left.%]="pct(s.trim.start)"
+              data-testid="trim-start"
+              [attr.aria-label]="'editor.trimStart' | transloco"
+              (pointerdown)="grabTrim('start', $event)"
+            ></span>
+            <span
+              class="grip"
+              [style.left.%]="pct(s.trim.end)"
+              data-testid="trim-end"
+              [attr.aria-label]="'editor.trimEnd' | transloco"
+              (pointerdown)="grabTrim('end', $event)"
+            ></span>
+            <span class="playhead" [style.left.%]="pct(store.time())"></span>
           </div>
-        }
-      }
+          @for (lane of lanes; track lane.kind) {
+            @let items = itemsOf(s, lane.kind);
+            @if (items.length) {
+              <div class="lane" [attr.aria-label]="lane.label | transloco">
+                @for (item of items; track $index) {
+                  @if (lane.kind === 'timer') {
+                    <span
+                      class="tail"
+                      [style.background]="lane.color"
+                      [style.left.%]="pct(item.end)"
+                      [style.width.%]="pct(Math.min(duration(), item.end + hold)) - pct(item.end)"
+                    ></span>
+                  }
+                  <div
+                    class="bar"
+                    [class.selected]="isSelected(lane.kind, $index)"
+                    [style.background]="lane.color"
+                    [style.left.%]="pct(item.start)"
+                    [style.width.%]="pct(item.end) - pct(item.start)"
+                    (pointerdown)="grab(lane.kind, $index, 'body', $event)"
+                  >
+                    {{ lane.label | transloco }} {{ $index + 1 }}
+                    <span
+                      class="end"
+                      style="left: 0"
+                      (pointerdown)="grab(lane.kind, $index, 'start', $event)"
+                    ></span>
+                    <span
+                      class="end"
+                      style="right: 0"
+                      (pointerdown)="grab(lane.kind, $index, 'end', $event)"
+                    ></span>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+      <div class="mt-4 flex items-start gap-3">
+        <p class="min-w-0 flex-1 text-sm text-muted">{{ 'editor.keys' | transloco }}</p>
+        <span class="flex shrink-0 gap-2">
+          <button
+            type="button"
+            [class]="iconButton"
+            [disabled]="shownZoom() <= 1"
+            [attr.aria-label]="'editor.zoomOut' | transloco"
+            [attr.title]="'editor.zoomOut' | transloco"
+            data-testid="timeline-zoom-out"
+            (click)="zoomBy(0.5)"
+          >
+            <ng-icon name="lucideZoomOut" size="20" />
+          </button>
+          <button
+            type="button"
+            [class]="iconButton"
+            [disabled]="shownZoom() >= maxZoom()"
+            [attr.aria-label]="'editor.zoomIn' | transloco"
+            [attr.title]="'editor.zoomIn' | transloco"
+            data-testid="timeline-zoom-in"
+            (click)="zoomBy(2)"
+          >
+            <ng-icon name="lucideZoomIn" size="20" />
+          </button>
+        </span>
+      </div>
     }
   `,
 })
 export class EditorTimelineComponent {
   protected readonly store = inject(EditorStore);
   private readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
+  private readonly scrollerRef = viewChild<ElementRef<HTMLDivElement>>('scroller');
+  private readonly innerRef = viewChild<ElementRef<HTMLDivElement>>('inner');
+  protected readonly iconButton = EDITOR_ICON_BUTTON;
+  protected readonly frames = computed(() => this.store.state()?.frameUrls ?? []);
+  private readonly zoom = signal(1);
+  protected readonly maxZoom = computed(() =>
+    Math.max(2, Math.min(MAX_ZOOM, this.duration() / CLOSEST_VIEW_SEC)),
+  );
+  /** A shorter new version of the video may bring the limit below the zoom set. */
+  protected readonly shownZoom = computed(() => Math.min(this.zoom(), this.maxZoom()));
+  /** A grip or the playhead is held: the view stays where the pointer is. */
+  private holding = false;
   protected readonly spec = this.store.spec;
   protected readonly duration = this.store.duration;
   protected readonly hold = TIMER_HOLD_SEC;
@@ -228,7 +369,8 @@ export class EditorTimelineComponent {
 
   private readonly tickStep = computed(() => {
     const d = this.duration();
-    return TICK_STEPS.find((step) => d / step <= 6) ?? 3600 * Math.ceil(d / 6 / 3600);
+    const seen = d / this.shownZoom();
+    return TICK_STEPS.find((step) => seen / step <= 6) ?? 3600 * Math.ceil(seen / 6 / 3600);
   });
 
   /** Round moments along the ruler: 0:00, 0:10, 0:20… */
@@ -239,6 +381,56 @@ export class EditorTimelineComponent {
     const count = Math.floor(d / step + 1e-6);
     return Array.from({ length: count + 1 }, (_, i) => i * step);
   });
+
+  constructor() {
+    // Not a template listener: stopping the page's own zoom takes a listener that is not passive.
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const onWheel = (e: WheelEvent) => {
+        if (!e.ctrlKey && !e.metaKey) return;
+        const scroller = this.scrollerRef()?.nativeElement;
+        if (!scroller?.contains(e.target as Node)) return;
+        e.preventDefault();
+        this.zoomBy(e.deltaY < 0 ? WHEEL_STEP : 1 / WHEEL_STEP, e.clientX);
+      };
+      document.addEventListener('wheel', onWheel, { passive: false });
+      destroyRef.onDestroy(() => document.removeEventListener('wheel', onWheel));
+    });
+    // Up close the playhead stays in view: it plays on, or a key moved it.
+    effect(() => {
+      const t = this.store.time();
+      untracked(() => this.keepInView(t));
+    });
+  }
+
+  /** Closer or further by `factor`, keeping what is under `atX` (or the playhead) where it is. */
+  protected zoomBy(factor: number, atX?: number): void {
+    const scroller = this.scrollerRef()?.nativeElement;
+    const inner = this.innerRef()?.nativeElement;
+    const d = this.duration();
+    if (!scroller || !inner || !d) return;
+    const next = Math.max(1, Math.min(this.maxZoom(), this.shownZoom() * factor));
+    const box = scroller.getBoundingClientRect();
+    const was = inner.clientWidth;
+    const x = atX === undefined ? null : atX - box.left + scroller.scrollLeft;
+    const share = x === null ? this.store.time() / d : x / Math.max(1, was);
+    const onScreen = x === null ? scroller.clientWidth / 2 : (atX as number) - box.left;
+    // Set here as well as in the template: the scroll below needs the new width now.
+    inner.style.width = `${next * 100}%`;
+    this.zoom.set(next);
+    scroller.scrollLeft = share * inner.clientWidth - onScreen;
+  }
+
+  private keepInView(t: number): void {
+    const scroller = this.scrollerRef()?.nativeElement;
+    const inner = this.innerRef()?.nativeElement;
+    const d = this.duration();
+    if (this.holding || !scroller || !inner || !d || this.shownZoom() <= 1) return;
+    const x = (t / d) * inner.clientWidth;
+    const left = scroller.scrollLeft;
+    const width = scroller.clientWidth;
+    if (x < left || x > left + width - 16) scroller.scrollLeft = x - width * 0.1;
+  }
 
   protected pct(t: number): number {
     const d = this.duration();
@@ -316,7 +508,9 @@ export class EditorTimelineComponent {
   }
 
   private follow(move: (e: PointerEvent) => void, done?: () => void): void {
+    this.holding = true;
     const up = () => {
+      this.holding = false;
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
       done?.();

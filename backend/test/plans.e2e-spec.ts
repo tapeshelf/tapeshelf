@@ -83,8 +83,8 @@ describe('plans (e2e)', () => {
       tiers: SETTING_DEFAULTS.tiers,
     });
     expect(plans.body.tiers.BASIC).toMatchObject({
-      maxFileBytes: GiB,
-      storageQuotaBytes: 20 * GiB,
+      maxFileBytes: 500 * 1024 ** 2,
+      storageQuotaBytes: 5 * GiB,
     });
     expect(plans.body.tiers.PREMIUM).toMatchObject({
       maxFileBytes: 5 * GiB,
@@ -209,8 +209,8 @@ describe('plans (e2e)', () => {
     const ended = (await notes()).filter((n) => n.type === 'PLAN_EXPIRED');
     expect(ended).toHaveLength(1);
     expect(ended[0]!.payload).toEqual({
-      maxFileBytes: GiB,
-      storageQuotaBytes: 20 * GiB,
+      maxFileBytes: 500 * 1024 ** 2,
+      storageQuotaBytes: 5 * GiB,
       overQuota: true,
     });
     // Nothing on the shelf was touched and a second run has nothing to do.

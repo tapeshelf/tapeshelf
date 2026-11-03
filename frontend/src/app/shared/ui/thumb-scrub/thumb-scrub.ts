@@ -1,8 +1,19 @@
-import { Component, DestroyRef, ElementRef, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { SensitiveContentService } from '../../../core/content/sensitive.service';
 import { scrubIndex } from '../../../features/library/selection';
+import { TileGhostComponent } from '../mosaic/tile-ghost';
 
 /** How long the pointer rests on a tile before it scrubs: crossing the shelf arms nothing. */
 export const ARM_DELAY_MS = 120;
@@ -17,18 +28,28 @@ export const ARM_DELAY_MS = 120;
  */
 @Component({
   selector: 'app-thumb-scrub',
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, TileGhostComponent],
   host: {
     class: 'relative block h-full w-full overflow-hidden bg-surface-2',
   },
   template: `
     @if (thumbnailUrl(); as url) {
+      <!-- The tile's own colour until the picture is in, which then comes up over it. -->
+      @if (!shown()) {
+        <app-tile-ghost class="absolute inset-0" data-testid="thumb-ghost" />
+      }
       <img
         [src]="url"
         [alt]="alt()"
-        class="h-full w-full object-cover"
+        class="relative h-full w-full object-cover"
+        [class.transition-opacity]="fades"
+        [class.duration-300]="fades"
+        [class.ease-out]="fades"
+        [class.opacity-0]="!shown()"
         [class.blur-xl]="blurred()"
         [class.scale-110]="blurred()"
+        (load)="shown.set(true)"
+        (error)="shown.set(true)"
         loading="lazy"
         decoding="async"
         draggable="false"
@@ -76,6 +97,7 @@ export const ARM_DELAY_MS = 120;
 })
 export class ThumbScrubComponent {
   private readonly sensitive = inject(SensitiveContentService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   readonly thumbnailUrl = input<string | null>(null);
   readonly frameUrls = input<readonly string[]>([]);
   readonly alt = input('');
@@ -83,6 +105,10 @@ export class ThumbScrubComponent {
   readonly restricted = input(false);
 
   protected readonly blurred = computed(() => this.restricted() && !this.sensitive.allowed());
+  /** The picture is in; a new address (the video was edited) waits for its own. */
+  protected readonly shown = linkedSignal({ source: this.thumbnailUrl, computation: () => false });
+  /** A picture the browser already holds (back on a shelf) is there at once, with no fade. */
+  protected fades = true;
   /** The frame under the pointer; null when the pointer is away. */
   protected readonly index = signal<number | null>(null);
   /** Scrubbing starts once the pointer rested on the tile (ARM_DELAY_MS). */
@@ -101,7 +127,15 @@ export class ThumbScrubComponent {
     // Plain listeners, not host bindings: a host listener marks every view up to the page for
     // checking, so each mouse move over the shelf re-checked all its tiles. The
     // signals set here refresh this tile alone.
-    const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const el = this.host;
+    afterNextRender({
+      earlyRead: () => this.host.querySelector<HTMLImageElement>('img[data-thumb]'),
+      write: (img) => {
+        if (!img?.complete || !img.naturalWidth) return;
+        this.fades = false;
+        this.shown.set(true);
+      },
+    });
     const move = (e: PointerEvent) => this.onMove(e);
     const leave = () => this.reset();
     el.addEventListener('pointermove', move, { passive: true });

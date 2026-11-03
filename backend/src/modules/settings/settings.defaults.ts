@@ -49,13 +49,13 @@ export const SETTING_DEFAULTS = {
   /** Limits per account tier: Free and Pro. */
   tiers: {
     BASIC: {
-      maxFileBytes: 1 * GiB,
-      storageQuotaBytes: 20 * GiB,
+      maxFileBytes: 500 * MiB,
+      storageQuotaBytes: 5 * GiB,
       requestsPerDay: 30,
       downloadsPerMonth: 10,
       downloadSpeedBytesPerSec: 1 * MiB,
       downloadConcurrency: 1,
-      trashRetentionDays: 30,
+      trashRetentionDays: 7,
       apiRateMultiplier: 1,
       extensionPerDay: 3,
     },
@@ -66,7 +66,7 @@ export const SETTING_DEFAULTS = {
       downloadsPerMonth: 0,
       downloadSpeedBytesPerSec: 0,
       downloadConcurrency: 0,
-      trashRetentionDays: 90,
+      trashRetentionDays: 30,
       apiRateMultiplier: 3,
       extensionPerDay: 0,
     },

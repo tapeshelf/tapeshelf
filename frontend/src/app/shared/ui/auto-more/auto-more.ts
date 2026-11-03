@@ -30,11 +30,21 @@ export const SCROLL_ROOT = 'data-scroll-root';
   host: { class: 'block' },
   template: `
     @if (more()) {
-      <div class="flex h-14 items-center justify-center text-muted" data-testid="auto-more">
+      <!-- With placeholders of its own (what is projected here) it needs no spinner of its own. -->
+      <div
+        [class]="
+          placeholders() && !stalled()
+            ? 'block'
+            : 'flex h-14 items-center justify-center text-muted'
+        "
+        data-testid="auto-more"
+      >
         @if (stalled()) {
           <button type="button" appButton variant="secondary" (click)="retry()">
             {{ 'common.retry' | transloco }}
           </button>
+        } @else if (placeholders()) {
+          <ng-content />
         } @else if (pending() || busy()) {
           <span role="status" class="flex items-center">
             <app-spinner [size]="22" />
@@ -54,6 +64,8 @@ export class AutoMoreComponent {
   readonly load = input.required<() => Promise<unknown> | void>();
   /** The list is loading by other means (a reload): wait for it. */
   readonly busy = input(false);
+  /** What is coming is shown as placeholders, projected into this line, not as a spinner. */
+  readonly placeholders = input(false);
 
   protected readonly pending = signal(false);
   protected readonly stalled = signal(false);

@@ -45,6 +45,7 @@ import { InputDirective } from '../../shared/ui/field/input.directive';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import { AlertComponent } from '../../shared/ui/alert/alert';
 import { AutoMoreComponent } from '../../shared/ui/auto-more/auto-more';
+import { ShelfGhostsComponent } from '../../shared/ui/mosaic/shelf-ghosts';
 import { ButtonDirective } from '../../shared/ui/button/button.directive';
 import { EmptyStateComponent } from '../../shared/ui/empty/empty-state';
 import { MosaicComponent } from '../../shared/ui/mosaic/mosaic';
@@ -132,6 +133,7 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
     InputDirective,
     MosaicComponent,
     SpinnerComponent,
+    ShelfGhostsComponent,
     StackTileComponent,
     StrokeComponent,
     FitRowDirective,
@@ -333,8 +335,19 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
     </ng-template>
     @if (error(); as message) {
       <app-alert kind="error">{{ message }}</app-alert>
-    } @else if (!loaded()) {
+    } @else if (!loaded() && showFolders()) {
       <div class="flex justify-center py-10 text-muted"><app-spinner /></div>
+    } @else if (!loaded()) {
+      <!-- The whole shelf comes at once, in its final place; until then its shape holds the page. -->
+      <div data-testid="shelf-ghosts" role="status">
+        <span class="sr-only">{{ 'common.loading' | transloco }}</span>
+        <app-shelf-ghosts
+          [rows]="4"
+          [count]="sizeCount()"
+          [zoom]="zoomOf(null)"
+          [list]="settings().layout === 'list'"
+        />
+      </div>
     } @else if (showFolders()) {
       <ng-container *ngTemplateOutlet="newSinceLine" />
       <app-shelf-folders [folders]="folders()" (picked)="openFolder($event)" />
@@ -423,6 +436,7 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
             }
             <!-- Sections come one after another as the page scrolls; each pages on its own. -->
             @if (group.hasMore) {
+              <!-- The next tiles' shape: they take its place, and the shelf does not jump for them. -->
               <app-auto-more
                 class="mt-2"
                 [attr.data-testid]="'more-' + group.key"
@@ -430,7 +444,10 @@ const ONE_FEED: ShelfPart[] = [{ key: 'ALL', titleKey: null, title: null, flat: 
                 [count]="group.items.length"
                 [busy]="group.loading"
                 [load]="loader(group.key)"
-              />
+                [placeholders]="settings().layout !== 'list'"
+              >
+                <app-shelf-ghosts [count]="sizeCount()" [zoom]="zoomOf(group)" />
+              </app-auto-more>
             }
           </section>
         }
@@ -879,7 +896,14 @@ export class CollectionViewComponent {
     this.sheetRef?.close();
     this.leaving.unsubscribe();
     if (this.loaded() && !this.showFolders())
-      this.cache.save(this.cacheKey(), this.parts(), this.sections(), this.summary(), this.leftAt);
+      this.cache.save(
+        this.cacheKey(),
+        this.parts(),
+        this.sections(),
+        this.summary(),
+        this.sectionBuckets(),
+        this.leftAt,
+      );
   });
 
   /** Whose eyes the kept page was for too: after signing in as someone else, Back showed the
@@ -894,8 +918,10 @@ export class CollectionViewComponent {
    */
   private start(): void {
     const generation = ++this.generation;
-    if (this.categoryId() === null && !this.search() && !this.newOnly())
-      void this.fetchFeatured(generation);
+    const featured =
+      this.categoryId() === null && !this.search() && !this.newOnly()
+        ? this.fetchFeatured(generation)
+        : Promise.resolve();
     if (this.showFolders()) {
       void this.fetchFolders(generation);
       return;
@@ -906,9 +932,11 @@ export class CollectionViewComponent {
       this.parts.set(kept.parts);
       this.sections.set(kept.sections);
       if (kept.summary) this.summary.set(kept.summary);
+      this.sectionBuckets.set(kept.buckets);
       this.loaded.set(true);
       this.error.set(null);
-      void this.fetchBuckets(generation);
+      // Only what changed meanwhile: what is on the page stays cut as it is until the answer.
+      void this.fetchBuckets(generation, true);
       this.stopRestore = restoreScroll(kept.scrollY);
       return;
     }
@@ -918,12 +946,16 @@ export class CollectionViewComponent {
     void this.planParts().then((parts) => {
       if (generation !== this.generation) return;
       this.parts.set(parts);
-      void this.fetchBuckets(generation);
-      void Promise.all(
-        parts.map((p) =>
+      // Everything that decides where a tile stands, before any is drawn: month headings, the
+      // featured row and the tile size each moved the whole shelf when they came after it.
+      void Promise.all([
+        ...parts.map((p) =>
           p.rows ? this.fetchPreview(p, generation) : this.fetchSection(p, generation),
         ),
-      ).then(() => {
+        this.fetchBuckets(generation),
+        featured,
+        this.summary() ? null : this.loadSummary(),
+      ]).then(() => {
         if (generation === this.generation) this.loaded.set(true);
       });
     });
@@ -1301,8 +1333,8 @@ export class CollectionViewComponent {
   }
 
   /** Each part's months (or letters), for its headings and the quick scroller. */
-  private async fetchBuckets(generation: number): Promise<void> {
-    this.sectionBuckets.set({});
+  private async fetchBuckets(generation: number, keep = false): Promise<void> {
+    if (!keep) this.sectionBuckets.set({});
     if (this.search()) return;
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     await Promise.all(

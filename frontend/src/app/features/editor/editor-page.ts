@@ -15,11 +15,12 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowLeft,
+  lucideCopyPlus,
   lucideEye,
+  lucideListVideo,
   lucidePause,
   lucidePlay,
   lucideRedo2,
-  lucideScissors,
   lucideUndo2,
 } from '@ng-icons/lucide';
 
@@ -32,7 +33,13 @@ import { ProgressBarComponent } from '../../shared/ui/progress/progress-bar';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import { formatTime } from './edit-model';
-import { EditorPanelComponent, type EditorTab } from './editor-panel';
+import {
+  EDITOR_ICON_BUTTON,
+  EDITOR_ON,
+  EditorPanelComponent,
+  type EditorTab,
+  EditorToolsComponent,
+} from './editor-panel';
 import { EditorStageComponent } from './editor-stage';
 import { EditorTimelineComponent } from './editor-timeline';
 import { EditorStore } from './editor.store';
@@ -55,7 +62,9 @@ import { EditorStore } from './editor.store';
     EditorStageComponent,
     EditorTimelineComponent,
     EditorPanelComponent,
+    EditorToolsComponent,
   ],
+  styles: EDITOR_ON,
   providers: [
     EditorStore,
     provideIcons({
@@ -65,7 +74,8 @@ import { EditorStore } from './editor.store';
       lucideUndo2,
       lucideRedo2,
       lucideEye,
-      lucideScissors,
+      lucideListVideo,
+      lucideCopyPlus,
     }),
   ],
   host: {
@@ -79,7 +89,7 @@ import { EditorStore } from './editor.store';
       <div class="flex justify-center py-16 text-muted"><app-spinner /></div>
     } @else {
       @let st = store.state()!;
-      <header class="mb-4 flex flex-wrap items-center gap-3">
+      <header class="mb-5 flex flex-wrap items-center gap-x-4 gap-y-3">
         <a
           [href]="back().url"
           class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-text"
@@ -88,51 +98,52 @@ import { EditorStore } from './editor.store';
         >
           <ng-icon name="lucideArrowLeft" size="16" />{{ back().label | transloco }}
         </a>
-        <h1 class="min-w-0 flex-1 truncate font-display text-xl font-bold">
-          <ng-icon name="lucideScissors" size="18" class="mr-1 align-[-2px]" />
-          {{ 'editor.title' | transloco }} · {{ st.title }}
+        <h1
+          class="min-w-0 flex-1 basis-48 truncate font-display text-xl font-bold"
+          [attr.title]="st.title"
+        >
+          {{ st.title }}
         </h1>
-        <div class="flex items-center gap-1">
+        <div class="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            class="flex h-9 w-9 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40"
+            [class]="iconButton"
             [disabled]="!store.canUndo()"
             [attr.aria-label]="'editor.undo' | transloco"
             [attr.title]="'editor.undo' | transloco"
             data-testid="undo"
             (click)="store.undo()"
           >
-            <ng-icon name="lucideUndo2" size="16" />
+            <ng-icon name="lucideUndo2" size="20" />
           </button>
           <button
             type="button"
-            class="flex h-9 w-9 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40"
+            [class]="iconButton"
             [disabled]="!store.canRedo()"
             [attr.aria-label]="'editor.redo' | transloco"
             [attr.title]="'editor.redo' | transloco"
             (click)="store.redo()"
           >
-            <ng-icon name="lucideRedo2" size="16" />
+            <ng-icon name="lucideRedo2" size="20" />
           </button>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
           @if (st.canCopy) {
             <button
               type="button"
-              appButton
-              variant="secondary"
-              size="sm"
+              [class]="iconButton"
               [disabled]="locked() || store.identity()"
+              [attr.aria-label]="'editor.saveCopy' | transloco"
+              [attr.title]="'editor.saveCopy' | transloco"
               data-testid="editor-save-copy"
               (click)="store.save('copy')"
             >
-              {{ 'editor.saveCopy' | transloco }}
+              <ng-icon name="lucideCopyPlus" size="20" />
             </button>
           }
+          <!-- Into the video, for good: this one says it in words. -->
           <button
             type="button"
             appButton
-            size="sm"
+            class="h-11! px-6!"
             [disabled]="locked() || !store.dirty()"
             data-testid="editor-save"
             (click)="save()"
@@ -179,50 +190,64 @@ import { EditorStore } from './editor.store';
         }
       }
 
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div class="min-w-0">
-          <!-- A new one for each version of the video: after a save it plays the new one. -->
-          @for (version of [store.generation()]; track version) {
-            <app-editor-stage [result]="result()" [cropTool]="tab() === 'frame'" />
-          }
-          <div class="mt-3 flex flex-wrap items-center gap-3">
+      <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div class="min-w-0 overflow-hidden rounded-xl border-2 border-line bg-surface shadow-hard">
+          <!-- The picture on a dark monitor, whichever the page's theme: its colours read true. -->
+          <div class="bg-[#0d0d0e] p-3">
+            <!-- A new one for each version of the video: after a save it plays the new one. -->
+            @for (version of [store.generation()]; track version) {
+              <app-editor-stage [result]="result()" [cropTool]="tab() === 'frame'" />
+            }
+          </div>
+          <div class="flex items-center gap-3 border-t-2 border-line px-4 py-3">
             <button
               type="button"
               appButton
-              size="sm"
+              class="h-11! w-11! rounded-full! px-0!"
               [attr.aria-label]="(store.playing() ? 'player.pause' : 'player.play') | transloco"
               data-testid="editor-play"
               (click)="store.togglePlay()"
             >
-              <ng-icon [name]="store.playing() ? 'lucidePause' : 'lucidePlay'" size="16" />
+              <ng-icon [name]="store.playing() ? 'lucidePause' : 'lucidePlay'" size="20" />
             </button>
-            <span class="font-mono text-sm" data-testid="editor-time">
+            <span class="min-w-0 truncate font-mono text-sm" data-testid="editor-time">
               {{ format(store.time()) }} / {{ format(store.duration()) }}
             </span>
-            <label class="ml-auto flex items-center gap-1.5 text-xs text-muted">
-              <input
-                type="checkbox"
-                [checked]="store.previewCuts()"
-                (change)="store.previewCuts.set(!store.previewCuts())"
-              />
-              {{ 'editor.previewCuts' | transloco }}
-            </label>
-            <button
-              type="button"
-              appButton
-              size="sm"
-              [variant]="result() ? 'primary' : 'secondary'"
-              [attr.aria-pressed]="result()"
-              data-testid="editor-result"
-              (click)="result.set(!result())"
-            >
-              <ng-icon name="lucideEye" size="14" />{{ 'editor.result' | transloco }}
-            </button>
+            <span class="ml-auto flex shrink-0 gap-2">
+              <button
+                type="button"
+                [class]="iconButton"
+                [class.on]="store.previewCuts()"
+                [attr.aria-pressed]="store.previewCuts()"
+                [attr.aria-label]="'editor.previewCuts' | transloco"
+                [attr.title]="'editor.previewCuts' | transloco"
+                data-testid="editor-preview-cuts"
+                (click)="store.previewCuts.set(!store.previewCuts())"
+              >
+                <ng-icon name="lucideListVideo" size="20" />
+              </button>
+              <button
+                type="button"
+                [class]="iconButton"
+                [class.on]="result()"
+                [attr.aria-pressed]="result()"
+                [attr.aria-label]="'editor.result' | transloco"
+                [attr.title]="'editor.result' | transloco"
+                data-testid="editor-result"
+                (click)="result.set(!result())"
+              >
+                <ng-icon name="lucideEye" size="20" />
+              </button>
+            </span>
           </div>
-          <app-editor-timeline class="mt-4" />
-          <p class="mt-3 text-xs text-muted">{{ 'editor.keys' | transloco }}</p>
+          <div class="border-t-2 border-line p-4">
+            <app-editor-timeline />
+          </div>
         </div>
-        <app-editor-panel [(tab)]="tab" />
+        <div class="flex min-w-0 flex-col gap-3">
+          <app-editor-tools [(tab)]="tab" />
+          <app-editor-panel [(tab)]="tab" />
+        </div>
       </div>
     }
   `,
@@ -238,6 +263,7 @@ export class EditorPage {
   private readonly location = inject(Location);
 
   readonly id = input.required<string>();
+  protected readonly iconButton = EDITOR_ICON_BUTTON;
   protected readonly tab = signal<EditorTab>('frame');
   protected readonly result = signal(false);
   /** Nothing is saved while a render is on its way. */
@@ -343,13 +369,22 @@ export class EditorPage {
             '[role="slider"], [role="radio"], [role^="menuitem"], [role="option"]',
           ));
     const mod = e.ctrlKey || e.metaKey;
-    if (mod && e.key.toLowerCase() === 'z') {
+    // The key's place, not its letter: these work the same in a Cyrillic layout.
+    if (mod && e.code === 'KeyZ') {
       e.preventDefault();
       if (e.shiftKey) this.store.redo();
       else this.store.undo();
-    } else if (mod && e.key.toLowerCase() === 'y') {
+    } else if (mod && e.code === 'KeyY') {
       e.preventDefault();
       this.store.redo();
+    } else if (!mod && !e.altKey && (e.code === 'KeyI' || e.code === 'KeyO')) {
+      e.preventDefault();
+      this.store.trimTo(e.code === 'KeyI' ? 'start' : 'end', this.store.time());
+    } else if (!mod && !e.altKey && (e.code === 'Comma' || e.code === 'Period')) {
+      e.preventDefault();
+      this.store.video?.pause();
+      const step = this.store.frameStep() * (e.code === 'Comma' ? -1 : 1);
+      this.store.seek(this.store.time() + step);
     } else if (own && (e.key === ' ' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
       return;
     } else if (e.key === ' ') {

@@ -15097,13 +15097,19 @@
           },
           "hasAudio": {
             "type": "boolean"
+          },
+          "fps": {
+            "type": "number",
+            "nullable": true,
+            "description": "Frames per second, when the probe says it (the step of one frame)"
           }
         },
         "required": [
           "durationSec",
           "width",
           "height",
-          "hasAudio"
+          "hasAudio",
+          "fps"
         ]
       },
       "EditMode": {
@@ -15418,6 +15424,13 @@
               }
             ]
           },
+          "frameUrls": {
+            "description": "Frames along the video, in order, for the timeline; empty until it has them",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "job": {
             "nullable": true,
             "type": "object",
@@ -15441,6 +15454,7 @@
           "code",
           "title",
           "source",
+          "frameUrls",
           "job",
           "canCopy",
           "foreign"

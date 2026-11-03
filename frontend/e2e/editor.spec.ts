@@ -225,6 +225,7 @@ test.describe.serial('video editor', () => {
     const toast = page.getByTestId('toast-with-action');
     await expect(toast).toContainText('The copy is ready', { timeout: 120_000 });
     await toast.getByRole('button', { name: 'Open' }).click();
+    await expect(page.getByTestId('player')).toBeVisible();
     await expect(page.getByRole('heading', { name: /^sample/i })).toBeVisible();
 
     // The copy is a video of its own, processed like an upload; the original is untouched.

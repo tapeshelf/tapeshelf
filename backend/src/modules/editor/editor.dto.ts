@@ -147,6 +147,13 @@ export class EditSourceDto {
   width!: number;
   @ApiProperty() height!: number;
   @ApiProperty() hasAudio!: boolean;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description:
+      'Frames per second, when the probe says it (the step of one frame)',
+  })
+  fps!: number | null;
 }
 
 export class EditJobDto {
@@ -183,6 +190,12 @@ export class EditStateDto {
       'The video as it is now: every edit starts from it (an earlier edit is part of it)',
   })
   source!: EditSourceDto;
+  @ApiProperty({
+    type: [String],
+    description:
+      'Frames along the video, in order, for the timeline; empty until it has them',
+  })
+  frameUrls!: string[];
   @ApiProperty({ type: EditJobDto, nullable: true }) job!: EditJobDto | null;
   @ApiProperty({ description: 'A copy is possible (own videos only)' })
   canCopy!: boolean;

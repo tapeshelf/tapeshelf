@@ -14,7 +14,7 @@ import {
   timerAt,
 } from './edit-model';
 
-const source = { width: 1920, height: 1080, durationSec: 60, hasAudio: true };
+const source = { width: 1920, height: 1080, durationSec: 60, hasAudio: true, fps: 30 };
 const spec = (patch: Partial<EditSpec>): EditSpec => ({ ...emptySpec(source), ...patch });
 
 describe('editor model', () => {

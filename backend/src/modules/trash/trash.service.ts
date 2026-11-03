@@ -20,7 +20,7 @@ const SWEEP_BATCH = 200;
 
 /**
  * The trash: what the author deleted stays restorable for the
- * plan's `trashRetentionDays` (Free 30, Pro 90; self-hosted one period for all, 90 by default),
+ * plan's `trashRetentionDays` (Free 7, Pro 30; self-hosted one period for all, 90 by default),
  * unless the author deletes it from here or empties the trash sooner. Then it leaves the
  * author's trash for good, its holders lose it, and it waits in the admin trash: nothing is erased
  * from storage here. Videos removed by an admin or with the account were never here.

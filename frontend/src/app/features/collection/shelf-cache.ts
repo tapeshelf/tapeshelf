@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import type { CollectionItemDto, CollectionSection, CollectionSummaryDto } from '../../api';
+import type {
+  CollectionBucketsDto,
+  CollectionItemDto,
+  CollectionSection,
+  CollectionSummaryDto,
+} from '../../api';
 
 /**
  * A part of the visitor's shelf, loaded and paged on its own: a visibility section, a
@@ -32,6 +37,8 @@ interface Entry {
   sections: Sections;
   /** The tile sizes follow it: without it the mosaic draws nothing, and the page is too short to scroll. */
   summary: CollectionSummaryDto | null;
+  /** Its months: without them it would open uncut and be cut again a moment later. */
+  buckets: Partial<Record<string, CollectionBucketsDto>>;
   scrollY: number;
 }
 
@@ -52,10 +59,11 @@ export class ShelfCache {
     parts: ShelfPart[],
     sections: Sections,
     summary: CollectionSummaryDto | null,
+    buckets: Partial<Record<string, CollectionBucketsDto>>,
     scrollY: number,
   ): void {
     this.entries.delete(key);
-    this.entries.set(key, { at: Date.now(), parts, sections, summary, scrollY });
+    this.entries.set(key, { at: Date.now(), parts, sections, summary, buckets, scrollY });
     while (this.entries.size > MAX_ENTRIES) this.entries.delete(this.entries.keys().next().value!);
   }
 
@@ -63,6 +71,7 @@ export class ShelfCache {
     parts: ShelfPart[];
     sections: Sections;
     summary: CollectionSummaryDto | null;
+    buckets: Partial<Record<string, CollectionBucketsDto>>;
     scrollY: number;
   } | null {
     const e = this.entries.get(key);

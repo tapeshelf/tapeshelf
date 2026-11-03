@@ -30,8 +30,8 @@ test('a deleted video waits in “Deleted” and comes back on the shelf', async
   const item = page.getByTestId('trash-item');
   await expect(item).toHaveCount(1);
   await expect(item).toContainText('Sample');
-  await expect(item).toContainText('30 d left');
-  await expect(page.getByText('waits here for 30 days')).toBeVisible();
+  await expect(item).toContainText('7 d left');
+  await expect(page.getByText('waits here for 7 days')).toBeVisible();
   await shot(page, 'trash-01-list');
   await audit(page, 'trash');
 

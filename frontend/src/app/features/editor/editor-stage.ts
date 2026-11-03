@@ -74,6 +74,13 @@ const MAX_STAGE_VH = 0.62;
       outline: 2px solid rgb(255 255 255 / 0.9);
       cursor: move;
     }
+    /* Thirds, while the crop is being set: only a guide, the result has none. */
+    .crop.thirds {
+      background-image:
+        linear-gradient(to right, rgb(255 255 255 / 0.28) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(255 255 255 / 0.28) 1px, transparent 1px);
+      background-size: 33.333% 33.333%;
+    }
     /* Only the crop tool moves it; otherwise it lets the areas under it be taken. */
     .crop.passive {
       pointer-events: none;
@@ -136,13 +143,25 @@ const MAX_STAGE_VH = 0.62;
     }
     .handle {
       position: absolute;
-      width: 12px;
-      height: 12px;
-      margin: -6px 0 0 -6px;
-      border: 2px solid var(--vs-line);
+      width: 14px;
+      height: 14px;
+      margin: -7px 0 0 -7px;
+      border: 2px solid #171717;
       background: #fff;
-      border-radius: 2px;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
       z-index: 2;
+      transition: transform 100ms ease-out;
+    }
+    .handle:hover {
+      transform: scale(1.25);
+    }
+    /* Easier to take than to see, a finger above all. */
+    .handle::after {
+      content: '';
+      position: absolute;
+      inset: -9px;
+      border-radius: 50%;
     }
     .result-hidden {
       display: none;
@@ -152,7 +171,7 @@ const MAX_STAGE_VH = 0.62;
     <div #wrap class="w-full">
       <div
         #stage
-        class="stage rounded-md"
+        class="stage"
         [style.width.px]="size().w"
         [style.height.px]="size().h"
         (pointerdown)="onBackground($event)"
@@ -169,13 +188,13 @@ const MAX_STAGE_VH = 0.62;
         >
           <video #video playsinline preload="auto" [style]="videoStyle()"></video>
           @if (spec(); as s) {
-            @for (b of s.blurs; track $index) {
+            @for (b of s.blurs; track $index; let area = $index) {
               <div
                 class="area"
                 [class.on]="inRange(b)"
                 [class.blur]="b.mode === 'blur'"
                 [class.box]="b.mode === 'box'"
-                [class.selected]="isSelected('blur', $index) && !result()"
+                [class.selected]="isSelected('blur', area) && !result()"
                 [class.result-hidden]="result() && !inRange(b)"
                 [style.backdrop-filter]="
                   inRange(b) && b.mode === 'blur' ? blurFilter(b.rect) : null
@@ -184,15 +203,15 @@ const MAX_STAGE_VH = 0.62;
                 [style.top.%]="b.rect.y * 100"
                 [style.width.%]="b.rect.w * 100"
                 [style.height.%]="b.rect.h * 100"
-                [attr.data-testid]="'stage-blur-' + $index"
-                (pointerdown)="start({ kind: 'blur', index: $index }, 'move', $event)"
+                [attr.data-testid]="'stage-blur-' + area"
+                (pointerdown)="start({ kind: 'blur', index: area }, 'move', $event)"
               >
-                @if (isSelected('blur', $index) && !result()) {
+                @if (isSelected('blur', area) && !result()) {
                   @for (h of handles; track h) {
                     <span
                       class="handle"
                       [style]="handleStyle(h)"
-                      (pointerdown)="start({ kind: 'blur', index: $index }, h, $event)"
+                      (pointerdown)="start({ kind: 'blur', index: area }, h, $event)"
                     ></span>
                   }
                 }
@@ -202,6 +221,7 @@ const MAX_STAGE_VH = 0.62;
               class="crop"
               [class.result]="result()"
               [class.passive]="!cropTool()"
+              [class.thirds]="cropTool() && !result()"
               [style.left.%]="shownCrop().x * 100"
               [style.top.%]="shownCrop().y * 100"
               [style.width.%]="shownCrop().w * 100"

@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 
 import {
@@ -10,10 +10,12 @@ import {
   editorState,
 } from '../../api';
 import { toApiError } from '../../core/api/api-error';
+import { AuthStore } from '../../core/auth/auth.store';
 import { WsService } from '../../core/ws/ws.service';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import {
   type EditSpec,
+  clamp,
   cloneSpec,
   editable,
   isIdentity,
@@ -44,12 +46,43 @@ function forward(before: EditJobDto | null, next: EditJobDto | null): EditJobDto
   return next.progress < before.progress ? { ...next, progress: before.progress } : next;
 }
 
+/** A video whose frame rate is not known is stepped as this. */
+const DEFAULT_FPS = 30;
+const DRAFT_PREFIX = 'vs.editDraft.';
+const DRAFT_DELAY_MS = 400;
+const DRAFT_KEEP_MS = 7 * 24 * 3_600_000;
+
+function readDraft(key: string): { base?: unknown; spec?: EditSpec } | null {
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? 'null') as {
+      base?: unknown;
+      spec?: EditSpec;
+    } | null;
+  } catch {
+    return null;
+  }
+}
+
+/** Drafts nobody came back to go after a week: they hold captions, on what may be a shared computer. */
+function dropOldDrafts(): void {
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith(DRAFT_PREFIX)) continue;
+      const at = (JSON.parse(localStorage.getItem(key) ?? '{}') as { at?: number }).at ?? 0;
+      if (Date.now() - at > DRAFT_KEEP_MS) localStorage.removeItem(key);
+    }
+  } catch {
+    // nothing to tidy where there is no storage
+  }
+}
+
 /**
  * One editing session: the edit being made, its history, what is picked, the
  * playhead, and the render after a save (pushed over the websocket, polled as a fallback).
  */
 @Injectable()
 export class EditorStore {
+  private readonly auth = inject(AuthStore);
   private readonly api = inject(Api);
   private readonly ws = inject(WsService);
   private readonly t = inject(TranslocoService);
@@ -94,6 +127,8 @@ export class EditorStore {
   video: HTMLVideoElement | null = null;
 
   readonly source = computed(() => this.state()?.source ?? null);
+  /** One frame of the video, seconds. */
+  readonly frameStep = computed(() => 1 / (this.source()?.fps ?? DEFAULT_FPS));
   readonly duration = computed(() => this.source()?.durationSec ?? 0);
   readonly job = computed(() => this.state()?.job ?? null);
   readonly pending = computed(() => {
@@ -137,6 +172,7 @@ export class EditorStore {
       // (they stayed registered for good). Or another video was asked for since.
       if (this.disposed || seq !== this.loads) return;
       this.adopt(state, true);
+      this.restoreDraft(state);
       this.offWs?.();
       this.offWs = this.ws.on<EditEvent>('video.edit', (e) => this.onEvent(e));
     } catch (e) {
@@ -164,9 +200,91 @@ export class EditorStore {
     this.disposed = true;
     this.stopPolling();
     this.offWs?.();
+    // Left: what is there now decides, without waiting for the moment after the last change.
+    if (this.draftTimer) clearTimeout(this.draftTimer);
+    this.keepDraft();
   }
 
   private disposed = false;
+  private draftTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor() {
+    effect(() => {
+      this.spec();
+      this.pending();
+      this.historySize();
+      if (untracked(this.state)) untracked(() => this.keepDraftSoon());
+    });
+  }
+
+  // ---------------------------------------------------------------- the draft
+
+  /** Where this person's unsaved edit of this video is kept in the browser. */
+  private draftKey(state: EditStateDto): string {
+    return `${DRAFT_PREFIX}${this.auth.user()?.id ?? ''}.${state.videoId}`;
+  }
+
+  /** The video it was made on: a draft of an older version is not offered on a newer one. */
+  private draftBase(state: EditStateDto): string {
+    const { durationSec, width, height } = state.source;
+    return JSON.stringify([durationSec, width, height, state.frameUrls[0] ?? '']);
+  }
+
+  /** Writes what leaving would lose, a moment after the last change; otherwise leaves no draft. */
+  private keepDraftSoon(): void {
+    if (this.draftTimer) clearTimeout(this.draftTimer);
+    this.draftTimer = setTimeout(() => this.keepDraft(), DRAFT_DELAY_MS);
+  }
+
+  private keepDraft(): void {
+    this.draftTimer = null;
+    const state = this.state();
+    if (!state) return;
+    try {
+      const key = this.draftKey(state);
+      if (!this.leavingLoses()) localStorage.removeItem(key);
+      else
+        localStorage.setItem(
+          key,
+          JSON.stringify({ at: Date.now(), base: this.draftBase(state), spec: this.spec() }),
+        );
+    } catch {
+      // private window, full storage: the editor works on without a draft
+    }
+  }
+
+  /** Back after a reload or a crash: the changes come back, one undo from the video as it is. */
+  private restoreDraft(state: EditStateDto): void {
+    dropOldDrafts();
+    if (state.job) return;
+    const draft = readDraft(this.draftKey(state));
+    if (!draft?.spec || draft.base !== this.draftBase(state)) return;
+    const fresh = this.spec();
+    let spec: EditSpec;
+    try {
+      spec = editable(draft.spec, state.source);
+    } catch {
+      return;
+    }
+    if (JSON.stringify(spec) === JSON.stringify(fresh)) return;
+    this.remember(JSON.stringify(fresh));
+    this.spec.set(spec);
+    this.toast.withAction(this.t.translate('editor.draftRestored'), {
+      label: this.t.translate('editor.draftDiscard'),
+      run: () => this.undoAll(),
+    });
+  }
+
+  /** Back to the video as it is: every change undone, the history cleared. */
+  private undoAll(): void {
+    const first = this.past[0];
+    if (!first) return;
+    this.spec.set(JSON.parse(first) as EditSpec);
+    this.past = [];
+    this.future = [];
+    this.syncHistory();
+    this.dropStaleSelection();
+  }
 
   // ---------------------------------------------------------------- changes
 
@@ -218,6 +336,15 @@ export class EditorStore {
   /** What changed between two states, as one step of history. */
   private step(from: string, now: string): void {
     if (from !== now) this.remember(from);
+  }
+
+  /** The start or the end of what stays, at least a second apart. */
+  trimTo(end: 'start' | 'end', t: number): void {
+    const d = this.duration();
+    this.change((s) => {
+      if (end === 'start') s.trim.start = clamp(t, 0, s.trim.end - 1);
+      else s.trim.end = clamp(t, s.trim.start + 1, d);
+    });
   }
 
   undo(): void {

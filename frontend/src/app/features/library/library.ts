@@ -88,6 +88,7 @@ import { VideosStore } from '../../core/videos/videos.store';
 import { BytesPipe, formatBytes } from '../../shared/pipes/bytes.pipe';
 import { AlertComponent } from '../../shared/ui/alert/alert';
 import { AutoMoreComponent } from '../../shared/ui/auto-more/auto-more';
+import { ShelfGhostsComponent } from '../../shared/ui/mosaic/shelf-ghosts';
 import { ButtonDirective } from '../../shared/ui/button/button.directive';
 import { EmptyStateComponent } from '../../shared/ui/empty/empty-state';
 import { SEARCH_FROM, ShelfSearchComponent } from '../../shared/collection/shelf-search';
@@ -113,7 +114,6 @@ import { ConfirmService } from '../../shared/ui/confirm/confirm-dialog';
 import { ProgressBarComponent } from '../../shared/ui/progress/progress-bar';
 import { MosaicComponent } from '../../shared/ui/mosaic/mosaic';
 import { aspectOf } from '../../shared/ui/mosaic/mosaic-layout';
-import { SpinnerComponent } from '../../shared/ui/spinner/spinner';
 import { ToastService } from '../../shared/ui/toast/toast.service';
 import {
   type HoldingText,
@@ -213,9 +213,9 @@ const LONG_PRESS_MS = 450;
     BytesPipe,
     AlertComponent,
     AutoMoreComponent,
+    ShelfGhostsComponent,
     ButtonDirective,
     ProgressBarComponent,
-    SpinnerComponent,
     MosaicComponent,
     LibraryIndexComponent,
     LibraryTileComponent,
@@ -449,9 +449,18 @@ const LONG_PRESS_MS = 450;
             </button>
           </div>
         }
-        @if (!store.loaded()) {
+        @if (!store.loaded() || !featuredIn()) {
+          <!-- The whole shelf comes at once, in its final place; until then its shape holds the page. -->
           @if (!store.error()) {
-            <div class="flex justify-center py-10 text-muted"><app-spinner /></div>
+            <div data-testid="shelf-ghosts" role="status">
+              <span class="sr-only">{{ 'common.loading' | transloco }}</span>
+              <app-shelf-ghosts
+                [rows]="4"
+                [count]="store.tileCount()"
+                [zoom]="zoom.factor()"
+                [list]="layout() === 'list'"
+              />
+            </div>
           }
         } @else if (store.items().length === 0) {
           @if (store.search()) {
@@ -594,7 +603,11 @@ const LONG_PRESS_MS = 450;
             [count]="store.items().length"
             [busy]="store.loading()"
             [load]="loadMore"
-          />
+            [placeholders]="layout() === 'grid'"
+          >
+            <!-- The next tiles' shape: they take its place, and the shelf does not jump for them. -->
+            <app-shelf-ghosts [count]="store.tileCount()" [zoom]="zoom.factor()" />
+          </app-auto-more>
         }
       }
     </section>
@@ -1661,6 +1674,8 @@ export class LibraryComponent implements OnDestroy {
   // --- the "Featured" strip -------------------------------------------
 
   private readonly featured = signal<FeaturedDto | null>(null);
+  /** Asked once: it lies above the tiles, and coming after them it pushed the whole shelf down. */
+  protected readonly featuredIn = signal(false);
   protected readonly featuredSlots = computed<Slot[]>(() => {
     const f = this.featured();
     if (!f || this.store.folder().kind !== 'ALL' || this.store.search()) return [];
@@ -1688,6 +1703,8 @@ export class LibraryComponent implements OnDestroy {
       this.featured.set(await this.api.invoke(collectionFeatured, { username: this.username() }));
     } catch {
       // the strip stays as it was
+    } finally {
+      this.featuredIn.set(true);
     }
   }
 
