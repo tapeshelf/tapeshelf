@@ -131,6 +131,8 @@ export const ko = {
       codeLimit:
         '이 링크로 받은 코드가 너무 많아요. 1시간 뒤에 다시 시도하세요.',
       noEmail: '특정 이메일용 링크가 아니에요.',
+      emailOff:
+        '이 서버는 이메일을 보내지 않아서 한 사람용 링크를 쓸 수 없어요.',
       blocked: '이 사용자의 동영상은 담을 수 없어요.',
     },
     anonymousLinks: {

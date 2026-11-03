@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Notificações",
       "hint": "Escolha como você quer saber de cada acontecimento. As notificações no app aparecem no sininho; os e-mails vão para o seu endereço.",
+      "hintNoEmail": "Escolha quais eventos aparecem no sino.",
+      "newMessageNoEmail": "Nova mensagem no chat",
       "event": "Acontecimento",
       "inApp": "No app",
       "email": "E-mail"
@@ -1569,6 +1571,7 @@
       "code": "Código do e-mail",
       "again": "Enviar um novo código",
       "sendCode": "Enviar um código",
+      "codeOff": "Este link só abre com um código enviado por e-mail, e este servidor não envia e-mails. Peça um novo link a quem enviou.",
       "sent": "Código enviado. Confira essa caixa de entrada.",
       "account": "Tem uma conta com este e-mail?",
       "logIn": "Entrar",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Esta negociação não abre neste navegador. Abra pelo link do seu e-mail ou pelo link que você copiou.",
+      "dealGoneNoMail": "Esta negociação não abre neste navegador. Abra pelo link que você copiou.",
+      "keepLink": "Copie este link e guarde-o: este servidor não envia e-mails, então é a única forma de voltar à negociação em outro navegador.",
       "linkGone": "Esta troca não está mais disponível.",
       "youGet": "Você recebe",
       "youGot": "Você recebeu",

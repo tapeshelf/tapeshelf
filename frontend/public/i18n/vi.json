@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Thông báo",
       "hint": "Chọn cách bạn muốn được báo về từng sự kiện. Thông báo trong ứng dụng hiện dưới biểu tượng chuông; email được gửi tới địa chỉ của bạn.",
+      "hintNoEmail": "Chọn các sự kiện hiển thị dưới biểu tượng chuông.",
+      "newMessageNoEmail": "Tin nhắn mới trong trò chuyện",
       "event": "Sự kiện",
       "inApp": "Trong ứng dụng",
       "email": "Email"
@@ -1569,6 +1571,7 @@
       "code": "Mã trong email",
       "again": "Gửi mã mới",
       "sendCode": "Gửi mã cho tôi",
+      "codeOff": "Liên kết này chỉ mở bằng mã gửi qua email, nhưng máy chủ này không gửi email. Hãy nhờ người gửi tạo liên kết mới.",
       "sent": "Đã gửi mã. Hãy kiểm tra hộp thư đó.",
       "account": "Bạn có tài khoản dùng email này?",
       "logIn": "Đăng nhập",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Giao dịch này không mở được trong trình duyệt này. Hãy mở bằng liên kết trong email hoặc liên kết bạn đã sao chép.",
+      "dealGoneNoMail": "Giao dịch này không mở được trong trình duyệt này. Hãy mở bằng liên kết bạn đã sao chép.",
+      "keepLink": "Hãy sao chép và giữ liên kết này: máy chủ này không gửi email, nên đây là cách duy nhất để quay lại giao dịch từ trình duyệt khác.",
       "linkGone": "Cuộc trao đổi này không còn được đề nghị nữa.",
       "youGet": "Bạn nhận",
       "youGot": "Bạn đã nhận",

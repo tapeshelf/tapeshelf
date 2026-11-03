@@ -35,6 +35,11 @@ export class MailService {
     });
   }
 
+  /** Mail really goes out here: what waits for one can be offered. */
+  get sends(): boolean {
+    return !this.sink;
+  }
+
   async send(to: string, mail: RenderedMail): Promise<boolean> {
     if (this.sink) {
       this.logger.debug(`Demo: "${mail.subject}" to ${to} not sent`);

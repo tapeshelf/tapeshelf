@@ -112,6 +112,7 @@ export const zh = {
       codeTooSoon: '验证码刚刚发出，一分钟后才能再次获取。',
       codeLimit: '这个链接的验证码请求次数过多，请一小时后再试。',
       noEmail: '这个链接没有指定邮箱。',
+      emailOff: '此服务器不发送邮件，因此无法使用仅限一人的链接。',
       blocked: '你不能添加这个人的视频。',
     },
     anonymousLinks: {

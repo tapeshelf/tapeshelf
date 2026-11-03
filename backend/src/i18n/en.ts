@@ -140,6 +140,8 @@ export const en = {
         'A code has just been sent. You can ask for another one in a minute.',
       codeLimit: 'Too many codes for this link. Try again in an hour.',
       noEmail: 'This link is not for a particular email.',
+      emailOff:
+        'This server doesn’t send email, so links for one person aren’t available.',
       blocked: 'You cannot add videos from this person.',
     },
     anonymousLinks: {

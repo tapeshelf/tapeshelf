@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Meldingen",
       "hint": "Kies per gebeurtenis hoe je ervan wilt horen. Meldingen in de app verschijnen onder het belletje; e-mails gaan naar je adres.",
+      "hintNoEmail": "Kies welke gebeurtenissen onder het belletje verschijnen.",
+      "newMessageNoEmail": "Nieuw chatbericht",
       "event": "Gebeurtenis",
       "inApp": "In de app",
       "email": "E-mail"
@@ -1569,6 +1571,7 @@
       "code": "Code uit de e-mail",
       "again": "Nieuwe code versturen",
       "sendCode": "Stuur me een code",
+      "codeOff": "Deze link opent alleen met een code per e-mail, en deze server verstuurt geen e-mail. Vraag de afzender om een nieuwe link.",
       "sent": "Code verstuurd. Kijk in die inbox.",
       "account": "Heb je een account met dit e-mailadres?",
       "logIn": "Inloggen",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Deze deal gaat in deze browser niet open. Open hem met de link uit je e-mail of de link die je hebt gekopieerd.",
+      "dealGoneNoMail": "Deze deal gaat in deze browser niet open. Open hem met de link die je hebt gekopieerd.",
+      "keepLink": "Kopieer deze link en bewaar hem: deze server verstuurt geen e-mail, dus alleen zo kom je vanuit een andere browser terug bij de deal.",
       "linkGone": "Deze ruil wordt niet meer aangeboden.",
       "youGet": "Jij krijgt",
       "youGot": "Je hebt gekregen",

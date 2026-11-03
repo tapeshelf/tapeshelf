@@ -146,6 +146,8 @@ export const pl = {
         'Kod został właśnie wysłany. O kolejny możesz poprosić za minutę.',
       codeLimit: 'Za dużo kodów dla tego linku. Spróbuj ponownie za godzinę.',
       noEmail: 'Ten link nie jest przypisany do konkretnego adresu e-mail.',
+      emailOff:
+        'Ten serwer nie wysyła e-maili, więc linki dla jednej osoby są niedostępne.',
       blocked: 'Nie możesz dodawać filmów od tej osoby.',
     },
     anonymousLinks: {

@@ -279,37 +279,40 @@ const SHOWN = 6;
             }
           </div>
 
-          <div class="flex flex-col gap-2">
-            <label class="flex items-center gap-2.5 text-sm font-medium">
-              <input
-                type="checkbox"
-                name="forEmail"
-                [ngModel]="forEmail()"
-                (ngModelChange)="forEmail.set($event)"
-                data-testid="link-for-email"
-              />
-              <ng-icon name="lucideMail" size="15" class="text-muted" />{{
-                'links.dialog.forEmail' | transloco
-              }}
-            </label>
-            @if (forEmail()) {
-              <div class="flex flex-col gap-1.5 pl-6">
+          <!-- It opens with a code sent by mail: not offered where no mail goes out. -->
+          @if (site.emailEnabled()) {
+            <div class="flex flex-col gap-2">
+              <label class="flex items-center gap-2.5 text-sm font-medium">
                 <input
-                  appInput
-                  type="email"
-                  maxlength="254"
-                  name="email"
-                  autocomplete="off"
-                  [placeholder]="'links.dialog.emailPlaceholder' | transloco"
-                  [attr.aria-label]="'links.dialog.emailPlaceholder' | transloco"
-                  [ngModel]="email()"
-                  (ngModelChange)="email.set($event)"
-                  data-testid="link-email"
+                  type="checkbox"
+                  name="forEmail"
+                  [ngModel]="forEmail()"
+                  (ngModelChange)="forEmail.set($event)"
+                  data-testid="link-for-email"
                 />
-                <p class="text-xs text-muted">{{ 'links.dialog.emailHint' | transloco }}</p>
-              </div>
-            }
-          </div>
+                <ng-icon name="lucideMail" size="15" class="text-muted" />{{
+                  'links.dialog.forEmail' | transloco
+                }}
+              </label>
+              @if (forEmail()) {
+                <div class="flex flex-col gap-1.5 pl-6">
+                  <input
+                    appInput
+                    type="email"
+                    maxlength="254"
+                    name="email"
+                    autocomplete="off"
+                    [placeholder]="'links.dialog.emailPlaceholder' | transloco"
+                    [attr.aria-label]="'links.dialog.emailPlaceholder' | transloco"
+                    [ngModel]="email()"
+                    (ngModelChange)="email.set($event)"
+                    data-testid="link-email"
+                  />
+                  <p class="text-xs text-muted">{{ 'links.dialog.emailHint' | transloco }}</p>
+                </div>
+              }
+            </div>
+          }
 
           @if (error(); as message) {
             <app-alert kind="error">{{ message }}</app-alert>
@@ -339,7 +342,7 @@ export class TemporaryLinkDialog {
   private readonly clipboard = inject(ClipboardService);
   private readonly t = inject(TranslocoService);
   private readonly language = inject(LanguageService);
-  private readonly site = inject(SiteConfig);
+  protected readonly site = inject(SiteConfig);
   private readonly auth = inject(AuthStore);
   protected readonly panelLink = panelLink;
   protected readonly ttls = LINK_TTLS;

@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Notifications",
       "hint": "Choisissez comment chaque événement vous est signalé. Les notifications de l’appli s’affichent sous la cloche ; les e-mails arrivent à votre adresse.",
+      "hintNoEmail": "Choisissez les événements affichés sous la cloche.",
+      "newMessageNoEmail": "Nouveau message",
       "event": "Événement",
       "inApp": "Dans l’appli",
       "email": "E-mail"
@@ -1569,6 +1571,7 @@
       "code": "Code reçu par e-mail",
       "again": "Envoyer un nouveau code",
       "sendCode": "M’envoyer un code",
+      "codeOff": "Ce lien ne s’ouvre qu’avec un code envoyé par e-mail, et ce serveur n’envoie pas d’e-mails. Demandez un nouveau lien à son expéditeur.",
       "sent": "Code envoyé. Consultez cette boîte mail.",
       "account": "Vous avez un compte avec cette adresse ?",
       "logIn": "Se connecter",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Cet échange ne s’ouvre pas dans ce navigateur. Ouvrez-le avec le lien reçu par e-mail ou celui que vous avez copié.",
+      "dealGoneNoMail": "Cet échange ne s’ouvre pas dans ce navigateur. Ouvrez-le avec le lien que vous avez copié.",
+      "keepLink": "Copiez ce lien et gardez-le : ce serveur n’envoie pas d’e-mails, c’est donc le seul moyen de revenir à l’échange depuis un autre navigateur.",
       "linkGone": "Cet échange n’est plus proposé.",
       "youGet": "Vous recevez",
       "youGot": "Vous avez reçu",

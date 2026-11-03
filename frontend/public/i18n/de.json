@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Benachrichtigungen",
       "hint": "Wähle, wie du von jedem Ereignis erfahren möchtest. Benachrichtigungen in der App erscheinen unter der Glocke, E-Mails gehen an deine Adresse.",
+      "hintNoEmail": "Wähle, welche Ereignisse unter der Glocke erscheinen.",
+      "newMessageNoEmail": "Neue Chatnachricht",
       "event": "Ereignis",
       "inApp": "In der App",
       "email": "E-Mail"
@@ -1569,6 +1571,7 @@
       "code": "Code aus der E-Mail",
       "again": "Neuen Code senden",
       "sendCode": "Code senden",
+      "codeOff": "Dieser Link öffnet sich nur mit einem Code per E-Mail, und dieser Server verschickt keine E-Mails. Bitte den Absender um einen neuen Link.",
       "sent": "Code gesendet. Schau in dieses Postfach.",
       "account": "Du hast ein Konto mit dieser E-Mail-Adresse?",
       "logIn": "Anmelden",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Dieser Deal öffnet sich in diesem Browser nicht. Öffne ihn mit dem Link aus deiner E-Mail oder mit dem, den du kopiert hast.",
+      "dealGoneNoMail": "Dieser Deal öffnet sich in diesem Browser nicht. Öffne ihn mit dem Link, den du kopiert hast.",
+      "keepLink": "Kopiere diesen Link und bewahre ihn auf: Dieser Server verschickt keine E-Mails, daher kommst du nur so aus einem anderen Browser zurück zum Deal.",
       "linkGone": "Dieser Tausch wird nicht mehr angeboten.",
       "youGet": "Du bekommst",
       "youGot": "Du hast bekommen",

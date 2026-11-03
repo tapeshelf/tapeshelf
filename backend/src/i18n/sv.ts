@@ -138,6 +138,8 @@ export const sv = {
       codeLimit: 'För många koder för den här länken. Försök igen om en timme.',
       noEmail:
         'Den här länken är inte kopplad till någon särskild e-postadress.',
+      emailOff:
+        'Den här servern skickar inte e-post, så länkar för en person är inte tillgängliga.',
       blocked: 'Du kan inte lägga till videor från den här personen.',
     },
     anonymousLinks: {

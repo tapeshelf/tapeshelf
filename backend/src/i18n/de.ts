@@ -150,6 +150,8 @@ export const de = {
       codeLimit:
         'Zu viele Codes für diesen Link. Versuch es in einer Stunde noch einmal.',
       noEmail: 'Dieser Link ist nicht für eine bestimmte E-Mail-Adresse.',
+      emailOff:
+        'Dieser Server verschickt keine E-Mails, daher sind Links für eine einzelne Person nicht verfügbar.',
       blocked: 'Von dieser Person kannst du keine Videos hinzufügen.',
     },
     anonymousLinks: {

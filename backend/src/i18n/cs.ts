@@ -147,6 +147,8 @@ export const cs = {
       codeLimit:
         'K tomuto odkazu bylo vyžádáno příliš mnoho kódů. Zkuste to znovu za hodinu.',
       noEmail: 'Tento odkaz není určený pro konkrétní e-mail.',
+      emailOff:
+        'Tento server neodesílá e-maily, proto odkazy pro jednu osobu nejsou k dispozici.',
       blocked: 'Videa od tohoto člověka si přidat nemůžete.',
     },
     anonymousLinks: {

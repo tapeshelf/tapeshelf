@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Notifikasi",
       "hint": "Pilih cara Anda ingin diberi tahu tentang setiap peristiwa. Notifikasi di aplikasi muncul di bawah ikon lonceng; email dikirim ke alamat Anda.",
+      "hintNoEmail": "Pilih peristiwa yang muncul di ikon lonceng.",
+      "newMessageNoEmail": "Pesan obrolan baru",
       "event": "Peristiwa",
       "inApp": "Di aplikasi",
       "email": "Email"
@@ -1569,6 +1571,7 @@
       "code": "Kode dari email",
       "again": "Kirim kode baru",
       "sendCode": "Kirimi saya kode",
+      "codeOff": "Tautan ini hanya terbuka dengan kode melalui email, dan server ini tidak mengirim email. Minta tautan baru kepada pengirim.",
       "sent": "Kode terkirim. Periksa kotak masuk tersebut.",
       "account": "Punya akun dengan email ini?",
       "logIn": "Masuk",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Kesepakatan ini tidak bisa dibuka di browser ini. Buka lewat tautan dari email Anda atau tautan yang Anda salin.",
+      "dealGoneNoMail": "Kesepakatan ini tidak bisa dibuka di browser ini. Buka lewat tautan yang Anda salin.",
+      "keepLink": "Salin tautan ini dan simpan: server ini tidak mengirim email, jadi ini satu-satunya cara kembali ke kesepakatan dari browser lain.",
       "linkGone": "Pertukaran ini sudah tidak ditawarkan.",
       "youGet": "Anda mendapat",
       "youGot": "Anda menerima",

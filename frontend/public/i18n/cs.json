@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Oznámení",
       "hint": "Vyberte, jak se chcete o jednotlivých událostech dozvídat. Oznámení v aplikaci najdete pod zvonečkem; e-maily chodí na vaši adresu.",
+      "hintNoEmail": "Vyberte, o kterých událostech vás má informovat zvonek.",
+      "newMessageNoEmail": "Nová zpráva v konverzaci",
       "event": "Událost",
       "inApp": "V aplikaci",
       "email": "E-mail"
@@ -1569,6 +1571,7 @@
       "code": "Kód z e-mailu",
       "again": "Poslat nový kód",
       "sendCode": "Poslat mi kód",
+      "codeOff": "Tento odkaz se otevře jen kódem z e-mailu a tento server e-maily neodesílá. Požádejte odesílatele o nový odkaz.",
       "sent": "Kód je odeslaný. Zkontrolujte tu schránku.",
       "account": "Máte účet s tímto e-mailem?",
       "logIn": "Přihlásit se",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Tento obchod se v tomto prohlížeči neotevře. Otevřete ho odkazem z e-mailu nebo tím, který jste si zkopírovali.",
+      "dealGoneNoMail": "Tento obchod se v tomto prohlížeči neotevře. Otevřete ho odkazem, který jste si zkopírovali.",
+      "keepLink": "Zkopírujte si tento odkaz a uschovejte ho: tento server neodesílá e-maily, takže je to jediná cesta zpět k obchodu z jiného prohlížeče.",
       "linkGone": "Tuto výměnu už nikdo nenabízí.",
       "youGet": "Dostanete",
       "youGot": "Dostali jste",

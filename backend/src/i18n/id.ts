@@ -139,6 +139,8 @@ export const id = {
       codeLimit:
         'Terlalu banyak kode untuk tautan ini. Coba lagi dalam satu jam.',
       noEmail: 'Tautan ini tidak ditujukan untuk email tertentu.',
+      emailOff:
+        'Server ini tidak mengirim email, jadi tautan untuk satu orang tidak tersedia.',
       blocked: 'Anda tidak bisa menambahkan video dari orang ini.',
     },
     anonymousLinks: {

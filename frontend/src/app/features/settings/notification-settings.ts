@@ -8,6 +8,7 @@ import {
   notificationsUpdatePreferences,
 } from '../../api';
 import { toApiError } from '../../core/api/api-error';
+import { SiteConfig } from '../../core/site/site-config';
 import { ButtonDirective } from '../../shared/ui/button/button.directive';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner';
 import { ToastService } from '../../shared/ui/toast/toast.service';
@@ -20,7 +21,10 @@ import { SettingsSectionComponent } from './settings-section';
   template: `
     <app-settings-section
       [title]="'settings.notifications.title' | transloco"
-      [description]="'settings.notifications.hint' | transloco"
+      [description]="
+        (site.emailEnabled() ? 'settings.notifications.hint' : 'settings.notifications.hintNoEmail')
+          | transloco
+      "
     >
       @if (items(); as items) {
         <table class="w-full text-sm">
@@ -30,15 +34,18 @@ import { SettingsSectionComponent } from './settings-section';
               <th class="w-24 py-2 text-center font-medium">
                 {{ 'settings.notifications.inApp' | transloco }}
               </th>
-              <th class="w-24 py-2 text-center font-medium">
-                {{ 'settings.notifications.email' | transloco }}
-              </th>
+              <!-- Where no mail goes out, a choice about it would change nothing. -->
+              @if (site.emailEnabled()) {
+                <th class="w-24 py-2 text-center font-medium">
+                  {{ 'settings.notifications.email' | transloco }}
+                </th>
+              }
             </tr>
           </thead>
           <tbody>
             @for (item of items; track item.type) {
               <tr class="border-t border-line/10">
-                <td class="py-2.5">{{ 'notifications.types.' + item.type | transloco }}</td>
+                <td class="py-2.5">{{ labelOf(item.type) | transloco }}</td>
                 <td class="py-2.5 text-center">
                   <input
                     type="checkbox"
@@ -46,23 +53,25 @@ import { SettingsSectionComponent } from './settings-section';
                     [attr.aria-label]="
                       ('settings.notifications.inApp' | transloco) +
                       ': ' +
-                      ('notifications.types.' + item.type | transloco)
+                      (labelOf(item.type) | transloco)
                     "
                     (change)="toggle(item.type, 'inApp', $event)"
                   />
                 </td>
-                <td class="py-2.5 text-center">
-                  <input
-                    type="checkbox"
-                    [checked]="item.email"
-                    [attr.aria-label]="
-                      ('settings.notifications.email' | transloco) +
-                      ': ' +
-                      ('notifications.types.' + item.type | transloco)
-                    "
-                    (change)="toggle(item.type, 'email', $event)"
-                  />
-                </td>
+                @if (site.emailEnabled()) {
+                  <td class="py-2.5 text-center">
+                    <input
+                      type="checkbox"
+                      [checked]="item.email"
+                      [attr.aria-label]="
+                        ('settings.notifications.email' | transloco) +
+                        ': ' +
+                        ('notifications.types.' + item.type | transloco)
+                      "
+                      (change)="toggle(item.type, 'email', $event)"
+                    />
+                  </td>
+                }
               </tr>
             }
           </tbody>
@@ -82,6 +91,7 @@ export class NotificationSettingsPage {
   private readonly api = inject(Api);
   private readonly toast = inject(ToastService);
   private readonly t = inject(TranslocoService);
+  protected readonly site = inject(SiteConfig);
 
   protected readonly items = signal<NotificationPreferenceDto[] | null>(null);
   protected readonly dirty = signal(false);
@@ -92,6 +102,13 @@ export class NotificationSettingsPage {
       .invoke(notificationsPreferences)
       .then((items) => this.items.set(items))
       .catch((e) => this.toast.error(toApiError(e).message || this.t.translate('errors.unknown')));
+  }
+
+  /** The name of an event; the one that speaks of email has a plain one where no mail goes out. */
+  protected labelOf(type: NotificationPreferenceDto['type']): string {
+    return type === 'NEW_MESSAGE' && !this.site.emailEnabled()
+      ? 'settings.notifications.newMessageNoEmail'
+      : `notifications.types.${type}`;
   }
 
   protected toggle(

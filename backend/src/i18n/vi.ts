@@ -133,6 +133,8 @@ export const vi = {
       codeLimit:
         'Đã gửi quá nhiều mã cho liên kết này. Hãy thử lại sau một giờ.',
       noEmail: 'Liên kết này không dành riêng cho email nào.',
+      emailOff:
+        'Máy chủ này không gửi email nên không dùng được liên kết cho một người.',
       blocked: 'Bạn không thể thêm video từ người này.',
     },
     anonymousLinks: {

@@ -177,6 +177,7 @@ export class LinksService {
         'linkPasswordPro',
         'errors.links.passwordPro',
       );
+    if (dto.email) this.needMail();
     const ids = [...new Set(dto.videoIds)];
     const now = new Date();
     // The links the sender's list shows: one whose videos have all gone is neither listed nor
@@ -333,6 +334,16 @@ export class LinksService {
     return { pass: next, page: await this.page(code, viewer, next) };
   }
 
+  /** A link for one person works by mail: where none goes out, it cannot be made or opened. */
+  private needMail(): void {
+    if (!this.mail.sends)
+      throw new AppException(
+        HttpStatus.CONFLICT,
+        'linkEmailOff',
+        'errors.links.emailOff',
+      );
+  }
+
   /** A code to the link's address: once a minute, five an hour. */
   async sendCode(code: string, locale: string): Promise<void> {
     const { link } = await this.load(code);
@@ -342,6 +353,7 @@ export class LinksService {
         'linkNoEmail',
         'errors.links.noEmail',
       );
+    this.needMail();
     const fresh = await this.redis.set(
       codeSentKey(link.id),
       '1',
@@ -590,8 +602,9 @@ export class LinksService {
       return { password: false, code: false };
     const own = pass?.l === link.id ? pass : null;
     let code = !!link.email && !own?.e;
-    // Signed in with that very address, confirmed: no code to wait for.
-    if (code && viewer?.emailVerified) {
+    // Signed in with that very address, confirmed: no code to wait for. Not where no mail goes out:
+    // a sign-up is confirmed at once there, so anyone could claim the address.
+    if (code && viewer?.emailVerified && this.mail.sends) {
       const me = await this.prisma.user.findUnique({
         where: { id: viewer.id },
         select: { email: true },

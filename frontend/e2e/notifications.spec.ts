@@ -29,12 +29,14 @@ test('the bell shows a processed video, opening it marks it read; settings list 
 
   await page.getByRole('link', { name: 'Settings' }).click();
   await expect(page).toHaveURL(/\(panel:settings\/notifications\)$/);
-  const emailFailed = page.getByLabel('Email: A video of mine could not be processed');
-  await expect(emailFailed).toBeChecked();
+  // By default, email only for what matters.
+  await expect(page.getByLabel('Email: A video of mine could not be processed')).not.toBeChecked();
+  const emailRequest = page.getByLabel('Email: Someone requests my video');
+  await expect(emailRequest).toBeChecked();
   if (process.env['VS_SHOT_PREFS']) await page.screenshot({ path: process.env['VS_SHOT_PREFS'] });
-  await emailFailed.uncheck();
+  await emailRequest.uncheck();
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Saved.')).toBeVisible();
   await page.reload();
-  await expect(page.getByLabel('Email: A video of mine could not be processed')).not.toBeChecked();
+  await expect(page.getByLabel('Email: Someone requests my video')).not.toBeChecked();
 });

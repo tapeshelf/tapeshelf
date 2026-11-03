@@ -146,6 +146,8 @@ export const es = {
       codeLimit:
         'Demasiados códigos para este enlace. Inténtalo dentro de una hora.',
       noEmail: 'Este enlace no es para ningún correo en concreto.',
+      emailOff:
+        'Este servidor no envía correos, así que los enlaces para una sola persona no están disponibles.',
       blocked: 'No puedes añadir videos de esta persona.',
     },
     anonymousLinks: {

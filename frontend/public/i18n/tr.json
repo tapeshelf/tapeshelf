@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Bildirimler",
       "hint": "Her olaydan nasıl haberdar olmak istediğinizi seçin. Uygulama içi bildirimler zil simgesinin altında görünür; e-postalar adresinize gelir.",
+      "hintNoEmail": "Zilin altında hangi olayların görüneceğini seçin.",
+      "newMessageNoEmail": "Yeni sohbet mesajı",
       "event": "Olay",
       "inApp": "Uygulamada",
       "email": "E-posta"
@@ -1569,6 +1571,7 @@
       "code": "E-postadaki kod",
       "again": "Yeni kod gönder",
       "sendCode": "Bana kod gönder",
+      "codeOff": "Bu bağlantı yalnızca e-postayla gönderilen kodla açılır ve bu sunucu e-posta göndermiyor. Gönderenden yeni bir bağlantı isteyin.",
       "sent": "Kod gönderildi. O adresin gelen kutusuna bakın.",
       "account": "Bu e-postayla bir hesabınız mı var?",
       "logIn": "Giriş yap",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Bu takas bu tarayıcıda açılmıyor. E-postanızdaki bağlantıyla ya da kopyaladığınız bağlantıyla açın.",
+      "dealGoneNoMail": "Bu takas bu tarayıcıda açılmıyor. Kopyaladığınız bağlantıyla açın.",
+      "keepLink": "Bu bağlantıyı kopyalayıp saklayın: bu sunucu e-posta göndermiyor, bu yüzden başka bir tarayıcıdan takasa dönmenin tek yolu bu.",
       "linkGone": "Bu takas artık sunulmuyor.",
       "youGet": "Alacağınız",
       "youGot": "Aldığınız",

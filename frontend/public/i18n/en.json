@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Notifications",
       "hint": "Choose how you want to hear about each event. In-app notifications show under the bell; emails go to your address.",
+      "hintNoEmail": "Choose which events show under the bell.",
+      "newMessageNoEmail": "New chat message",
       "event": "Event",
       "inApp": "In-app",
       "email": "Email"
@@ -1569,6 +1571,7 @@
       "code": "Code from the email",
       "again": "Send a new code",
       "sendCode": "Send me a code",
+      "codeOff": "This link opens only with a code sent by email, and this server doesn’t send email. Ask the sender for a new link.",
       "sent": "Code sent. Check that inbox.",
       "account": "Have an account with this email?",
       "logIn": "Log in",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "This deal does not open in this browser. Open it with the link from your email or the one you copied.",
+      "dealGoneNoMail": "This deal does not open in this browser. Open it with the link you copied.",
+      "keepLink": "Copy this link and keep it: this server doesn’t send email, so it’s the only way back to the deal from another browser.",
       "linkGone": "This exchange is no longer offered.",
       "youGet": "You get",
       "youGot": "You received",

@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Aviseringar",
       "hint": "Välj hur du vill få veta om varje händelse. Aviseringar i appen visas under klockan. Mejl skickas till din adress.",
+      "hintNoEmail": "Välj vilka händelser som visas under klockan.",
+      "newMessageNoEmail": "Nytt chattmeddelande",
       "event": "Händelse",
       "inApp": "I appen",
       "email": "Mejl"
@@ -1569,6 +1571,7 @@
       "code": "Kod från mejlet",
       "again": "Skicka en ny kod",
       "sendCode": "Skicka en kod till mig",
+      "codeOff": "Den här länken öppnas bara med en kod via e-post, och den här servern skickar inte e-post. Be avsändaren om en ny länk.",
       "sent": "Koden är skickad. Titta i den inkorgen.",
       "account": "Har du ett konto med den här e-postadressen?",
       "logIn": "Logga in",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Bytet öppnas inte i den här webbläsaren. Öppna det med länken i ditt mejl eller den du kopierade.",
+      "dealGoneNoMail": "Bytet öppnas inte i den här webbläsaren. Öppna det med länken du kopierade.",
+      "keepLink": "Kopiera länken och spara den: den här servern skickar inte e-post, så det är enda sättet att komma tillbaka till bytet från en annan webbläsare.",
       "linkGone": "Det här bytet erbjuds inte längre.",
       "youGet": "Du får",
       "youGot": "Du fick",

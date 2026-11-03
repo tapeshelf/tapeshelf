@@ -37,8 +37,8 @@ test('plan settings: Free by default, Pro until a date after an admin grants it'
 
   await page.goto('/settings/plan');
   await expect(page.getByTestId('plan-tier')).toHaveText('Free');
-  await expect(page.getByTestId('plan-file')).toHaveText('up to 1.0 GB');
-  await expect(page.getByTestId('plan-shelf')).toHaveText('0 B of 20.0 GB');
+  await expect(page.getByTestId('plan-file')).toHaveText('up to 500 MB');
+  await expect(page.getByTestId('plan-shelf')).toHaveText('0 B of 5.0 GB');
   await expect(page.getByTestId('plan-until')).toHaveCount(0);
   await shot(page, 'plan-01-free');
   await audit(page, 'plan settings');

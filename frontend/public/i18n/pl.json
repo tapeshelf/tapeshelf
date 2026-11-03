@@ -373,6 +373,8 @@
     "notifications": {
       "title": "Powiadomienia",
       "hint": "Wybierz, jak chcesz się dowiadywać o każdym zdarzeniu. Powiadomienia w aplikacji pojawiają się pod dzwonkiem, a e-maile przychodzą na Twój adres.",
+      "hintNoEmail": "Wybierz, które zdarzenia mają się pojawiać pod dzwonkiem.",
+      "newMessageNoEmail": "Nowa wiadomość na czacie",
       "event": "Zdarzenie",
       "inApp": "W aplikacji",
       "email": "E-mail"
@@ -1569,6 +1571,7 @@
       "code": "Kod z e-maila",
       "again": "Wyślij nowy kod",
       "sendCode": "Wyślij mi kod",
+      "codeOff": "Ten link otwiera się tylko kodem z e-maila, a ten serwer nie wysyła e-maili. Poproś nadawcę o nowy link.",
       "sent": "Kod wysłany. Sprawdź tę skrzynkę.",
       "account": "Masz konto z tym adresem e-mail?",
       "logIn": "Zaloguj się",
@@ -1642,6 +1645,8 @@
     },
     "trade": {
       "dealGone": "Ta transakcja nie otwiera się w tej przeglądarce. Otwórz ją linkiem z e-maila albo tym, który został skopiowany.",
+      "dealGoneNoMail": "Ta transakcja nie otwiera się w tej przeglądarce. Otwórz ją skopiowanym linkiem.",
+      "keepLink": "Skopiuj ten link i zachowaj go: ten serwer nie wysyła e-maili, więc tylko tak wrócisz do transakcji z innej przeglądarki.",
       "linkGone": "Ta oferta wymiany jest już nieaktualna.",
       "youGet": "Dostajesz",
       "youGot": "Otrzymane",

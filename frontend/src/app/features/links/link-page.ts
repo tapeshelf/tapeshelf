@@ -36,6 +36,7 @@ import {
 } from '../../api';
 import { toApiError } from '../../core/api/api-error';
 import { AuthStore } from '../../core/auth/auth.store';
+import { SiteConfig } from '../../core/site/site-config';
 import { SensitiveContentService } from '../../core/content/sensitive.service';
 import { profileLink } from '../../core/navigation/user-links';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
@@ -196,7 +197,12 @@ import { timeLeft } from './links';
                 />
               </label>
             }
-            @if (p.needsCode) {
+            @if (p.needsCode && !site.emailEnabled()) {
+              <!-- A link made before this server's mail was turned off: nothing can open it now. -->
+              <p class="text-sm text-muted" data-testid="link-gate-code-off">
+                {{ 'links.gate.codeOff' | transloco }}
+              </p>
+            } @else if (p.needsCode) {
               <p class="text-sm text-muted">
                 {{ 'links.gate.codeLead' | transloco: { email: p.emailHint } }}
               </p>
@@ -254,14 +260,16 @@ import { timeLeft } from './links';
             @if (error(); as message) {
               <app-alert kind="error">{{ message }}</app-alert>
             }
-            <button
-              type="submit"
-              appButton
-              [disabled]="busy() || !canSubmit()"
-              data-testid="link-unlock"
-            >
-              {{ 'links.gate.open' | transloco }}
-            </button>
+            @if (site.emailEnabled() || p.needsPassword) {
+              <button
+                type="submit"
+                appButton
+                [disabled]="busy() || !canSubmit()"
+                data-testid="link-unlock"
+              >
+                {{ 'links.gate.open' | transloco }}
+              </button>
+            }
           </form>
         } @else {
           <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
@@ -493,6 +501,7 @@ export class LinkPage {
   private readonly toast = inject(ToastService);
   private readonly t = inject(TranslocoService);
   protected readonly auth = inject(AuthStore);
+  protected readonly site = inject(SiteConfig);
   protected readonly sensitive = inject(SensitiveContentService);
 
   readonly code = input.required<string>();

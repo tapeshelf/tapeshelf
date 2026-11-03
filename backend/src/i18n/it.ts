@@ -147,6 +147,8 @@ export const it = {
         'Un codice è appena stato inviato. Potrai chiederne un altro tra un minuto.',
       codeLimit: 'Troppi codici per questo link. Riprova tra un’ora.',
       noEmail: 'Questo link non è legato a un indirizzo email.',
+      emailOff:
+        'Questo server non invia email, quindi i link per una sola persona non sono disponibili.',
       blocked: 'Non puoi aggiungere video di questa persona.',
     },
     anonymousLinks: {

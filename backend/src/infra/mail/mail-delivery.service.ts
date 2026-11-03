@@ -18,6 +18,10 @@ export class MailDeliveryService {
     private readonly queues: QueueService,
   ) {}
 
+  get sends(): boolean {
+    return this.mail.sends;
+  }
+
   async deliver(to: string, mail: RenderedMail): Promise<void> {
     if (await this.mail.send(to, mail)) return;
     await this.queues

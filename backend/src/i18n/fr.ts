@@ -154,6 +154,8 @@ export const fr = {
         'Un code vient d’être envoyé. Vous pourrez en demander un autre dans une minute.',
       codeLimit: 'Trop de codes pour ce lien. Réessayez dans une heure.',
       noEmail: 'Ce lien n’est pas destiné à une adresse e-mail précise.',
+      emailOff:
+        'Ce serveur n’envoie pas d’e-mails : les liens pour une seule personne ne sont pas disponibles.',
       blocked: 'Vous ne pouvez pas ajouter de vidéos de cette personne.',
     },
     anonymousLinks: {

@@ -145,6 +145,8 @@ export const tr = {
       codeLimit:
         'Bu bağlantı için çok fazla kod istendi. Bir saat sonra yeniden deneyin.',
       noEmail: 'Bu bağlantı belirli bir e-posta adresine bağlı değil.',
+      emailOff:
+        'Bu sunucu e-posta göndermiyor, bu yüzden tek kişilik bağlantılar kullanılamıyor.',
       blocked: 'Bu kişinin videolarını ekleyemezsiniz.',
     },
     anonymousLinks: {

@@ -144,6 +144,8 @@ export const nl = {
       codeLimit:
         'Te veel codes voor deze link. Probeer het over een uur opnieuw.',
       noEmail: 'Deze link is niet voor één bepaald e-mailadres.',
+      emailOff:
+        'Deze server verstuurt geen e-mail, dus links voor één persoon zijn niet beschikbaar.',
       blocked: 'Je kunt geen video’s van deze persoon toevoegen.',
     },
     anonymousLinks: {

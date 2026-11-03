@@ -142,7 +142,12 @@ const POLL_MS = 6000;
         <div class="flex justify-center py-24 text-muted"><app-spinner /></div>
       } @else if (phase() === 'gone') {
         <app-alert kind="error" class="mx-auto block max-w-xl" data-testid="trade-gone">{{
-          (dealId() ? 'deals.trade.dealGone' : 'deals.trade.linkGone') | transloco
+          (dealId()
+            ? site.emailEnabled()
+              ? 'deals.trade.dealGone'
+              : 'deals.trade.dealGoneNoMail'
+            : 'deals.trade.linkGone'
+          ) | transloco
         }}</app-alert>
         @if (dealId(); as id) {
           <!-- A deal taken into an account is that account's request now. -->
@@ -403,19 +408,22 @@ const POLL_MS = 6000;
                 @case ('draft') {
                   <ng-container *ngTemplateOutlet="uploader" />
                   <ng-container *ngTemplateOutlet="messageBox" />
-                  <label class="mt-3 block text-sm">
-                    <span class="label-mono mb-1 block text-muted">{{
-                      'deals.trade.email' | transloco
-                    }}</span>
-                    <input
-                      appInput
-                      type="email"
-                      autocomplete="email"
-                      [maxlength]="emailMax"
-                      [(ngModel)]="email"
-                      data-testid="trade-email"
-                    />
-                  </label>
+                  <!-- News of the deal go by mail: not offered where none goes out. -->
+                  @if (site.emailEnabled()) {
+                    <label class="mt-3 block text-sm">
+                      <span class="label-mono mb-1 block text-muted">{{
+                        'deals.trade.email' | transloco
+                      }}</span>
+                      <input
+                        appInput
+                        type="email"
+                        autocomplete="email"
+                        [maxlength]="emailMax"
+                        [(ngModel)]="email"
+                        data-testid="trade-email"
+                      />
+                    </label>
+                  }
                   <button
                     type="button"
                     appButton
@@ -539,7 +547,7 @@ const POLL_MS = 6000;
               <div
                 class="flex flex-col gap-3 rounded-xl border-2 border-line bg-surface p-5 text-sm"
               >
-                @if (phase() !== 'draft') {
+                @if (phase() !== 'draft' && site.emailEnabled()) {
                   @if (v.email && !changingEmail()) {
                     <p data-testid="trade-email-set">
                       {{ 'deals.trade.emailOn' | transloco: { email: v.email } }}
@@ -586,6 +594,12 @@ const POLL_MS = 6000;
                   >
                     <ng-icon name="lucideCopy" size="14" />{{ 'deals.trade.copyDeal' | transloco }}
                   </button>
+                  @if (!site.emailEnabled()) {
+                    <!-- No mail brings this link later: it is the only way back from elsewhere. -->
+                    <p class="text-muted" data-testid="trade-keep-link">
+                      {{ 'deals.trade.keepLink' | transloco }}
+                    </p>
+                  }
                 }
                 <p class="text-muted">
                   {{ 'deals.trade.account' | transloco }}
