@@ -240,6 +240,7 @@ function limits(t: TierLimitsDto): TierLimits {
     downloadsPerMonth: t.downloadsPerMonth,
     downloadSpeedBytesPerSec: t.downloadSpeedBytesPerSec,
     downloadConcurrency: t.downloadConcurrency,
+    trafficBytesPerMonth: t.trafficBytesPerMonth,
     trashRetentionDays: t.trashRetentionDays,
     apiRateMultiplier: t.apiRateMultiplier,
     extensionPerDay: t.extensionPerDay,

@@ -171,6 +171,7 @@ describe('plans', () => {
         downloadsPerMonth: 0,
         downloadSpeedBytesPerSec: 0,
         downloadConcurrency: 0,
+        trafficBytesPerMonth: 0,
         apiRateMultiplier: 1,
       });
       expect(instancePlan(limits)).toEqual({

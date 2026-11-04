@@ -403,7 +403,10 @@
       "trash": "已删除视频保留",
       "trashDays": "{count, plural, other {# 天}}",
       "extension": "通过浏览器扩展保存",
-      "extensionPerDay": "每天 {{count}} 个视频"
+      "extensionPerDay": "每天 {{count}} 个视频",
+      "traffic": "本月流量",
+      "trafficNote": "流量就是观看和下载用掉的数据。视频一开始，就按整个视频的大小计算，每人每天只算一次。别人的视频消耗你的流量，游客在你的链接和公开视频上消耗的也是你的流量。你自己的视频不消耗流量。",
+      "downloadsNoCount": "不计次数"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "{{plan}}的下载速度上限为 {{mb}} MB/s；在 {{date}} 前还剩 {{left}} 次下载（共 {{limit}} 次）。",
     "limitsSpeed": "{{plan}}的下载速度上限为 {{mb}} MB/s。",
     "limitsCount": "{{plan}}在 {{date}} 前还剩 {{left}} 次下载（共 {{limit}} 次）。",
-    "pro": "Pro 没有限制，也不用等待。",
+    "pro": "Pro 下载立即开始，全速进行，不计次数。",
     "proLink": "了解 Pro",
     "repeat": "你在一小时内下载过这个视频，这次不计入次数。",
     "limitReached": "本月的下载次数已用完，下一次要等到 {{date}}。",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "片架空间更大、下载不限次数、回收站保留更久，还有视频编辑器、可以隐藏的主页、片架匿名链接和限时链接密码。",
+    "lead": "片架空间更大、流量更多、全速下载、回收站保留更久，还有视频编辑器、可以隐藏的主页、片架匿名链接和限时链接密码。",
     "period": "付费周期",
     "year": "按年",
     "month": "按月",
@@ -1328,7 +1331,8 @@
       "editor": "视频编辑器",
       "hiddenPage": "隐藏主页",
       "links": "限时链接密码",
-      "anonymousLinks": "片架匿名链接"
+      "anonymousLinks": "片架匿名链接",
+      "traffic": "每月流量"
     },
     "upTo": "最大 {{size}}",
     "downloadsLimited": "每月 {{count}} 次，最高 {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "片架空间 {{size}}",
       "shelfAny": "片架空间不限",
       "shelfText": "只有你自己上传的视频占空间，别人给的视频从不占。",
-      "downloads": "下载不限次数",
-      "downloadsText": "全速下载，没有等待页面，想下多少下多少。",
+      "downloads": "全速下载",
+      "downloadsText": "没有等待页面，也不计次数。和观看共用每月 {{size}} 流量。",
       "editor": "视频编辑器",
       "editorText": "裁剪、剪掉片段、模糊、计时器、文字和声音，在你的任意视频上都能打开。",
       "trash": "{count, plural, other {# 天}}的反悔时间",
@@ -1368,7 +1372,8 @@
       "start": "开始吧",
       "anonymousLinks": "片架匿名链接",
       "anonymousLinksText": "我的链接：分享片架而不暴露用户名，用完就删除链接。"
-    }
+    },
+    "downloadsAny": "不计次数，全速"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "管理订阅",
     "updatePayment": "更新付款方式",
     "upgrade": "升级到 Pro",
-    "upgradeHint": "空间更大，下载不限次数。",
+    "upgradeHint": "空间更大，流量更多，下载更快。",
     "deleteNote": "你的 Pro 订阅会立即取消，已付费的周期不退款。"
   },
   "demo": {

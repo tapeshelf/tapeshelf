@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import {
@@ -14,12 +15,16 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiQuery,
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 
-import type { RequestUser } from '../../common/auth/request-user.js';
+import type {
+  AppRequest,
+  RequestUser,
+} from '../../common/auth/request-user.js';
 import { OptionalUser } from '../../common/decorators/optional-user.decorator.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 import { PlaybackDto } from './streaming.dto.js';
@@ -42,6 +47,10 @@ export class StreamingController {
       'Start playback: returns the tokenized master playlist URL (guests: public videos only)',
   })
   @ApiOkResponse({ type: PlaybackDto })
+  @ApiTooManyRequestsResponse({
+    description:
+      'trafficLimitReached (the viewer’s) or sharerTrafficLimitReached (the author’s, for a guest); details.resetAt',
+  })
   @ApiQuery({
     name: 'source',
     required: false,
@@ -52,12 +61,14 @@ export class StreamingController {
   playback(
     @OptionalUser() user: RequestUser | undefined,
     @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AppRequest,
     @Query('source') source?: string,
   ): Promise<PlaybackDto> {
     return this.streaming.createPlayback(
       user,
       id,
       source === 'true' || source === '1',
+      { guestId: req.guestId, ip: req.ip },
     );
   }
 

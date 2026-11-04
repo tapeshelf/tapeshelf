@@ -4470,6 +4470,9 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "trafficLimitReached (the viewer’s) or sharerTrafficLimitReached (the author’s, for a guest); details.resetAt"
           }
         },
         "summary": "Start playback: returns the tokenized master playlist URL (guests: public videos only)",
@@ -4539,7 +4542,7 @@
             }
           },
           "429": {
-            "description": "downloadLimitReached (details.resetAt) or downloadBusy (another download is running)"
+            "description": "downloadLimitReached or trafficLimitReached (details.resetAt), or downloadBusy (another download is running)"
           }
         },
         "security": [
@@ -8651,6 +8654,12 @@
             "maximum": 100,
             "description": "Downloads at once; 0 = no limit"
           },
+          "trafficBytesPerMonth": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1125899906842624,
+            "description": "Views and downloads per calendar month (UTC), by the size of each file; 0 = no limit"
+          },
           "trashRetentionDays": {
             "type": "number",
             "minimum": 1,
@@ -8677,6 +8686,7 @@
           "downloadsPerMonth",
           "downloadSpeedBytesPerSec",
           "downloadConcurrency",
+          "trafficBytesPerMonth",
           "trashRetentionDays",
           "apiRateMultiplier",
           "extensionPerDay"
@@ -9299,12 +9309,18 @@
             "type": "string",
             "format": "date-time",
             "description": "When the monthly download count starts over"
+          },
+          "trafficBytesThisMonth": {
+            "type": "number",
+            "format": "int64",
+            "description": "Views and downloads counted this calendar month (UTC); starts over with the downloads"
           }
         },
         "required": [
           "storageBytes",
           "downloadsThisMonth",
-          "downloadsResetAt"
+          "downloadsResetAt",
+          "trafficBytesThisMonth"
         ]
       },
       "SubscriptionStatus": {
@@ -13258,6 +13274,10 @@
             "type": "boolean",
             "description": "Over the monthly limit (a repeat is still allowed)"
           },
+          "trafficReached": {
+            "type": "boolean",
+            "description": "No traffic left this month, so this download will not start (an own upload or a repeat still would)"
+          },
           "waitSec": {
             "type": "number",
             "description": "Seconds to count down before starting"
@@ -13280,6 +13300,7 @@
           "own",
           "busy",
           "limitReached",
+          "trafficReached",
           "waitSec"
         ]
       },
@@ -13515,6 +13536,10 @@
             "type": "number",
             "format": "int64",
             "description": "The ZIP of them all: a little more than the files"
+          },
+          "senderTrafficReached": {
+            "type": "boolean",
+            "description": "The sender has no traffic left this month: the videos neither play nor download"
           }
         },
         "required": [
@@ -13529,7 +13554,8 @@
           "own",
           "videos",
           "totalBytes",
-          "zipBytes"
+          "zipBytes",
+          "senderTrafficReached"
         ]
       },
       "UnlockLinkDto": {

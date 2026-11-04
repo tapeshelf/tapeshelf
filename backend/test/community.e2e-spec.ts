@@ -87,6 +87,7 @@ describe('self-hosted instance (e2e)', () => {
         downloadsPerMonth: 0,
         downloadSpeedBytesPerSec: 0,
         downloadConcurrency: 0,
+        trafficBytesPerMonth: 0,
         trashRetentionDays: 90,
         apiRateMultiplier: 1,
       },

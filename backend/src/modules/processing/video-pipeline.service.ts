@@ -278,6 +278,7 @@ export class VideoPipelineService {
             probe: probeJson(summary, packaged.mode),
             hlsPrefix: hls.prefix,
             segmentCount: hls.segmentCount,
+            playbackBytes: BigInt(hls.bytes),
             processedAt: now,
             // Its place in "What's new": when it first appeared, not when it was redone.
             ...(before.processedAt === null ? { readyAt: now } : {}),
@@ -931,7 +932,7 @@ export class VideoPipelineService {
     work: string,
     reporter: AssetReporter,
     keyVersion = video.keyVersion,
-  ): Promise<{ prefix: string; segmentCount: number }> {
+  ): Promise<{ prefix: string; segmentCount: number; bytes: number }> {
     await reporter.report('ENCRYPT', inBand('ENCRYPT', 0), { force: true });
     const key = deriveHlsKey(this.kek, video.id, keyVersion);
     const plainIndex = await readFile(
@@ -1006,7 +1007,7 @@ export class VideoPipelineService {
         contentType: 'application/vnd.apple.mpegurl',
       },
     ]);
-    return { prefix, segmentCount: segments.length };
+    return { prefix, segmentCount: segments.length, bytes };
   }
 
   /**

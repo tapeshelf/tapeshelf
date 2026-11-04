@@ -172,6 +172,10 @@ export const zh = {
       ticketInvalid: '下载链接已过期。请回到视频页面重新开始下载。',
       range: '文件的这一部分不存在。',
     },
+    traffic: {
+      limitReached: '你的套餐本月流量已用完。下个月初重置。',
+      sharerLimitReached: '分享这个视频的人本月流量已用完。下个月初重置。',
+    },
     admin: {
       selfAction: '不能对自己的账号这样做。',
       adminTarget: '请先移除管理员角色。',

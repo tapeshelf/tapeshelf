@@ -487,7 +487,9 @@ export class VideoPlayerComponent {
       this.error.set(
         err.statusCode === 403
           ? this.t.translate('player.noAccess')
-          : this.t.translate('player.error'),
+          : err.statusCode === 429 && err.message // the month's traffic ran out
+            ? err.message
+            : this.t.translate('player.error'),
       );
     }
   }

@@ -17,6 +17,8 @@ export interface TierForm {
   /** 0 = straight from storage at full speed. */
   downloadSpeedMiB: number;
   downloadConcurrency: number;
+  /** Views and downloads a month; 0 = no limit. */
+  trafficGiB: number;
   trashRetentionDays: number;
   apiRateMultiplier: number;
   /** Videos a day through the browser extension; 0 = no limit. */
@@ -61,6 +63,7 @@ function tierToForm(t: TierLimitsDto): TierForm {
     downloadsPerMonth: t.downloadsPerMonth,
     downloadSpeedMiB: toMiB(t.downloadSpeedBytesPerSec),
     downloadConcurrency: t.downloadConcurrency,
+    trafficGiB: toGiB(t.trafficBytesPerMonth),
     trashRetentionDays: t.trashRetentionDays,
     apiRateMultiplier: t.apiRateMultiplier,
     extensionPerDay: t.extensionPerDay,
@@ -75,6 +78,7 @@ function tierFromForm(t: TierForm, original: TierLimitsDto): TierLimitsDto {
     downloadsPerMonth: Math.round(t.downloadsPerMonth),
     downloadSpeedBytesPerSec: bytes(t.downloadSpeedMiB, original.downloadSpeedBytesPerSec, MiB),
     downloadConcurrency: Math.round(t.downloadConcurrency),
+    trafficBytesPerMonth: bytes(t.trafficGiB, original.trafficBytesPerMonth),
     trashRetentionDays: Math.round(t.trashRetentionDays),
     apiRateMultiplier: Math.round(t.apiRateMultiplier * 100) / 100,
     extensionPerDay: Math.round(t.extensionPerDay),

@@ -48,8 +48,8 @@ export class PlansService {
   /** An account's limits: its tier's, with no storage quota for an admin. */
   /**
    * An admin has no limits: no storage quota, no file size limit (but what one upload can carry),
-   * no daily limit through the browser extension — also when signed in by the extension's token,
-   * which carries no admin powers.
+   * no traffic limit, no daily limit through the browser extension — also when signed in by the
+   * extension's token, which carries no admin powers.
    */
   async limitsForUser(user: {
     role: Role;
@@ -58,7 +58,13 @@ export class PlansService {
   }): Promise<TierLimits> {
     const limits = await this.limitsFor(user.tier);
     return user.role === 'ADMIN' || user.adminAccount
-      ? { ...limits, storageQuotaBytes: 0, maxFileBytes: 0, extensionPerDay: 0 }
+      ? {
+          ...limits,
+          storageQuotaBytes: 0,
+          maxFileBytes: 0,
+          trafficBytesPerMonth: 0,
+          extensionPerDay: 0,
+        }
       : limits;
   }
 

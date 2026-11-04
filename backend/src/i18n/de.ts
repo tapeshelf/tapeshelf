@@ -221,6 +221,12 @@ export const de = {
         'Dieser Download-Link ist abgelaufen. Starte den Download auf der Videoseite neu.',
       range: 'Diesen Teil der Datei gibt es nicht.',
     },
+    traffic: {
+      limitReached:
+        'Du hast das Datenvolumen deines Tarifs für diesen Monat aufgebraucht. Es erneuert sich zum Anfang des nächsten Monats.',
+      sharerLimitReached:
+        'Die Person, die dieses Video geteilt hat, hat ihr Datenvolumen für diesen Monat aufgebraucht. Es erneuert sich zum Anfang des nächsten Monats.',
+    },
     admin: {
       selfAction: 'Das kannst du mit deinem eigenen Konto nicht tun.',
       adminTarget: 'Entferne zuerst die Admin-Rolle.',

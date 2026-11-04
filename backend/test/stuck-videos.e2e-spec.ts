@@ -26,6 +26,7 @@ import { StorageService } from '../src/infra/storage/storage.service.js';
 import { BillingModule } from '../src/modules/billing/billing.module.js';
 import { BlocklistModule } from '../src/modules/blocklist/blocklist.module.js';
 import { PlansModule } from '../src/modules/plans/plans.module.js';
+import { TrafficModule } from '../src/modules/traffic/traffic.module.js';
 import { MaintenanceService } from '../src/modules/processing/maintenance.service.js';
 import { PipelineModule } from '../src/modules/processing/pipeline.module.js';
 import { VideoPipelineService } from '../src/modules/processing/video-pipeline.service.js';
@@ -71,6 +72,7 @@ describe('videos whose processing stopped without an end (e2e)', () => {
         OutboxModule,
         SettingsModule,
         PlansModule,
+        TrafficModule,
         BillingModule,
         BlocklistModule,
         PipelineModule,

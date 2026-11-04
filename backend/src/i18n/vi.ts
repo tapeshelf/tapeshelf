@@ -202,6 +202,12 @@ export const vi = {
         'Liên kết tải xuống này đã hết hạn. Hãy bắt đầu tải lại từ trang video.',
       range: 'Phần này của tệp không tồn tại.',
     },
+    traffic: {
+      limitReached:
+        'Bạn đã dùng hết lưu lượng tháng này của gói. Lưu lượng được đặt lại vào đầu tháng sau.',
+      sharerLimitReached:
+        'Người chia sẻ video này đã dùng hết lưu lượng của tháng này. Lưu lượng được đặt lại vào đầu tháng sau.',
+    },
     admin: {
       selfAction: 'Bạn không thể làm việc này với tài khoản của chính mình.',
       adminTarget: 'Hãy gỡ vai trò quản trị viên trước.',

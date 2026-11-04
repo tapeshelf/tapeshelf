@@ -216,6 +216,12 @@ export const it = {
         'Questo link di download è scaduto. Avvia di nuovo il download dalla pagina del video.',
       range: 'Questa parte del file non esiste.',
     },
+    traffic: {
+      limitReached:
+        'Hai esaurito il traffico del tuo piano per questo mese. Si rinnova all’inizio del mese prossimo.',
+      sharerLimitReached:
+        'Chi ha condiviso questo video ha esaurito il traffico di questo mese. Si rinnova all’inizio del mese prossimo.',
+    },
     admin: {
       selfAction: 'Non puoi farlo sul tuo stesso account.',
       adminTarget: 'Prima togli il ruolo di amministratore.',

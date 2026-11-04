@@ -403,7 +403,10 @@
       "trash": "Video terhapus disimpan",
       "trashDays": "{count, plural, other {# hari}}",
       "extension": "Melalui ekstensi browser",
-      "extensionPerDay": "{{count}} video per hari"
+      "extensionPerDay": "{{count}} video per hari",
+      "traffic": "Trafik bulan ini",
+      "trafficNote": "Trafik adalah semua yang ditonton dan diunduh. Saat video mulai diputar, seluruh ukurannya dihitung, sekali sehari per orang. Anda memakainya untuk video dari orang lain, dan tamu memakai trafik Anda di tautan dan video publik Anda. Video Anda sendiri tidak memakai trafik.",
+      "downloadsNoCount": "tidak dihitung"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Di {{plan}}, kecepatan dibatasi {{mb}} MB/s; sisa {{left}} dari {{limit}} unduhan hingga {{date}}.",
     "limitsSpeed": "Di {{plan}}, kecepatan dibatasi {{mb}} MB/s.",
     "limitsCount": "Di {{plan}}, sisa {{left}} dari {{limit}} unduhan hingga {{date}}.",
-    "pro": "Dengan Pro, tidak ada batas dan tidak perlu menunggu.",
+    "pro": "Dengan Pro, unduhan langsung dimulai, berjalan dengan kecepatan penuh, dan tidak dihitung.",
     "proLink": "Selengkapnya tentang Pro",
     "repeat": "Anda sudah mengunduh video ini dalam satu jam terakhir, jadi kali ini tidak dihitung.",
     "limitReached": "Jatah unduhan bulan ini sudah habis; unduhan berikutnya tersedia pada {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Ruang lebih besar di rak Anda, unduhan tanpa batas, sampah yang menyimpan lebih lama, editor video, halaman yang bisa disembunyikan, tautan anonim ke rak Anda, dan kata sandi pada tautan sementara.",
+    "lead": "Ruang lebih besar di rak Anda, trafik lebih besar, unduhan dengan kecepatan penuh, sampah yang menyimpan lebih lama, editor video, halaman yang bisa disembunyikan, tautan anonim ke rak Anda, dan kata sandi pada tautan sementara.",
     "period": "Periode tagihan",
     "year": "Tahunan",
     "month": "Bulanan",
@@ -1328,7 +1331,8 @@
       "editor": "Editor video",
       "hiddenPage": "Halaman tersembunyi",
       "links": "Kata sandi pada tautan sementara",
-      "anonymousLinks": "Tautan anonim ke rak Anda"
+      "anonymousLinks": "Tautan anonim ke rak Anda",
+      "traffic": "Trafik per bulan"
     },
     "upTo": "hingga {{size}}",
     "downloadsLimited": "{{count}} per bulan, hingga {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} di rak Anda",
       "shelfAny": "Rak tanpa batas",
       "shelfText": "Hanya unggahan Anda sendiri yang memakai ruang; video dari orang lain tidak pernah.",
-      "downloads": "Unduhan tanpa batas",
-      "downloadsText": "Dengan kecepatan penuh, tanpa halaman tunggu, sebanyak yang Anda perlukan.",
+      "downloads": "Unduhan dengan kecepatan penuh",
+      "downloadsText": "Tanpa halaman tunggu, dan tidak dihitung. Unduhan dan tontonan berbagi {{size}} trafik per bulan.",
       "editor": "Editor video",
       "editorText": "Crop, potong, blur, timer, teks, dan suara; buka dari video mana pun milik Anda.",
       "trash": "{count, plural, other {# hari}} untuk berubah pikiran",
@@ -1368,7 +1372,8 @@
       "start": "Ayo mulai",
       "anonymousLinks": "Tautan anonim ke rak Anda",
       "anonymousLinksText": "“Tautan saya”: bagikan rak Anda tanpa menampilkan nama pengguna, lalu hapus tautannya jika sudah tidak diperlukan."
-    }
+    },
+    "downloadsAny": "tidak dihitung, kecepatan penuh"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Kelola langganan",
     "updatePayment": "Perbarui metode pembayaran",
     "upgrade": "Upgrade ke Pro",
-    "upgradeHint": "Ruang lebih besar dan unduhan tanpa batas.",
+    "upgradeHint": "Ruang lebih besar, trafik lebih besar, dan unduhan lebih cepat.",
     "deleteNote": "Langganan Pro Anda langsung dibatalkan; periode yang sudah dibayar tidak dikembalikan."
   },
   "demo": {

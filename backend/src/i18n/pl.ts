@@ -215,6 +215,12 @@ export const pl = {
         'Ten link do pobrania wygasł. Zacznij pobieranie od nowa na stronie filmu.',
       range: 'Taka część pliku nie istnieje.',
     },
+    traffic: {
+      limitReached:
+        'Transfer z Twojego planu na ten miesiąc się wyczerpał. Odnowi się na początku następnego miesiąca.',
+      sharerLimitReached:
+        'Osobie, która udostępniła ten film, wyczerpał się transfer na ten miesiąc. Odnowi się na początku następnego miesiąca.',
+    },
     admin: {
       selfAction: 'Nie możesz tego zrobić z własnym kontem.',
       adminTarget: 'Najpierw odbierz rolę administratora.',

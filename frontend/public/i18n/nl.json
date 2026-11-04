@@ -403,7 +403,10 @@
       "trash": "Verwijderde video’s bewaard",
       "trashDays": "{count, plural, one {# dag} other {# dagen}}",
       "extension": "Via de browserextensie",
-      "extensionPerDay": "{{count}} per dag"
+      "extensionPerDay": "{{count}} per dag",
+      "traffic": "Dataverkeer deze maand",
+      "trafficNote": "Dataverkeer is wat er wordt bekeken en gedownload. Als een video start, telt de hele grootte mee, één keer per dag per persoon. Je verbruikt het aan video’s van anderen, en gasten verbruiken het jouwe via je links en openbare video’s. Je eigen video’s kosten niets.",
+      "downloadsNoCount": "niet geteld"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Met {{plan}} is de snelheid beperkt tot {{mb}} MB/s; je hebt nog {{left}} van {{limit}} downloads tot {{date}}.",
     "limitsSpeed": "Met {{plan}} is de snelheid beperkt tot {{mb}} MB/s.",
     "limitsCount": "Met {{plan}} heb je nog {{left}} van {{limit}} downloads tot {{date}}.",
-    "pro": "Met Pro zijn er geen limieten en hoef je niet te wachten.",
+    "pro": "Met Pro beginnen downloads meteen, gaan ze op volle snelheid en worden ze niet geteld.",
     "proLink": "Meer over Pro",
     "repeat": "Je hebt deze video het afgelopen uur al gedownload, dus deze keer telt niet mee.",
     "limitReached": "Je downloads voor deze maand zijn op; de volgende kan weer op {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Meer ruimte op je plank, downloads zonder limiet, een langere prullenbak, de video-editor, een pagina die je kunt verbergen, anonieme links naar je plank en wachtwoorden op tijdelijke links.",
+    "lead": "Meer ruimte op je plank, meer dataverkeer, downloads op volle snelheid, een langere prullenbak, de video-editor, een pagina die je kunt verbergen, anonieme links naar je plank en wachtwoorden op tijdelijke links.",
     "period": "Betaalperiode",
     "year": "Per jaar",
     "month": "Per maand",
@@ -1328,7 +1331,8 @@
       "editor": "Video-editor",
       "hiddenPage": "Verborgen pagina",
       "links": "Wachtwoord op tijdelijke links",
-      "anonymousLinks": "Anonieme links naar je plank"
+      "anonymousLinks": "Anonieme links naar je plank",
+      "traffic": "Dataverkeer per maand"
     },
     "upTo": "tot {{size}}",
     "downloadsLimited": "{{count}} per maand, tot {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} op je plank",
       "shelfAny": "Een plank zonder limiet",
       "shelfText": "Alleen je eigen uploads nemen ruimte in; video’s van anderen nooit.",
-      "downloads": "Downloads zonder limiet",
-      "downloadsText": "Op volle snelheid, zonder wachtpagina, zoveel als je nodig hebt.",
+      "downloads": "Downloads op volle snelheid",
+      "downloadsText": "Geen wachtpagina, en ze worden niet geteld. Samen met het kijken delen ze {{size}} dataverkeer per maand.",
       "editor": "De video-editor",
       "editorText": "Bijsnijden, knippen, vervagen, timers, teksten en geluid. Je opent hem vanuit elke video van jezelf.",
       "trash": "{count, plural, one {# dag} other {# dagen}} om je te bedenken",
@@ -1368,7 +1372,8 @@
       "start": "Aan de slag",
       "anonymousLinks": "Anonieme links naar je plank",
       "anonymousLinksText": "“Mijn links”: deel je plank zonder je gebruikersnaam te laten zien, en verwijder de link als je hem niet meer nodig hebt."
-    }
+    },
+    "downloadsAny": "niet geteld, volle snelheid"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Abonnement beheren",
     "updatePayment": "Betaalmethode bijwerken",
     "upgrade": "Overstappen op Pro",
-    "upgradeHint": "Meer ruimte en downloads zonder limiet.",
+    "upgradeHint": "Meer ruimte, meer dataverkeer en snellere downloads.",
     "deleteNote": "Je Pro-abonnement wordt meteen opgezegd; de betaalde periode wordt niet terugbetaald."
   },
   "demo": {

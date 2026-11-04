@@ -403,7 +403,10 @@
       "trash": "Thời gian giữ video đã xóa",
       "trashDays": "{count, plural, other {# ngày}}",
       "extension": "Qua tiện ích mở rộng trình duyệt",
-      "extensionPerDay": "{{count}} video mỗi ngày"
+      "extensionPerDay": "{{count}} video mỗi ngày",
+      "traffic": "Lưu lượng tháng này",
+      "trafficNote": "Lưu lượng là những gì được xem và tải xuống. Khi một video bắt đầu chạy, toàn bộ dung lượng của nó được tính, mỗi người một lần mỗi ngày. Bạn dùng lưu lượng cho video của người khác, còn khách dùng lưu lượng của bạn trên liên kết và video công khai của bạn. Video của chính bạn không tốn lưu lượng.",
+      "downloadsNoCount": "không tính lượt"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Với {{plan}}, tốc độ bị giới hạn ở {{mb}} MB/s; bạn còn {{left}}/{{limit}} lượt tải xuống đến {{date}}.",
     "limitsSpeed": "Với {{plan}}, tốc độ bị giới hạn ở {{mb}} MB/s.",
     "limitsCount": "Với {{plan}}, bạn còn {{left}}/{{limit}} lượt tải xuống đến {{date}}.",
-    "pro": "Với Pro, không có giới hạn và không phải chờ.",
+    "pro": "Với Pro, tải xuống bắt đầu ngay, chạy ở tốc độ tối đa và không tính lượt.",
     "proLink": "Tìm hiểu thêm về Pro",
     "repeat": "Bạn đã tải video này trong vòng một giờ qua, nên lần này không bị tính.",
     "limitReached": "Bạn đã dùng hết lượt tải xuống của tháng này; lượt tiếp theo có vào {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Kệ rộng hơn, tải xuống không giới hạn, thùng rác giữ lâu hơn, trình chỉnh sửa video, trang có thể ẩn, liên kết ẩn danh tới kệ và mật khẩu cho liên kết tạm thời.",
+    "lead": "Kệ rộng hơn, nhiều lưu lượng hơn, tải xuống ở tốc độ tối đa, thùng rác giữ lâu hơn, trình chỉnh sửa video, trang có thể ẩn, liên kết ẩn danh tới kệ và mật khẩu cho liên kết tạm thời.",
     "period": "Chu kỳ thanh toán",
     "year": "Hằng năm",
     "month": "Hằng tháng",
@@ -1328,7 +1331,8 @@
       "editor": "Trình chỉnh sửa video",
       "hiddenPage": "Trang ẩn",
       "links": "Mật khẩu cho liên kết tạm thời",
-      "anonymousLinks": "Liên kết ẩn danh tới kệ của bạn"
+      "anonymousLinks": "Liên kết ẩn danh tới kệ của bạn",
+      "traffic": "Lưu lượng mỗi tháng"
     },
     "upTo": "tối đa {{size}}",
     "downloadsLimited": "{{count}} lượt mỗi tháng, tối đa {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} trên kệ của bạn",
       "shelfAny": "Kệ không giới hạn",
       "shelfText": "Chỉ video bạn tự tải lên mới chiếm chỗ; video từ người khác thì không bao giờ.",
-      "downloads": "Tải xuống không giới hạn",
-      "downloadsText": "Tốc độ tối đa, không có trang chờ, tải bao nhiêu tùy thích.",
+      "downloads": "Tải xuống ở tốc độ tối đa",
+      "downloadsText": "Không có trang chờ và không tính lượt. Cùng với lượt xem, tải xuống dùng chung {{size}} lưu lượng mỗi tháng.",
       "editor": "Trình chỉnh sửa video",
       "editorText": "Cắt khung, cắt đoạn, làm mờ, bộ hẹn giờ, văn bản và âm thanh — mở từ bất kỳ video nào của bạn.",
       "trash": "{count, plural, other {# ngày}} để đổi ý",
@@ -1368,7 +1372,8 @@
       "start": "Bắt đầu thôi",
       "anonymousLinks": "Liên kết ẩn danh tới kệ của bạn",
       "anonymousLinksText": "Liên kết của tôi: chia sẻ kệ mà không lộ tên người dùng, và xóa liên kết khi không cần nữa."
-    }
+    },
+    "downloadsAny": "không tính lượt, tốc độ tối đa"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Quản lý gói đăng ký",
     "updatePayment": "Cập nhật phương thức thanh toán",
     "upgrade": "Nâng cấp lên Pro",
-    "upgradeHint": "Thêm dung lượng và tải xuống không giới hạn.",
+    "upgradeHint": "Thêm dung lượng, thêm lưu lượng và tải xuống nhanh hơn.",
     "deleteNote": "Gói đăng ký Pro của bạn sẽ bị hủy ngay; thời gian đã trả tiền không được hoàn lại."
   },
   "demo": {

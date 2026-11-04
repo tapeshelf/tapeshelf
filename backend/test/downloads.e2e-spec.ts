@@ -162,6 +162,7 @@ describe('downloads (e2e)', () => {
       own: false,
       busy: false,
       limitReached: false,
+      trafficReached: false,
       waitSec: 5,
     });
     expect((await info(pro, pub.code).expect(200)).body).toMatchObject({

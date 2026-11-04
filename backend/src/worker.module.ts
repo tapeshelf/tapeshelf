@@ -15,6 +15,7 @@ import { BlocklistModule } from './modules/blocklist/blocklist.module.js';
 import { BillingModule } from './modules/billing/billing.module.js';
 import { DemoModule } from './modules/demo/demo.module.js';
 import { PlansModule } from './modules/plans/plans.module.js';
+import { TrafficModule } from './modules/traffic/traffic.module.js';
 import { RetentionModule } from './modules/retention/retention.module.js';
 import { TrashModule } from './modules/trash/trash.module.js';
 import { PipelineModule } from './modules/processing/pipeline.module.js';
@@ -56,6 +57,7 @@ import { SupportModule } from './modules/support/support.module.js';
     OutboxModule,
     SettingsModule,
     PlansModule,
+    TrafficModule,
     BillingModule,
     DemoModule,
     AuditModule,

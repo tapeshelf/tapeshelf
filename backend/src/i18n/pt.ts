@@ -212,6 +212,12 @@ export const pt = {
         'Este link de download expirou. Comece o download de novo pela página do vídeo.',
       range: 'Esta parte do arquivo não existe.',
     },
+    traffic: {
+      limitReached:
+        'Você já usou todo o tráfego do seu plano neste mês. Ele se renova no começo do próximo mês.',
+      sharerLimitReached:
+        'Quem compartilhou este vídeo já usou todo o tráfego deste mês. Ele se renova no começo do próximo mês.',
+    },
     admin: {
       selfAction: 'Você não pode fazer isso com a sua própria conta.',
       adminTarget: 'Remova primeiro a função de administrador.',

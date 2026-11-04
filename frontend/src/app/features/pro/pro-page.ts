@@ -250,7 +250,8 @@ export class ProPage {
             count: l.downloadsPerMonth,
             mb: Math.round((l.downloadSpeedBytesPerSec / 1024 ** 2) * 10) / 10,
           })
-        : t('pro.unlimited');
+        : t('pro.downloadsAny');
+    const traffic = (bytes: number) => (bytes > 0 ? formatBytes(bytes) : t('pro.unlimited'));
     return [
       { label: 'pro.rows.file', free: size(free.maxFileBytes), pro: size(pro.maxFileBytes) },
       {
@@ -259,6 +260,11 @@ export class ProPage {
         pro: size(pro.storageQuotaBytes),
       },
       { label: 'pro.rows.downloads', free: downloads(free), pro: downloads(pro) },
+      {
+        label: 'pro.rows.traffic',
+        free: traffic(free.trafficBytesPerMonth),
+        pro: traffic(pro.trafficBytesPerMonth),
+      },
       {
         label: 'pro.rows.trash',
         free: t('pro.days', { count: free.trashRetentionDays }),

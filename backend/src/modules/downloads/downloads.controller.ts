@@ -57,7 +57,7 @@ export class DownloadsController {
   @ApiOkResponse({ type: DownloadTicketDto })
   @ApiTooManyRequestsResponse({
     description:
-      'downloadLimitReached (details.resetAt) or downloadBusy (another download is running)',
+      'downloadLimitReached or trafficLimitReached (details.resetAt), or downloadBusy (another download is running)',
   })
   ticket(
     @CurrentUser() user: RequestUser,
@@ -73,10 +73,14 @@ export class DownloadsController {
   async redirect(
     @CurrentUser() user: RequestUser,
     @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
     res.setHeader('Cache-Control', 'private, no-store');
-    res.redirect(HttpStatus.FOUND, await this.downloads.redirect(user, id));
+    res.redirect(
+      HttpStatus.FOUND,
+      await this.downloads.redirect(user, id, req.method === 'HEAD'),
+    );
   }
 
   @Get('videos/:id/download/file')

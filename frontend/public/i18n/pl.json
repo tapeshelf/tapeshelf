@@ -403,7 +403,10 @@
       "trash": "Przechowywanie usuniętych",
       "trashDays": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}",
       "extension": "Filmy przez rozszerzenie przeglądarki",
-      "extensionPerDay": "{{count}} dziennie"
+      "extensionPerDay": "{{count}} dziennie",
+      "traffic": "Transfer w tym miesiącu",
+      "trafficNote": "Transfer to wszystko, co się ogląda i pobiera. Gdy film się zaczyna, liczy się cały jego rozmiar, raz dziennie na osobę. Zużywasz go na filmy od innych, a goście zużywają Twój przez Twoje linki i filmy publiczne. Filmy przesłane przez Ciebie nic nie kosztują.",
+      "downloadsNoCount": "bez liczenia"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "W {{plan}} prędkość jest ograniczona do {{mb}} MB/s; do {{date}} zostało {{left}} z {{limit}} pobrań.",
     "limitsSpeed": "W {{plan}} prędkość jest ograniczona do {{mb}} MB/s.",
     "limitsCount": "W {{plan}} do {{date}} zostało {{left}} z {{limit}} pobrań.",
-    "pro": "W Pro nie ma limitów ani czekania.",
+    "pro": "W Pro pobieranie zaczyna się od razu, z pełną prędkością i bez liczenia.",
     "proLink": "Więcej o Pro",
     "repeat": "Ten film był już pobierany w ciągu ostatniej godziny, więc tym razem się nie liczy.",
     "limitReached": "Pobrania na ten miesiąc się wyczerpały; następne będzie możliwe {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Więcej miejsca na półce, pobieranie bez limitów, dłuższe przechowywanie usuniętych filmów, edytor wideo, strona, którą można ukryć, anonimowe linki do Twojej półki i hasła do linków tymczasowych.",
+    "lead": "Więcej miejsca na półce, więcej transferu, pobieranie z pełną prędkością, dłuższe przechowywanie usuniętych filmów, edytor wideo, strona, którą można ukryć, anonimowe linki do Twojej półki i hasła do linków tymczasowych.",
     "period": "Okres rozliczeniowy",
     "year": "Rocznie",
     "month": "Miesięcznie",
@@ -1328,7 +1331,8 @@
       "editor": "Edytor wideo",
       "hiddenPage": "Ukryta strona",
       "links": "Hasła do linków tymczasowych",
-      "anonymousLinks": "Anonimowe linki do Twojej półki"
+      "anonymousLinks": "Anonimowe linki do Twojej półki",
+      "traffic": "Transfer miesięcznie"
     },
     "upTo": "do {{size}}",
     "downloadsLimited": "{{count}} miesięcznie, do {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} na półce",
       "shelfAny": "Półka bez limitu",
       "shelfText": "Miejsce zajmują tylko filmy przesłane przez Ciebie, filmy od innych nigdy.",
-      "downloads": "Pobieranie bez limitów",
-      "downloadsText": "Z pełną prędkością, bez strony oczekiwania, tyle, ile potrzebujesz.",
+      "downloads": "Pobieranie z pełną prędkością",
+      "downloadsText": "Bez strony oczekiwania i bez liczenia. Razem z oglądaniem to {{size}} transferu miesięcznie.",
       "editor": "Edytor wideo",
       "editorText": "Kadrowanie, cięcie, rozmycie, stopery, napisy i dźwięk. Otworzysz go przy każdym swoim filmie.",
       "trash": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} na zmianę zdania",
@@ -1368,7 +1372,8 @@
       "start": "Zaczynamy",
       "anonymousLinks": "Anonimowe linki do Twojej półki",
       "anonymousLinksText": "Moje linki: udostępniaj swoją półkę bez pokazywania nazwy użytkownika i usuń link, gdy nie będzie już potrzebny."
-    }
+    },
+    "downloadsAny": "bez liczenia, pełna prędkość"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Zarządzaj subskrypcją",
     "updatePayment": "Zaktualizuj metodę płatności",
     "upgrade": "Przejdź na Pro",
-    "upgradeHint": "Więcej miejsca i pobieranie bez limitów.",
+    "upgradeHint": "Więcej miejsca, więcej transferu i szybsze pobieranie.",
     "deleteNote": "Twoja subskrypcja Pro zostanie od razu anulowana; za opłacony okres nie ma zwrotu."
   },
   "demo": {

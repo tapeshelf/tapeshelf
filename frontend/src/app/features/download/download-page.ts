@@ -41,7 +41,8 @@ const MiB = 1024 ** 2;
  * The wait page of a limited download: five seconds counted down like a film
  * leader over the video's cover, what the plan allows and what is left this month, a quiet
  * pointer to Pro on tapeshelf.com. Unlimited plans pass straight through to the file, and so does
- * every download on a self-hosted instance, which has no limits on them.
+ * every download on a self-hosted instance, which has no limits on them. Whoever has no
+ * traffic left this month stops here too, on any plan, with the same words as for the count.
  */
 @Component({
   selector: 'app-download-page',
@@ -328,6 +329,7 @@ export class DownloadPage {
       return;
     }
     this.info.set(info);
+    if (info.trafficReached) return this.state.set({ kind: 'limit' });
     if (info.direct) return this.start();
     if (info.limitReached) return this.state.set({ kind: 'limit' });
     if (info.busy) return this.state.set({ kind: 'busy' });
@@ -376,7 +378,8 @@ export class DownloadPage {
       }, 1500);
     } catch (e) {
       const err = toApiError(e);
-      if (err.code === 'downloadLimitReached') this.state.set({ kind: 'limit' });
+      if (err.code === 'downloadLimitReached' || err.code === 'trafficLimitReached')
+        this.state.set({ kind: 'limit' });
       else if (err.code === 'downloadBusy') this.state.set({ kind: 'busy' });
       else
         this.state.set({

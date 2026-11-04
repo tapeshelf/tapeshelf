@@ -403,7 +403,10 @@
       "trash": "Los videos eliminados se guardan",
       "trashDays": "{count, plural, one {# día} many {# de días} other {# días}}",
       "extension": "Videos con la extensión del navegador",
-      "extensionPerDay": "{{count}} al día"
+      "extensionPerDay": "{{count}} al día",
+      "traffic": "Tráfico este mes",
+      "trafficNote": "El tráfico es lo que se ve y se descarga. Cuando empieza un video, cuenta todo su tamaño, una vez al día por persona. Lo gastas en videos de otros, y los invitados gastan el tuyo en tus enlaces y videos públicos. Lo que subes tú no cuesta nada.",
+      "downloadsNoCount": "sin contador"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Con {{plan}}, la velocidad está limitada a {{mb}} MB/s; te quedan {{left}} de {{limit}} descargas hasta el {{date}}.",
     "limitsSpeed": "Con {{plan}}, la velocidad está limitada a {{mb}} MB/s.",
     "limitsCount": "Con {{plan}}, te quedan {{left}} de {{limit}} descargas hasta el {{date}}.",
-    "pro": "Con Pro no hay límites ni esperas.",
+    "pro": "Con Pro, las descargas empiezan al instante, van a máxima velocidad y no se cuentan.",
     "proLink": "Más sobre Pro",
     "repeat": "Ya descargaste este video en la última hora, así que esta vez no cuenta.",
     "limitReached": "Ya usaste las descargas de este mes; la próxima estará disponible el {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Más espacio en tu estante, descargas sin límites, una papelera que guarda más tiempo, el editor de video, una página que puedes ocultar, enlaces anónimos a tu estante y contraseñas en los enlaces temporales.",
+    "lead": "Más espacio en tu estante, más tráfico, descargas a máxima velocidad, una papelera que guarda más tiempo, el editor de video, una página que puedes ocultar, enlaces anónimos a tu estante y contraseñas en los enlaces temporales.",
     "period": "Periodo de facturación",
     "year": "Anual",
     "month": "Mensual",
@@ -1328,7 +1331,8 @@
       "editor": "Editor de video",
       "hiddenPage": "Página oculta",
       "links": "Contraseña en enlaces temporales",
-      "anonymousLinks": "Enlaces anónimos a tu estante"
+      "anonymousLinks": "Enlaces anónimos a tu estante",
+      "traffic": "Tráfico al mes"
     },
     "upTo": "hasta {{size}}",
     "downloadsLimited": "{{count}} al mes, hasta {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} en tu estante",
       "shelfAny": "Un estante sin límite",
       "shelfText": "Solo ocupa espacio lo que subes tú; los videos de otros nunca.",
-      "downloads": "Descargas sin límites",
-      "downloadsText": "A velocidad máxima, sin página de espera, todas las que necesites.",
+      "downloads": "Descargas a máxima velocidad",
+      "downloadsText": "Sin página de espera y sin contador. Comparten con las reproducciones {{size}} de tráfico al mes.",
       "editor": "El editor de video",
       "editorText": "Recorte, cortes, desenfoque, cronómetros, textos y sonido: ábrelo desde cualquiera de tus videos.",
       "trash": "{count, plural, one {# día} many {# de días} other {# días}} para arrepentirte",
@@ -1368,7 +1372,8 @@
       "start": "Vamos allá",
       "anonymousLinks": "Enlaces anónimos a tu estante",
       "anonymousLinksText": "Mis enlaces: comparte tu estante sin mostrar tu nombre de usuario y elimina el enlace cuando ya no lo necesites."
-    }
+    },
+    "downloadsAny": "sin contador, a máxima velocidad"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Gestionar la suscripción",
     "updatePayment": "Actualizar el método de pago",
     "upgrade": "Pasar a Pro",
-    "upgradeHint": "Más espacio y descargas sin límites.",
+    "upgradeHint": "Más espacio, más tráfico y descargas más rápidas.",
     "deleteNote": "Tu suscripción Pro se cancela en el acto; el periodo pagado no se reembolsa."
   },
   "demo": {

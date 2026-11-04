@@ -362,7 +362,8 @@
     "extensionPerDay": "Videos a day through the browser extension",
     "instanceHint": "Changes apply within a minute, without a restart. 0 means no limit. Lowering a limit never deletes anything: it only blocks new uploads over it. Downloads are never limited on this server.",
     "paymentGraceDays": "Days of Pro after a failed renewal",
-    "registrationOpen": "Anyone can create an account"
+    "registrationOpen": "Anyone can create an account",
+    "trafficPerMonth": "Traffic per month, GiB"
   },
   "audit": {
     "anyAction": "Any action",

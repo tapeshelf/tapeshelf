@@ -207,6 +207,12 @@ export const sv = {
         'Nedladdningslänken har gått ut. Starta nedladdningen igen från videons sida.',
       range: 'Den här delen av filen finns inte.',
     },
+    traffic: {
+      limitReached:
+        'Du har använt upp månadens datatrafik för ditt abonnemang. Den förnyas i början av nästa månad.',
+      sharerLimitReached:
+        'Den som delade den här videon har använt upp månadens datatrafik. Den förnyas i början av nästa månad.',
+    },
     admin: {
       selfAction: 'Du kan inte göra så med ditt eget konto.',
       adminTarget: 'Ta bort administratörsrollen först.',

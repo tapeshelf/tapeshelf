@@ -26,6 +26,11 @@ import {
 } from './playback-token.service.js';
 import { editInProgress } from '../editor/edit-job.js';
 import { linkCarries, linkLive } from '../links/link-rules.js';
+import {
+  TrafficService,
+  type TrafficViewer,
+} from '../traffic/traffic.service.js';
+import { VIEW_WINDOW_SEC, playbackSize } from '../traffic/traffic-rules.js';
 import type { PlaybackDto } from './streaming.dto.js';
 
 /** Access decisions are cached briefly; deletion is the only revocation and it may lag a minute. */
@@ -39,6 +44,9 @@ type StreamVideo = PolicyVideo & {
   hlsPrefix: string | null;
   keyVersion: number;
   editJob: unknown;
+  playbackBytes: bigint | null;
+  renderBytes: bigint | null;
+  sizeBytes: bigint;
 };
 
 /** The video and the version a token plays, with that version's files. */
@@ -58,6 +66,7 @@ export class StreamingService {
     private readonly prisma: PrismaService,
     private readonly storage: StorageService,
     private readonly tokens: PlaybackTokenService,
+    private readonly traffic: TrafficService,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     config: ConfigService<Env, true>,
   ) {
@@ -70,12 +79,14 @@ export class StreamingService {
   /**
    * `POST /videos/:id/playback`: checks the right to stream and hands out a short-lived playlist URL.
    * `source`: for its editor (author or admin only), which plays the video as it is now — an
-   * edit starts from it — also while that edit renders.
+   * edit starts from it — also while that edit renders. `guest`: who a guest is, for the
+   * traffic count.
    */
   async createPlayback(
     viewer: RequestUser | undefined,
     videoId: string,
     source = false,
+    guest: TrafficViewer = {},
   ): Promise<PlaybackDto> {
     const video = await this.loadVideo(videoId);
     if (!video) throw notFound();
@@ -100,6 +111,7 @@ export class StreamingService {
         'videoNotWatchable',
         'errors.videos.notWatchable',
       );
+    if (!source) await this.chargeView(viewer, video, guest);
     const token = this.tokens.sign(
       videoId,
       viewer?.id ?? null,
@@ -248,6 +260,32 @@ export class StreamingService {
   }
 
   // ------------------------------------------------------------------ internals
+
+  /**
+   * A view comes off someone's traffic when it starts: the viewer's, or for a guest the
+   * author's, who made the video public. Own uploads and admins spend nothing.
+   */
+  private async chargeView(
+    viewer: RequestUser | undefined,
+    video: StreamVideo,
+    guest: TrafficViewer,
+  ): Promise<void> {
+    if (viewer?.role === 'ADMIN' || viewer?.id === video.authorId) return;
+    const accountId = viewer?.id ?? video.authorId;
+    await this.traffic.charge({
+      accountId,
+      bytes: playbackSize(video),
+      payer: viewer ? 'viewer' : 'sharer',
+      seen: {
+        keys: this.traffic.seenKeys(
+          accountId,
+          `view:${video.id}`,
+          viewer ? { userId: viewer.id } : guest,
+        ),
+        windowSec: VIEW_WINDOW_SEC,
+      },
+    });
+  }
 
   /**
    * Token + (for anything not public) the cookie session must agree with the token subject.
@@ -438,6 +476,9 @@ export class StreamingService {
         hlsPrefix: true,
         keyVersion: true,
         editJob: true,
+        playbackBytes: true,
+        renderBytes: true,
+        sizeBytes: true,
       },
     });
   }

@@ -213,6 +213,12 @@ export const tr = {
         'Bu indirme bağlantısının süresi doldu. İndirmeyi video sayfasından yeniden başlatın.',
       range: 'Dosyanın bu kısmı yok.',
     },
+    traffic: {
+      limitReached:
+        'Planınızın bu ayki trafiğinin hepsini kullandınız. Gelecek ayın başında yenilenir.',
+      sharerLimitReached:
+        'Bu videoyu paylaşan kişi bu ayki trafiğinin hepsini kullandı. Gelecek ayın başında yenilenir.',
+    },
     admin: {
       selfAction: 'Bunu kendi hesabınıza uygulayamazsınız.',
       adminTarget: 'Önce yönetici rolünü kaldırın.',

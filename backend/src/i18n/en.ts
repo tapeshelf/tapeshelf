@@ -209,6 +209,12 @@ export const en = {
         'This download link has expired. Start the download again from the video page.',
       range: 'This part of the file does not exist.',
     },
+    traffic: {
+      limitReached:
+        'You have used up this month’s traffic on your plan. It renews at the start of next month.',
+      sharerLimitReached:
+        'The person who shared this video has used up this month’s traffic. It renews at the start of next month.',
+    },
     admin: {
       selfAction: 'You cannot do this to your own account.',
       adminTarget: 'Remove the admin role first.',

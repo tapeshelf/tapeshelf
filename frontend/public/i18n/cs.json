@@ -403,7 +403,10 @@
       "trash": "Smazaná videa v koši",
       "trashDays": "{count, plural, one {# den} few {# dny} many {# dne} other {# dní}}",
       "extension": "Přes rozšíření prohlížeče",
-      "extensionPerDay": "{{count}} denně"
+      "extensionPerDay": "{{count}} denně",
+      "traffic": "Přenos dat tento měsíc",
+      "trafficNote": "Do přenosu dat se počítá to, co se sleduje a stahuje. Když se video spustí, počítá se celá jeho velikost, jednou denně na člověka. Svůj přenos dat čerpáte na videa od ostatních a hosté čerpají váš přes vaše odkazy a veřejná videa. Videa, která jste nahráli sami, nic nestojí.",
+      "downloadsNoCount": "nepočítá se"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "V {{plan}} je rychlost omezená na {{mb}} MB/s; do {{date}} vám zbývá {{left}} z {{limit}} stažení.",
     "limitsSpeed": "V {{plan}} je rychlost omezená na {{mb}} MB/s.",
     "limitsCount": "V {{plan}} vám do {{date}} zbývá {{left}} z {{limit}} stažení.",
-    "pro": "S Pro nejsou žádné limity ani čekání.",
+    "pro": "S Pro začíná stahování hned, běží plnou rychlostí a nepočítá se.",
     "proLink": "Víc o Pro",
     "repeat": "Toto video jste stahovali během poslední hodiny, takže se tentokrát nepočítá.",
     "limitReached": "Stažení na tento měsíc jsou vyčerpaná; další bude k dispozici {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Víc místa na polici, stahování bez limitů, delší koš, editor videa, stránka, kterou můžete skrýt, anonymní odkazy na polici a hesla u dočasných odkazů.",
+    "lead": "Víc místa na polici, víc přenosu dat, stahování plnou rychlostí, delší koš, editor videa, stránka, kterou můžete skrýt, anonymní odkazy na polici a hesla u dočasných odkazů.",
     "period": "Fakturační období",
     "year": "Ročně",
     "month": "Měsíčně",
@@ -1328,7 +1331,8 @@
       "editor": "Editor videa",
       "hiddenPage": "Skrytá stránka",
       "links": "Heslo u dočasných odkazů",
-      "anonymousLinks": "Anonymní odkazy na polici"
+      "anonymousLinks": "Anonymní odkazy na polici",
+      "traffic": "Přenos dat měsíčně"
     },
     "upTo": "až {{size}}",
     "downloadsLimited": "{{count}} měsíčně, až {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} na polici",
       "shelfAny": "Police bez limitu",
       "shelfText": "Místo zabírají jen videa, která nahrajete; videa od ostatních nikdy.",
-      "downloads": "Stahování bez limitů",
-      "downloadsText": "Plnou rychlostí, bez čekací stránky, kolik potřebujete.",
+      "downloads": "Stahování plnou rychlostí",
+      "downloadsText": "Bez čekací stránky a stažení se nepočítají. Se sledováním videí se dělí o {{size}} přenosu dat měsíčně.",
       "editor": "Editor videa",
       "editorText": "Ořez, střih, rozmazání, stopky, titulky a zvuk; otevřete ho u kteréhokoli svého videa.",
       "trash": "{count, plural, one {# den} few {# dny} many {# dne} other {# dní}} na rozmyšlenou",
@@ -1368,7 +1372,8 @@
       "start": "Jdeme na to",
       "anonymousLinks": "Anonymní odkazy na polici",
       "anonymousLinksText": "„Moje odkazy“: sdílejte polici, aniž byste ukázali uživatelské jméno, a až odkaz nebudete potřebovat, smažte ho."
-    }
+    },
+    "downloadsAny": "nepočítá se, plná rychlost"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Spravovat předplatné",
     "updatePayment": "Aktualizovat platební metodu",
     "upgrade": "Přejít na Pro",
-    "upgradeHint": "Víc místa a stahování bez limitů.",
+    "upgradeHint": "Víc místa, víc přenosu dat a rychlejší stahování.",
     "deleteNote": "Předplatné Pro se okamžitě zruší; za zaplacené období se peníze nevracejí."
   },
   "demo": {

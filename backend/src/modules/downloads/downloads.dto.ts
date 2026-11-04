@@ -44,6 +44,11 @@ export class DownloadInfoDto {
     description: 'Over the monthly limit (a repeat is still allowed)',
   })
   limitReached!: boolean;
+  @ApiProperty({
+    description:
+      'No traffic left this month, so this download will not start (an own upload or a repeat still would)',
+  })
+  trafficReached!: boolean;
   @ApiProperty({ description: 'Seconds to count down before starting' })
   waitSec!: number;
 }

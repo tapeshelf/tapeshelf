@@ -88,7 +88,32 @@ import { panelLink } from '../../core/navigation/panels';
                         : { used: p.usage.downloadsThisMonth, limit: p.limits.downloadsPerMonth }
                   }}
                 } @else {
-                  {{ 'settings.plan.unlimited' | transloco }}
+                  {{ 'settings.plan.downloadsNoCount' | transloco }}
+                }
+              </dd>
+            </div>
+            <!-- Views and downloads this month. -->
+            <div>
+              <dt class="label-mono text-muted">{{ 'settings.plan.traffic' | transloco }}</dt>
+              <dd class="mt-1 text-sm">
+                @if (p.limits.trafficBytesPerMonth > 0) {
+                  <span data-testid="plan-traffic">{{
+                    'settings.plan.used'
+                      | transloco
+                        : {
+                            used: p.usage.trafficBytesThisMonth | bytes,
+                            quota: p.limits.trafficBytesPerMonth | bytes,
+                          }
+                  }}</span>
+                  <app-progress-bar
+                    class="mt-2"
+                    [label]="'settings.plan.traffic' | transloco"
+                    [value]="trafficPercent()"
+                  />
+                } @else {
+                  <span data-testid="plan-traffic">{{
+                    'settings.plan.unlimited' | transloco
+                  }}</span>
                 }
               </dd>
             </div>
@@ -122,6 +147,11 @@ import { panelLink } from '../../core/navigation/panels';
               </dd>
             </div>
           </dl>
+          @if (p.limits.trafficBytesPerMonth > 0) {
+            <p class="mt-4 text-sm text-muted" data-testid="plan-traffic-note">
+              {{ 'settings.plan.trafficNote' | transloco }}
+            </p>
+          }
         </div>
         <div class="mt-5 flex flex-col gap-3" data-testid="plan-billing">
           @if (p.subscription; as s) {
@@ -200,6 +230,12 @@ export class PlanSettingsPage {
   protected readonly speedMb = computed(() => {
     const speed = this.plan()?.limits.downloadSpeedBytesPerSec ?? 0;
     return speed > 0 ? String(Math.round((speed / 1024 ** 2) * 10) / 10) : null;
+  });
+  protected readonly trafficPercent = computed(() => {
+    const p = this.plan();
+    return p && p.limits.trafficBytesPerMonth > 0
+      ? Math.min(100, (p.usage.trafficBytesThisMonth / p.limits.trafficBytesPerMonth) * 100)
+      : 0;
   });
   protected readonly shelfPercent = computed(() => {
     const p = this.plan();

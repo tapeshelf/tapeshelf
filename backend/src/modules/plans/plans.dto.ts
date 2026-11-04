@@ -71,6 +71,17 @@ export class TierLimitsDto {
   downloadConcurrency!: number;
 
   @ApiProperty({
+    minimum: 0,
+    maximum: 1024 * TiB,
+    description:
+      'Views and downloads per calendar month (UTC), by the size of each file; 0 = no limit',
+  })
+  @IsInt()
+  @Min(0)
+  @Max(1024 * TiB)
+  trafficBytesPerMonth!: number;
+
+  @ApiProperty({
     minimum: 1,
     maximum: 3650,
     description:
@@ -179,6 +190,13 @@ export class PlanUsageDto {
     description: 'When the monthly download count starts over',
   })
   downloadsResetAt!: string;
+
+  @ApiProperty({
+    format: 'int64',
+    description:
+      'Views and downloads counted this calendar month (UTC); starts over with the downloads',
+  })
+  trafficBytesThisMonth!: number;
 }
 
 /** The user's Pro subscription (cloud): what the plan tab says about it. */

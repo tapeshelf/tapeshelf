@@ -36,6 +36,7 @@ import { VideoPipelineService } from '../src/modules/processing/video-pipeline.s
 import { readSourceMetadata } from '../src/modules/processing/source-metadata.js';
 import { BillingModule } from '../src/modules/billing/billing.module.js';
 import { PlansModule } from '../src/modules/plans/plans.module.js';
+import { TrafficModule } from '../src/modules/traffic/traffic.module.js';
 import { SettingsModule } from '../src/modules/settings/settings.module.js';
 import { VideosService } from '../src/modules/videos/videos.service.js';
 import { VideosModule } from '../src/modules/videos/videos.module.js';
@@ -75,6 +76,7 @@ describe('video processing pipeline (worker)', () => {
         OutboxModule,
         SettingsModule,
         PlansModule,
+        TrafficModule,
         BillingModule,
         BlocklistModule,
         PipelineModule,

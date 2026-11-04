@@ -173,6 +173,7 @@ model User {
   reportsAgainst          Report[]                  @relation("ReportsAgainst")
   auditEntries            AuditLog[]
   downloads               DownloadEvent[]
+  traffic                 TrafficUsage[]
   blockedFiles            BlockedFile[]
   subscriptions           Subscription[]
   shelfVisits             ShelfVisit[]              @relation("ShelfVisitsMade")
@@ -516,6 +517,8 @@ model Video {
   /// The edited file the current HLS comes from (private bucket) and its size, counted in the quota.
   renderKey           String?
   renderBytes         BigInt?
+  /// What the player streams: the current HLS's segments together; null = not measured yet.
+  playbackBytes       BigInt?
   /// While edited, the original's own HLS stays (editor preview, instant revert) under this key version…
   sourceKeyVersion    Int?
   /// …with what the original was (duration, size, segments, probe), put back on a revert.
@@ -1135,6 +1138,19 @@ model DownloadEvent {
 
   @@index([userId, startedAt])
   @@index([userId, videoId, startedAt])
+}
+
+/// An account's traffic in one calendar month (UTC): one number, nothing about who watched what.
+model TrafficUsage {
+  userId    String   @db.Uuid
+  /// The first day of the month.
+  month     DateTime @db.Date
+  bytes     BigInt   @default(0)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, month])
 }
 
 // ---------------------------------------------------------------------------

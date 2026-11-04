@@ -403,7 +403,10 @@
       "trash": "Conservation des vidéos supprimées",
       "trashDays": "{count, plural, one {# jour} many {# jours} other {# jours}}",
       "extension": "Vidéos via l’extension de navigateur",
-      "extensionPerDay": "{{count}} par jour"
+      "extensionPerDay": "{{count}} par jour",
+      "traffic": "Trafic ce mois-ci",
+      "trafficNote": "Le trafic, c’est ce qui est regardé et téléchargé. Quand une vidéo démarre, toute sa taille compte, une fois par jour et par personne. Vous le consommez avec les vidéos des autres, et les invités consomment le vôtre sur vos liens et vos vidéos publiques. Vos propres vidéos ne coûtent rien.",
+      "downloadsNoCount": "non comptés"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Avec {{plan}}, la vitesse est limitée à {{mb}} Mo/s, et il vous reste {{left}} téléchargements sur {{limit}} jusqu’au {{date}}.",
     "limitsSpeed": "Avec {{plan}}, la vitesse est limitée à {{mb}} Mo/s.",
     "limitsCount": "Avec {{plan}}, il vous reste {{left}} téléchargements sur {{limit}} jusqu’au {{date}}.",
-    "pro": "Avec Pro, ni limite ni attente.",
+    "pro": "Avec Pro, les téléchargements démarrent tout de suite, à pleine vitesse, et ne sont pas comptés.",
     "proLink": "En savoir plus sur Pro",
     "repeat": "Vous avez déjà téléchargé cette vidéo dans l’heure : cette fois ne compte pas.",
     "limitReached": "Les téléchargements de ce mois sont épuisés ; le prochain sera possible le {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Plus d’espace sur votre étagère, des téléchargements sans limite, une corbeille plus longue, l’éditeur vidéo, une page que vous pouvez masquer, des liens anonymes vers votre étagère et des mots de passe sur les liens temporaires.",
+    "lead": "Plus d’espace sur votre étagère, plus de trafic, des téléchargements à pleine vitesse, une corbeille plus longue, l’éditeur vidéo, une page que vous pouvez masquer, des liens anonymes vers votre étagère et des mots de passe sur les liens temporaires.",
     "period": "Période de facturation",
     "year": "Annuel",
     "month": "Mensuel",
@@ -1328,7 +1331,8 @@
       "editor": "Éditeur vidéo",
       "hiddenPage": "Page masquée",
       "links": "Mot de passe sur les liens temporaires",
-      "anonymousLinks": "Liens anonymes vers votre étagère"
+      "anonymousLinks": "Liens anonymes vers votre étagère",
+      "traffic": "Trafic par mois"
     },
     "upTo": "jusqu’à {{size}}",
     "downloadsLimited": "{{count}} par mois, jusqu’à {{mb}} Mo/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} sur votre étagère",
       "shelfAny": "Une étagère sans limite",
       "shelfText": "Seules vos vidéos importées prennent de la place ; celles des autres, jamais.",
-      "downloads": "Des téléchargements sans limite",
-      "downloadsText": "À pleine vitesse, sans page d’attente, autant qu’il vous en faut.",
+      "downloads": "Des téléchargements à pleine vitesse",
+      "downloadsText": "Sans page d’attente, et ils ne sont pas comptés. Avec les vidéos regardées, ils se partagent {{size}} de trafic par mois.",
       "editor": "L’éditeur vidéo",
       "editorText": "Recadrage, coupes, flou, chronos, textes et son : ouvrez-le depuis n’importe laquelle de vos vidéos.",
       "trash": "{count, plural, one {# jour} many {# jours} other {# jours}} pour changer d’avis",
@@ -1368,7 +1372,8 @@
       "start": "C’est parti",
       "anonymousLinks": "Des liens anonymes vers votre étagère",
       "anonymousLinksText": "Mes liens : partagez votre étagère sans montrer votre nom d’utilisateur, et supprimez le lien quand vous n’en avez plus besoin."
-    }
+    },
+    "downloadsAny": "non comptés, à pleine vitesse"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Gérer l’abonnement",
     "updatePayment": "Mettre à jour le moyen de paiement",
     "upgrade": "Passer à Pro",
-    "upgradeHint": "Plus d’espace et des téléchargements sans limite.",
+    "upgradeHint": "Plus d’espace, plus de trafic et des téléchargements plus rapides.",
     "deleteNote": "Votre abonnement Pro est résilié immédiatement ; la période payée n’est pas remboursée."
   },
   "demo": {

@@ -403,7 +403,10 @@
       "trash": "Silinen videolar saklanır",
       "trashDays": "{count, plural, one {# gün} other {# gün}}",
       "extension": "Tarayıcı uzantısı üzerinden",
-      "extensionPerDay": "Günde {{count}} video"
+      "extensionPerDay": "Günde {{count}} video",
+      "traffic": "Bu ayki trafik",
+      "trafficNote": "Trafik, izlenen ve indirilen her şeydir. Bir video başladığında, kişi başına günde bir kez, videonun tüm boyutu sayılır. Siz trafiğinizi başkalarının videolarına harcarsınız, misafirler de bağlantılarınızda ve herkese açık videolarınızda sizin trafiğinizi harcar. Kendi videolarınız trafik harcamaz.",
+      "downloadsNoCount": "sayılmaz"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Hız, {{plan}} kapsamında {{mb}} MB/sn ile sınırlı; {{date}} tarihine kadar {{limit}} indirmeden {{left}} tanesi kaldı.",
     "limitsSpeed": "Hız, {{plan}} kapsamında {{mb}} MB/sn ile sınırlı.",
     "limitsCount": "{{date}} tarihine kadar {{plan}} kapsamında {{limit}} indirmeden {{left}} tanesi kaldı.",
-    "pro": "Pro’da ne sınır var ne bekleme.",
+    "pro": "Pro’da indirmeler hemen başlar, tam hızda olur ve sayılmaz.",
     "proLink": "Pro hakkında daha fazlası",
     "repeat": "Bu videoyu son bir saat içinde indirdiniz, bu yüzden bu indirme sayılmaz.",
     "limitReached": "Bu ayki indirme hakkınız doldu; sonraki indirme {{date}} tarihinde açılır.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Rafınızda daha fazla alan, sınırsız indirme, daha uzun süre saklayan çöp kutusu, video düzenleyici, gizlenebilen sayfa, rafınıza anonim bağlantılar ve geçici bağlantılara şifre.",
+    "lead": "Rafınızda daha fazla alan, daha fazla trafik, tam hızda indirme, daha uzun süre saklayan çöp kutusu, video düzenleyici, gizlenebilen sayfa, rafınıza anonim bağlantılar ve geçici bağlantılara şifre.",
     "period": "Ödeme dönemi",
     "year": "Yıllık",
     "month": "Aylık",
@@ -1328,7 +1331,8 @@
       "editor": "Video düzenleyici",
       "hiddenPage": "Gizli sayfa",
       "links": "Geçici bağlantılarda şifre",
-      "anonymousLinks": "Rafınıza anonim bağlantılar"
+      "anonymousLinks": "Rafınıza anonim bağlantılar",
+      "traffic": "Aylık trafik"
     },
     "upTo": "en fazla {{size}}",
     "downloadsLimited": "ayda {{count}}, en fazla {{mb}} MB/sn",
@@ -1352,8 +1356,8 @@
       "shelf": "Rafınızda {{size}} alan",
       "shelfAny": "Sınırsız raf",
       "shelfText": "Yalnızca kendi yüklemeleriniz yer kaplar; başkalarından gelen videolar hiçbir zaman kaplamaz.",
-      "downloads": "Sınırsız indirme",
-      "downloadsText": "Tam hızda, bekleme sayfası olmadan, istediğiniz kadar.",
+      "downloads": "Tam hızda indirme",
+      "downloadsText": "Bekleme sayfası yok ve indirmeler sayılmaz. İzlemelerle birlikte ayda {{size}} trafiği paylaşır.",
       "editor": "Video düzenleyici",
       "editorText": "Kırpma, kesme, bulanıklaştırma, zamanlayıcılar, yazılar ve ses: herhangi bir videonuzdan açın.",
       "trash": "Fikrinizi değiştirmek için {count, plural, one {# gün} other {# gün}}",
@@ -1368,7 +1372,8 @@
       "start": "Başlayalım",
       "anonymousLinks": "Rafınıza anonim bağlantılar",
       "anonymousLinksText": "“Bağlantılarım”: rafınızı kullanıcı adınızı göstermeden paylaşın, işiniz bitince bağlantıyı silin."
-    }
+    },
+    "downloadsAny": "sayılmaz, tam hız"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Aboneliği yönet",
     "updatePayment": "Ödeme yöntemini güncelle",
     "upgrade": "Pro’ya geç",
-    "upgradeHint": "Daha fazla alan ve sınırsız indirme.",
+    "upgradeHint": "Daha fazla alan, daha fazla trafik ve daha hızlı indirme.",
     "deleteNote": "Pro aboneliğiniz hemen iptal edilir; ödenmiş dönemin ücreti iade edilmez."
   },
   "demo": {

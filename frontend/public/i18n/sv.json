@@ -403,7 +403,10 @@
       "trash": "Raderade videor sparas",
       "trashDays": "{count, plural, one {# dag} other {# dagar}}",
       "extension": "Via webbläsartillägget",
-      "extensionPerDay": "{{count}} per dag"
+      "extensionPerDay": "{{count}} per dag",
+      "traffic": "Datatrafik den här månaden",
+      "trafficNote": "Datatrafik är det som spelas upp och laddas ner. När en video startar räknas hela dess storlek, en gång per dygn per person. Du använder den på videor från andra, och gäster använder din via dina länkar och offentliga videor. Dina egna videor kostar ingenting.",
+      "downloadsNoCount": "räknas inte"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Med {{plan}} är hastigheten begränsad till {{mb}} MB/s och du har {{left}} av {{limit}} nedladdningar kvar till {{date}}.",
     "limitsSpeed": "Med {{plan}} är hastigheten begränsad till {{mb}} MB/s.",
     "limitsCount": "Med {{plan}} har du {{left}} av {{limit}} nedladdningar kvar till {{date}}.",
-    "pro": "Med Pro finns inga gränser och ingen väntan.",
+    "pro": "Med Pro startar nedladdningar direkt, går i full hastighet och räknas inte.",
     "proLink": "Mer om Pro",
     "repeat": "Du laddade ner den här videon under den senaste timmen, så den här gången räknas inte.",
     "limitReached": "Månadens nedladdningar är slut. Nästa blir tillgänglig den {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Mer utrymme på hyllan, nedladdningar utan gränser, längre tid i papperskorgen, videoredigeraren, en sida du kan dölja, anonyma länkar till din hylla och lösenord på tillfälliga länkar.",
+    "lead": "Mer utrymme på hyllan, mer datatrafik, nedladdningar i full hastighet, längre tid i papperskorgen, videoredigeraren, en sida du kan dölja, anonyma länkar till din hylla och lösenord på tillfälliga länkar.",
     "period": "Betalningsperiod",
     "year": "Årsvis",
     "month": "Månadsvis",
@@ -1328,7 +1331,8 @@
       "editor": "Videoredigerare",
       "hiddenPage": "Dold sida",
       "links": "Lösenord på tillfälliga länkar",
-      "anonymousLinks": "Anonyma länkar till din hylla"
+      "anonymousLinks": "Anonyma länkar till din hylla",
+      "traffic": "Datatrafik per månad"
     },
     "upTo": "upp till {{size}}",
     "downloadsLimited": "{{count}} per månad, upp till {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} på din hylla",
       "shelfAny": "En hylla utan gräns",
       "shelfText": "Bara dina egna uppladdningar tar plats, videor från andra gör det aldrig.",
-      "downloads": "Nedladdningar utan gränser",
-      "downloadsText": "I full hastighet, utan väntsida, så många du behöver.",
+      "downloads": "Nedladdningar i full hastighet",
+      "downloadsText": "Ingen väntsida, och de räknas inte. Tillsammans med visningar delar de på {{size}} datatrafik per månad.",
       "editor": "Videoredigeraren",
       "editorText": "Beskär, klipp, gör suddigt, lägg till stoppur, texter och ljud. Öppna den från vilken av dina videor som helst.",
       "trash": "{count, plural, one {# dag} other {# dagar}} att ångra dig",
@@ -1368,7 +1372,8 @@
       "start": "Sätt igång",
       "anonymousLinks": "Anonyma länkar till din hylla",
       "anonymousLinksText": "”Mina länkar”: dela din hylla utan att visa ditt användarnamn och radera länken när du är klar."
-    }
+    },
+    "downloadsAny": "räknas inte, full hastighet"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Hantera abonnemanget",
     "updatePayment": "Uppdatera betalningssätt",
     "upgrade": "Uppgradera till Pro",
-    "upgradeHint": "Mer utrymme och nedladdningar utan gränser.",
+    "upgradeHint": "Mer utrymme, mer datatrafik och snabbare nedladdningar.",
     "deleteNote": "Ditt Pro-abonnemang sägs upp direkt. Den betalda perioden återbetalas inte."
   },
   "demo": {

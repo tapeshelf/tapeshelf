@@ -136,6 +136,11 @@ export class LinkPageDto {
     description: 'The ZIP of them all: a little more than the files',
   })
   zipBytes!: number;
+  @ApiProperty({
+    description:
+      'The sender has no traffic left this month: the videos neither play nor download',
+  })
+  senderTrafficReached!: boolean;
 }
 
 export class UnlockLinkDto {

@@ -215,6 +215,12 @@ export const es = {
         'Este enlace de descarga caducó. Vuelve a iniciar la descarga desde la página del video.',
       range: 'Esta parte del archivo no existe.',
     },
+    traffic: {
+      limitReached:
+        'Ya agotaste el tráfico de tu plan para este mes. Se renueva a principios del próximo mes.',
+      sharerLimitReached:
+        'Quien compartió este video agotó el tráfico de este mes. Se renueva a principios del próximo mes.',
+    },
     admin: {
       selfAction: 'No puedes hacer esto con tu propia cuenta.',
       adminTarget: 'Primero quita el rol de administrador.',

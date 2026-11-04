@@ -403,7 +403,10 @@
       "trash": "Gelöschte Videos bleiben",
       "trashDays": "{count, plural, one {# Tag} other {# Tage}}",
       "extension": "Videos über die Browsererweiterung",
-      "extensionPerDay": "{{count}} pro Tag"
+      "extensionPerDay": "{{count}} pro Tag",
+      "traffic": "Datenvolumen in diesem Monat",
+      "trafficNote": "Zum Datenvolumen zählt, was angesehen und heruntergeladen wird. Startet ein Video, zählt seine ganze Größe, einmal pro Tag und Person. Du verbrauchst dein Datenvolumen für Videos von anderen, und Gäste verbrauchen es über deine Links und öffentlichen Videos. Deine eigenen Videos kosten nichts.",
+      "downloadsNoCount": "ohne Zählung"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "Im {{plan}} ist die Geschwindigkeit auf {{mb}} MB/s begrenzt; bis {{date}} hast du noch {{left}} von {{limit}} Downloads.",
     "limitsSpeed": "Im {{plan}} ist die Geschwindigkeit auf {{mb}} MB/s begrenzt.",
     "limitsCount": "Im {{plan}} hast du bis {{date}} noch {{left}} von {{limit}} Downloads.",
-    "pro": "Mit Pro gibt es keine Limits und keine Wartezeit.",
+    "pro": "Mit Pro starten Downloads sofort, laufen mit voller Geschwindigkeit und werden nicht gezählt.",
     "proLink": "Mehr über Pro",
     "repeat": "Du hast dieses Video in der letzten Stunde schon heruntergeladen, deshalb zählt dieser Download nicht.",
     "limitReached": "Die Downloads für diesen Monat sind aufgebraucht; der nächste ist am {{date}} möglich.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Mehr Platz in deinem Regal, Downloads ohne Limit, ein Papierkorb, der länger aufbewahrt, der Videoeditor, eine Seite, die du verstecken kannst, anonyme Links zu deinem Regal und Passwörter für temporäre Links.",
+    "lead": "Mehr Platz in deinem Regal, mehr Datenvolumen, Downloads mit voller Geschwindigkeit, ein Papierkorb, der länger aufbewahrt, der Videoeditor, eine Seite, die du verstecken kannst, anonyme Links zu deinem Regal und Passwörter für temporäre Links.",
     "period": "Abrechnungszeitraum",
     "year": "Jährlich",
     "month": "Monatlich",
@@ -1328,7 +1331,8 @@
       "editor": "Videoeditor",
       "hiddenPage": "Versteckte Seite",
       "links": "Passwort für temporäre Links",
-      "anonymousLinks": "Anonyme Links zu deinem Regal"
+      "anonymousLinks": "Anonyme Links zu deinem Regal",
+      "traffic": "Datenvolumen pro Monat"
     },
     "upTo": "bis {{size}}",
     "downloadsLimited": "{{count}} pro Monat, bis {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} in deinem Regal",
       "shelfAny": "Ein Regal ohne Limit",
       "shelfText": "Platz belegen nur deine eigenen Uploads, Videos von anderen nie.",
-      "downloads": "Downloads ohne Limit",
-      "downloadsText": "Mit voller Geschwindigkeit, ohne Warteseite, so viele du brauchst.",
+      "downloads": "Downloads mit voller Geschwindigkeit",
+      "downloadsText": "Ohne Warteseite und ohne Zählung. Downloads und Ansehen teilen sich {{size}} Datenvolumen pro Monat.",
       "editor": "Der Videoeditor",
       "editorText": "Zuschneiden, Kürzen, Weichzeichnen, Timer, Texte und Ton. Du öffnest ihn bei jedem deiner Videos.",
       "trash": "{count, plural, one {# Tag} other {# Tage}} Bedenkzeit",
@@ -1368,7 +1372,8 @@
       "start": "Los geht’s",
       "anonymousLinks": "Anonyme Links zu deinem Regal",
       "anonymousLinksText": "Meine Links: Teile dein Regal, ohne deinen Nutzernamen zu zeigen, und lösche den Link, wenn du ihn nicht mehr brauchst."
-    }
+    },
+    "downloadsAny": "ohne Zählung, volle Geschwindigkeit"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Abo verwalten",
     "updatePayment": "Zahlungsmethode aktualisieren",
     "upgrade": "Zu Pro wechseln",
-    "upgradeHint": "Mehr Platz und Downloads ohne Limit.",
+    "upgradeHint": "Mehr Platz, mehr Datenvolumen und schnellere Downloads.",
     "deleteNote": "Dein Pro-Abo wird sofort beendet; der bezahlte Zeitraum wird nicht erstattet."
   },
   "demo": {

@@ -16,6 +16,7 @@ import { canDownload } from '../access/access-policy.js';
 import { PlansService } from '../plans/plans.service.js';
 import type { TierLimits } from '../settings/settings.defaults.js';
 import { POLICY_SELECT, toViewer } from '../streaming/streaming.service.js';
+import { TrafficService } from '../traffic/traffic.service.js';
 import {
   REPEAT_WINDOW_MS,
   WAIT_SEC,
@@ -113,7 +114,8 @@ export async function downloadUsage(
  * Downloads of originals. Every signed-in viewer who
  * may watch a video may download it. Pro and admins get a presigned link straight to storage; Free
  * goes through the wait page, gets a one-time ticket and the file streams through the API at the
- * tier's speed, one at a time, ten a month (the same video again within an hour is free).
+ * tier's speed, one at a time, ten a month (the same video again within an hour is free). Either way
+ * the file's size comes off the viewer's monthly traffic, unless they uploaded it.
  */
 @Injectable()
 export class DownloadsService {
@@ -124,6 +126,7 @@ export class DownloadsService {
     private readonly storage: StorageService,
     private readonly plans: PlansService,
     private readonly tickets: DownloadTicketService,
+    private readonly traffic: TrafficService,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     config: ConfigService<Env, true>,
   ) {
@@ -149,13 +152,12 @@ export class DownloadsService {
     const limits = await this.limits(user);
     const direct = downloadMode(user.role, limits) === 'direct';
     const { resetAt } = monthWindow(now);
-    const [{ used }, repeat, active] = direct
-      ? [{ used: 0 }, false, 0]
-      : await Promise.all([
-          downloadUsage(this.prisma, user.id, now),
-          this.isRepeat(user.id, video.id, now),
-          this.activeCount(user.id, now),
-        ]);
+    const [{ used }, repeat, active, traffic] = await Promise.all([
+      direct ? { used: 0 } : downloadUsage(this.prisma, user.id, now),
+      this.isRepeat(user.id, video.id, now),
+      direct ? 0 : this.activeCount(user.id, now),
+      this.traffic.standing(user.id, now),
+    ]);
     const limit = direct ? 0 : limits.downloadsPerMonth;
     const concurrency = direct ? 0 : limits.downloadConcurrency;
     return {
@@ -178,6 +180,7 @@ export class DownloadsService {
       busy: concurrency > 0 && active >= concurrency,
       limitReached:
         limit > 0 && used >= limit && !repeat && video.authorId !== user.id,
+      trafficReached: traffic.reached && !repeat && video.authorId !== user.id,
       waitSec: direct ? 0 : WAIT_SEC,
     };
   }
@@ -191,13 +194,15 @@ export class DownloadsService {
     const video = await this.load(user, { id: videoId });
     const limits = await this.limits(user);
     if (downloadMode(user.role, limits) === 'direct')
-      return { url: await this.direct(user, video), direct: true };
+      return { url: await this.direct(user, video, now), direct: true };
     if (
       limits.downloadConcurrency > 0 &&
       (await this.activeCount(user.id, now)) >= limits.downloadConcurrency
     )
       throw busy();
     await this.counts(user, video, limits, now);
+    // Said here, before the file request: there it would land on a blank tab.
+    if (await this.outOfTraffic(user, video, now)) throw trafficReached(now);
     const t = this.tickets.sign(video.id, user.id, now.getTime());
     return {
       url: `/api/videos/${video.id}/download/file?t=${encodeURIComponent(t)}`,
@@ -205,13 +210,23 @@ export class DownloadsService {
     };
   }
 
-  /** `GET /videos/:id/download`: a direct download at once, a limited one via the wait page. */
-  async redirect(user: RequestUser, videoId: string): Promise<string> {
+  /**
+   * `GET /videos/:id/download`: a direct download at once, a limited one via the wait page, and so
+   * does one with no traffic left: that page says why. A HEAD spends nothing.
+   */
+  async redirect(
+    user: RequestUser,
+    videoId: string,
+    head = false,
+    now = new Date(),
+  ): Promise<string> {
     const video = await this.load(user, { id: videoId });
     const limits = await this.limits(user);
-    return downloadMode(user.role, limits) === 'direct'
-      ? this.direct(user, video)
-      : `${this.publicUrl}/download/${video.code}`;
+    const page = `${this.publicUrl}/download/${video.code}`;
+    if (head || downloadMode(user.role, limits) !== 'direct') return page;
+    return (await this.outOfTraffic(user, video, now))
+      ? page
+      : this.direct(user, video, now);
   }
 
   /**
@@ -252,6 +267,7 @@ export class DownloadsService {
     try {
       if (first) {
         const counted = await this.counts(user, video, limits, now);
+        await this.spendTraffic(user, video, now);
         await this.record(user, video.id, counted);
       }
       const file = fileOf(video);
@@ -321,11 +337,42 @@ export class DownloadsService {
     return this.plans.limitsFor(user.tier);
   }
 
-  /** Presigned link to the original; logged, never counted. */
+  /** The file's size off the viewer's traffic; not an own upload, not a retry. */
+  private async spendTraffic(
+    user: RequestUser,
+    video: DownloadVideo,
+    now: Date,
+  ): Promise<void> {
+    if (video.authorId === user.id) return;
+    if (await this.isRepeat(user.id, video.id, now)) return;
+    await this.traffic.charge(
+      {
+        accountId: user.id,
+        bytes: fileOf(video).sizeBytes,
+        payer: 'viewer',
+      },
+      now,
+    );
+  }
+
+  /** Whether this download would be refused for traffic: an own upload or a retry never is. */
+  private async outOfTraffic(
+    user: RequestUser,
+    video: DownloadVideo,
+    now: Date,
+  ): Promise<boolean> {
+    if (video.authorId === user.id) return false;
+    const { reached } = await this.traffic.standing(user.id, now);
+    return reached && !(await this.isRepeat(user.id, video.id, now));
+  }
+
+  /** Presigned link to the original: logged, outside the count of downloads, off the traffic. */
   private async direct(
     user: RequestUser,
     video: DownloadVideo,
+    now: Date,
   ): Promise<string> {
+    await this.spendTraffic(user, video, now);
     await this.record(user, video.id, false);
     const file = fileOf(video);
     return this.storage.presignGet('private', file.key, DIRECT_URL_TTL_SEC, {
@@ -476,6 +523,13 @@ const busy = () =>
     HttpStatus.TOO_MANY_REQUESTS,
     'downloadBusy',
     'errors.downloads.busy',
+  );
+const trafficReached = (now: Date) =>
+  new AppException(
+    HttpStatus.TOO_MANY_REQUESTS,
+    'trafficLimitReached',
+    'errors.traffic.limitReached',
+    { details: { resetAt: monthWindow(now).resetAt.toISOString() } },
   );
 const ticketInvalid = () =>
   new AppException(

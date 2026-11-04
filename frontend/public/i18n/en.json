@@ -403,7 +403,10 @@
       "trash": "Deleted videos kept",
       "trashDays": "{count, plural, one {# day} other {# days}}",
       "extension": "Through the browser extension",
-      "extensionPerDay": "{{count}} videos a day"
+      "extensionPerDay": "{{count}} videos a day",
+      "traffic": "Traffic this month",
+      "trafficNote": "Traffic is what gets watched and downloaded. When a video starts, its whole size counts, once a day per person. You spend it on videos from others, and guests spend yours on your links and public videos. Your own videos cost nothing.",
+      "downloadsNoCount": "not counted"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "On {{plan}}, speed is limited to {{mb}} MB/s; {{left}} of {{limit}} downloads left until {{date}}.",
     "limitsSpeed": "On {{plan}}, speed is limited to {{mb}} MB/s.",
     "limitsCount": "On {{plan}}, {{left}} of {{limit}} downloads are left until {{date}}.",
-    "pro": "With Pro there are no limits and no waiting.",
+    "pro": "With Pro, downloads start at once, run at full speed and aren't counted.",
     "proLink": "More about Pro",
     "repeat": "You downloaded this video within the last hour, so this time does not count.",
     "limitReached": "This month's downloads are used up; the next one is available on {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "More room on your shelf, downloads without limits, a longer trash, the video editor, a page you can hide, anonymous links to your shelf and passwords on temporary links.",
+    "lead": "More room on your shelf, more traffic, downloads at full speed, a longer trash, the video editor, a page you can hide, anonymous links to your shelf and passwords on temporary links.",
     "period": "Billing period",
     "year": "Yearly",
     "month": "Monthly",
@@ -1328,7 +1331,8 @@
       "editor": "Video editor",
       "hiddenPage": "Hidden page",
       "links": "Password on temporary links",
-      "anonymousLinks": "Anonymous links to your shelf"
+      "anonymousLinks": "Anonymous links to your shelf",
+      "traffic": "Traffic a month"
     },
     "upTo": "up to {{size}}",
     "downloadsLimited": "{{count}} a month, up to {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} on your shelf",
       "shelfAny": "A shelf without a limit",
       "shelfText": "Only your own uploads take room; videos from others never do.",
-      "downloads": "Downloads without limits",
-      "downloadsText": "At full speed, no waiting page, as many as you need.",
+      "downloads": "Downloads at full speed",
+      "downloadsText": "No waiting page, and they aren't counted. With views, they share {{size}} of traffic a month.",
       "editor": "The video editor",
       "editorText": "Crop, cut, blur, timers, captions and sound — open it from any of your videos.",
       "trash": "{count, plural, one {# day} other {# days}} to change your mind",
@@ -1368,7 +1372,8 @@
       "start": "Let’s go",
       "anonymousLinks": "Anonymous links to your shelf",
       "anonymousLinksText": "My links: share your shelf without showing your nickname, and delete the link when you are done."
-    }
+    },
+    "downloadsAny": "not counted, full speed"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Manage subscription",
     "updatePayment": "Update payment method",
     "upgrade": "Upgrade to Pro",
-    "upgradeHint": "More room and downloads without limits.",
+    "upgradeHint": "More room, more traffic and faster downloads.",
     "deleteNote": "Your Pro subscription is cancelled right away; the paid period is not refunded."
   },
   "demo": {

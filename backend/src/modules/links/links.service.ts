@@ -37,6 +37,15 @@ import type { PlaybackDto } from '../streaming/streaming.dto.js';
 import { StreamingService } from '../streaming/streaming.service.js';
 import { toViewer } from '../streaming/streaming.service.js';
 import {
+  TrafficService,
+  type TrafficViewer,
+} from '../traffic/traffic.service.js';
+import {
+  DOWNLOAD_WINDOW_SEC,
+  VIEW_WINDOW_SEC,
+  playbackSize,
+} from '../traffic/traffic-rules.js';
+import {
   LINK_CODES_PER_HOUR,
   LINK_CODE_TRIES,
   LINK_CODE_TTL_SEC,
@@ -129,6 +138,7 @@ const VIDEO_SELECT = {
   mimeType: true,
   renderKey: true,
   renderBytes: true,
+  playbackBytes: true,
   author: { select: { id: true, username: true, displayName: true } },
 } as const;
 type LinkVideo = Prisma.VideoGetPayload<{ select: typeof VIDEO_SELECT }>;
@@ -143,8 +153,9 @@ interface Item {
  * Temporary links. A Pro sender puts videos on a page
  * at /t/<code>; whoever has the link (and passes its password, its emailed code) watches them,
  * downloads them without the tier's limits — one by one straight from storage, or all as one ZIP —
- * and puts them on their own shelf as a copy shared by the sender, for good. When the time is up,
- * the link is taken back or nothing is left in it, the page is a 404.
+ * and puts them on their own shelf as a copy shared by the sender, for good. Watching and downloading
+ * spend the sender's monthly traffic, not the viewer's. When the time is up, the link is
+ * taken back or nothing is left in it, the page is a 404.
  */
 @Injectable()
 export class LinksService {
@@ -160,6 +171,7 @@ export class LinksService {
     private readonly outbox: OutboxService,
     private readonly mail: MailDeliveryService,
     private readonly anonymous: AnonymousLinksService,
+    private readonly traffic: TrafficService,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     config: ConfigService<Env, true>,
   ) {
@@ -281,6 +293,7 @@ export class LinksService {
       ? await this.videosFor(items, viewer, link.senderId)
       : [];
     const entries = open ? this.entries(items) : [];
+    const traffic = open ? await this.traffic.standing(link.senderId) : null;
     return {
       sender: {
         username: link.sender.username,
@@ -301,6 +314,7 @@ export class LinksService {
       videos,
       totalBytes: entries.reduce((n, e) => n + e.size, 0),
       zipBytes: entries.length ? zipSize(entries) : 0,
+      senderTrafficReached: !own && !!traffic?.reached,
     };
   }
 
@@ -399,20 +413,37 @@ export class LinksService {
     videoId: string,
     viewer: RequestUser | undefined,
     pass: LinkPass | null,
+    guest: TrafficViewer = {},
   ): Promise<PlaybackDto> {
     const { link, item } = await this.openItem(code, videoId, viewer, pass);
+    await this.spendTraffic(link.senderId, viewer, guest, {
+      what: `view:${item.video.id}`,
+      bytes: playbackSize(item.video),
+      windowSec: VIEW_WINDOW_SEC,
+    });
     return this.streaming.linkPlayback(item.video.id, link.id, link.expiresAt);
   }
 
-  /** Straight from storage at full speed: the link is the sender's Pro, not a tier. */
+  /**
+   * Straight from storage at full speed: the link is the sender's Pro, not a tier. Off the
+   * sender's traffic. A HEAD (`spend` false) only looks: nothing is sent, nothing is spent.
+   */
   async download(
     code: string,
     videoId: string,
     viewer: RequestUser | undefined,
     pass: LinkPass | null,
+    guest: TrafficViewer = {},
+    spend = true,
   ): Promise<string> {
-    const { item } = await this.openItem(code, videoId, viewer, pass);
+    const { link, item } = await this.openItem(code, videoId, viewer, pass);
     const file = fileOf(item.video);
+    if (spend)
+      await this.spendTraffic(link.senderId, viewer, guest, {
+        what: `download:${item.video.id}`,
+        bytes: file.sizeBytes,
+        windowSec: DOWNLOAD_WINDOW_SEC,
+      });
     return this.storage.presignGet('private', file.key, DOWNLOAD_URL_TTL_SEC, {
       contentDisposition: attachmentHeader(file.filename),
     });
@@ -423,6 +454,8 @@ export class LinksService {
     code: string,
     viewer: RequestUser | undefined,
     pass: LinkPass | null,
+    guest: TrafficViewer = {},
+    spend = true,
   ): Promise<{ filename: string; size: number; body: Readable }> {
     const { link, items } = await this.openLink(code, viewer, pass);
     // The files' real lengths: one byte off and the archive would break at its end.
@@ -433,6 +466,12 @@ export class LinksService {
       ...e,
       size: heads[i]?.size ?? e.size,
     }));
+    if (spend)
+      await this.spendTraffic(link.senderId, viewer, guest, {
+        what: `zip:${link.id}`,
+        bytes: entries.reduce((n, e) => n + e.size, 0),
+        windowSec: DOWNLOAD_WINDOW_SEC,
+      });
     const body = Readable.from(zipStream(entries));
     this.watch(link.id, body);
     return {
@@ -612,6 +651,26 @@ export class LinksService {
       if (me?.email && normalizeEmail(me.email) === link.email) code = false;
     }
     return { password: !!link.passwordHash && !own?.p, code };
+  }
+
+  /** Whoever opens the link spends the sender's traffic; the sender and admins spend nothing. */
+  private async spendTraffic(
+    senderId: string,
+    viewer: RequestUser | undefined,
+    guest: TrafficViewer,
+    spending: { what: string; bytes: number; windowSec: number },
+  ): Promise<void> {
+    if (viewer?.id === senderId || isAdmin(toViewer(viewer))) return;
+    const who = viewer ? { userId: viewer.id } : guest;
+    await this.traffic.charge({
+      accountId: senderId,
+      bytes: spending.bytes,
+      payer: 'sharer',
+      seen: {
+        keys: this.traffic.seenKeys(senderId, spending.what, who),
+        windowSec: spending.windowSec,
+      },
+    });
   }
 
   private async openLink(

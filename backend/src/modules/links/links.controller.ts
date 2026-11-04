@@ -170,7 +170,13 @@ export class LinksController {
     @Param('videoId', ParseUUIDPipe) videoId: string,
     @Req() req: AppRequest,
   ): Promise<PlaybackDto> {
-    return this.links.playback(checked(code), videoId, user, passOf(req, code));
+    return this.links.playback(
+      checked(code),
+      videoId,
+      user,
+      passOf(req, code),
+      { guestId: req.guestId, ip: req.ip },
+    );
   }
 
   @Public()
@@ -192,6 +198,8 @@ export class LinksController {
       videoId,
       user,
       passOf(req, code),
+      { guestId: req.guestId, ip: req.ip },
+      req.method !== 'HEAD',
     );
     res.setHeader('Cache-Control', 'private, no-store');
     res.redirect(HttpStatus.FOUND, url);
@@ -208,7 +216,13 @@ export class LinksController {
     @Req() req: AppRequest,
     @Res() res: Response,
   ): Promise<void> {
-    const zip = await this.links.zip(checked(code), user, passOf(req, code));
+    const zip = await this.links.zip(
+      checked(code),
+      user,
+      passOf(req, code),
+      { guestId: req.guestId, ip: req.ip },
+      req.method !== 'HEAD',
+    );
     res.status(HttpStatus.OK).set({
       'Content-Type': 'application/zip',
       'Content-Length': String(zip.size),

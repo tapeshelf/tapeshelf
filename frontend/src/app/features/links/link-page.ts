@@ -281,11 +281,13 @@ import { timeLeft } from './links';
             <!-- One video has its own buttons; "all" is for several. -->
             @if (p.videos.length > 1) {
               <div class="flex flex-wrap gap-2">
-                <a appButton [href]="zipUrl()" download data-testid="link-zip"
-                  ><ng-icon name="lucideFileArchive" size="16" />{{
-                    'links.page.zip' | transloco: { size: (p.zipBytes | bytes) }
-                  }}</a
-                >
+                @if (!p.senderTrafficReached) {
+                  <a appButton [href]="zipUrl()" download data-testid="link-zip"
+                    ><ng-icon name="lucideFileArchive" size="16" />{{
+                      'links.page.zip' | transloco: { size: (p.zipBytes | bytes) }
+                    }}</a
+                  >
+                }
                 @if (auth.user() && !p.own) {
                   <button
                     type="button"
@@ -436,22 +438,26 @@ import { timeLeft } from './links';
                       }}</span>
                     </button>
                   }
-                  <a
-                    appButton
-                    size="sm"
-                    [variant]="playing() === item.video.id ? 'primary' : 'secondary'"
-                    [href]="downloadUrl(item)"
-                    download
-                    [attr.aria-label]="'links.page.download' | transloco"
-                    [attr.title]="'links.page.download' | transloco"
-                    data-testid="link-download"
-                    ><ng-icon name="lucideDownload" size="14" /><span
-                      [class]="
-                        auth.user() && !p.own ? 'hidden @[22rem]:inline' : 'hidden @[15rem]:inline'
-                      "
-                      >{{ 'links.page.download' | transloco }}</span
-                    ></a
-                  >
+                  @if (!p.senderTrafficReached) {
+                    <a
+                      appButton
+                      size="sm"
+                      [variant]="playing() === item.video.id ? 'primary' : 'secondary'"
+                      [href]="downloadUrl(item)"
+                      download
+                      [attr.aria-label]="'links.page.download' | transloco"
+                      [attr.title]="'links.page.download' | transloco"
+                      data-testid="link-download"
+                      ><ng-icon name="lucideDownload" size="14" /><span
+                        [class]="
+                          auth.user() && !p.own
+                            ? 'hidden @[22rem]:inline'
+                            : 'hidden @[15rem]:inline'
+                        "
+                        >{{ 'links.page.download' | transloco }}</span
+                      ></a
+                    >
+                  }
                   @if (auth.user() && !p.own) {
                     @if (item.onShelf) {
                       <span

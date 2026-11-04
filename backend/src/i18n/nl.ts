@@ -215,6 +215,12 @@ export const nl = {
         'Deze downloadlink is verlopen. Start de download opnieuw vanaf de videopagina.',
       range: 'Dit deel van het bestand bestaat niet.',
     },
+    traffic: {
+      limitReached:
+        'Je hebt het dataverkeer van je abonnement voor deze maand opgebruikt. Het wordt aan het begin van volgende maand weer aangevuld.',
+      sharerLimitReached:
+        'Degene die deze video heeft gedeeld, heeft het dataverkeer van deze maand opgebruikt. Het wordt aan het begin van volgende maand weer aangevuld.',
+    },
     admin: {
       selfAction: 'Dit kun je niet met je eigen account doen.',
       adminTarget: 'Haal eerst de beheerdersrol weg.',

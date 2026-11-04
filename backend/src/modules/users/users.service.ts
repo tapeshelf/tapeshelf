@@ -27,6 +27,7 @@ import {
 import { effectiveTier } from '../plans/plan.js';
 import { PlansService } from '../plans/plans.service.js';
 import { SettingsService } from '../settings/settings.service.js';
+import { TrafficService } from '../traffic/traffic.service.js';
 import { type PageSettings, pageSettingsFrom } from './page-settings.js';
 import type {
   PublicUserDto,
@@ -98,6 +99,7 @@ export class UsersService {
     private readonly billing: BillingService,
     private readonly storage: StorageService,
     private readonly anonymous: AnonymousLinksService,
+    private readonly traffic: TrafficService,
   ) {}
 
   async getMe(userId: string): Promise<MeDto> {
@@ -135,9 +137,10 @@ export class UsersService {
         oauthAccounts: { select: { provider: true } },
       },
     });
-    const [plan, downloads, subscription] = await Promise.all([
+    const [plan, downloads, trafficBytes, subscription] = await Promise.all([
       this.plans.planOf(u),
       downloadUsage(this.prisma, u.id),
+      this.traffic.usedThisMonth(u.id),
       this.billing.subscriptionOf(u.id),
     ]);
     return {
@@ -179,6 +182,7 @@ export class UsersService {
           storageBytes: Number(u.storageUsedBytes),
           downloadsThisMonth: downloads.used,
           downloadsResetAt: downloads.resetAt.toISOString(),
+          trafficBytesThisMonth: trafficBytes,
         },
         subscription,
       },

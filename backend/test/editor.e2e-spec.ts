@@ -29,6 +29,7 @@ import { SHEET_VERSION } from '../src/modules/processing/contact-sheet.js';
 import { PipelineModule } from '../src/modules/processing/pipeline.module.js';
 import { VideoPipelineService } from '../src/modules/processing/video-pipeline.service.js';
 import { PlansModule } from '../src/modules/plans/plans.module.js';
+import { TrafficModule } from '../src/modules/traffic/traffic.module.js';
 import { SettingsModule } from '../src/modules/settings/settings.module.js';
 import { VideosModule } from '../src/modules/videos/videos.module.js';
 import { ensureFixtures } from './utils/fixtures.js';
@@ -77,6 +78,7 @@ describe('video editor (e2e)', () => {
         OutboxModule,
         SettingsModule,
         PlansModule,
+        TrafficModule,
         BillingModule,
         BlocklistModule,
         PipelineModule,

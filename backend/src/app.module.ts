@@ -34,6 +34,7 @@ import { BillingModule } from './modules/billing/billing.module.js';
 import { CaptchaModule } from './modules/captcha/captcha.module.js';
 import { DemoModule } from './modules/demo/demo.module.js';
 import { PlansModule } from './modules/plans/plans.module.js';
+import { TrafficModule } from './modules/traffic/traffic.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
 import { StreamingModule } from './modules/streaming/streaming.module.js';
 import { DownloadsModule } from './modules/downloads/downloads.module.js';
@@ -113,6 +114,7 @@ import { SupportModule } from './modules/support/support.module.js';
     MailModule,
     SettingsModule,
     PlansModule,
+    TrafficModule,
     BillingModule,
     DemoModule,
     CaptchaModule,

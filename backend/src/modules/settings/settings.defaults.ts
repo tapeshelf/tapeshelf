@@ -14,6 +14,8 @@ export interface TierLimits {
   downloadSpeedBytesPerSec: number;
   /** Downloads running at once; 0 = no limit. */
   downloadConcurrency: number;
+  /** What an account may spend on views and downloads per calendar month (UTC); 0 = no limit. */
+  trafficBytesPerMonth: number;
   /** Days a video the author deleted stays restorable before its files are erased. */
   trashRetentionDays: number;
   /** Signed-in rate limits are multiplied by this; guests always get ×1. */
@@ -55,6 +57,7 @@ export const SETTING_DEFAULTS = {
       downloadsPerMonth: 10,
       downloadSpeedBytesPerSec: 1 * MiB,
       downloadConcurrency: 1,
+      trafficBytesPerMonth: 50 * GiB,
       trashRetentionDays: 7,
       apiRateMultiplier: 1,
       extensionPerDay: 3,
@@ -66,6 +69,7 @@ export const SETTING_DEFAULTS = {
       downloadsPerMonth: 0,
       downloadSpeedBytesPerSec: 0,
       downloadConcurrency: 0,
+      trafficBytesPerMonth: 1024 * GiB,
       trashRetentionDays: 30,
       apiRateMultiplier: 3,
       extensionPerDay: 0,

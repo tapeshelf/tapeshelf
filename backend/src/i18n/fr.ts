@@ -224,6 +224,12 @@ export const fr = {
         'Ce lien de téléchargement a expiré. Relancez le téléchargement depuis la page de la vidéo.',
       range: 'Cette partie du fichier n’existe pas.',
     },
+    traffic: {
+      limitReached:
+        'Vous avez épuisé le trafic de votre formule pour ce mois. Il se renouvelle au début du mois prochain.',
+      sharerLimitReached:
+        'La personne qui a partagé cette vidéo a épuisé son trafic de ce mois. Il se renouvelle au début du mois prochain.',
+    },
     admin: {
       selfAction: 'Vous ne pouvez pas faire cela sur votre propre compte.',
       adminTarget: 'Retirez d’abord le rôle d’administrateur.',

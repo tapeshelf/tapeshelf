@@ -136,7 +136,12 @@ export class ProWelcomeDialog {
             params: { size: shelf },
           }
         : { icon: 'lucideHardDrive', title: 'pro.welcome.shelfAny', text: 'pro.welcome.shelfText' },
-      { icon: 'lucideDownload', title: 'pro.welcome.downloads', text: 'pro.welcome.downloadsText' },
+      {
+        icon: 'lucideDownload',
+        title: 'pro.welcome.downloads',
+        text: 'pro.welcome.downloadsText',
+        params: { size: formatBytes(pro.trafficBytesPerMonth) },
+      },
       { icon: 'lucideScissors', title: 'pro.welcome.editor', text: 'pro.welcome.editorText' },
       {
         icon: 'lucideRotateCcw',

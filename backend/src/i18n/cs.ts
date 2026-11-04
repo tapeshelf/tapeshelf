@@ -214,6 +214,12 @@ export const cs = {
         'Platnost odkazu ke stažení vypršela. Spusťte stahování znovu ze stránky videa.',
       range: 'Tato část souboru neexistuje.',
     },
+    traffic: {
+      limitReached:
+        'Přenos dat vašeho tarifu na tento měsíc jste už vyčerpali. Obnoví se na začátku příštího měsíce.',
+      sharerLimitReached:
+        'Člověk, který toto video sdílí, vyčerpal přenos dat na tento měsíc. Obnoví se na začátku příštího měsíce.',
+    },
     admin: {
       selfAction: 'Tohle se svým vlastním účtem udělat nemůžete.',
       adminTarget: 'Nejdřív odeberte roli administrátora.',

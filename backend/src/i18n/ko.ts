@@ -198,6 +198,12 @@ export const ko = {
         '만료된 다운로드 링크예요. 동영상 페이지에서 다시 다운로드하세요.',
       range: '파일에 이 부분이 없어요.',
     },
+    traffic: {
+      limitReached:
+        '요금제의 이번 달 트래픽을 다 썼어요. 다음 달 초에 초기화돼요.',
+      sharerLimitReached:
+        '이 동영상을 공유한 사람이 이번 달 트래픽을 다 썼어요. 다음 달 초에 초기화돼요.',
+    },
     admin: {
       selfAction: '내 계정에는 이 작업을 할 수 없어요.',
       adminTarget: '먼저 관리자 역할을 해제하세요.',

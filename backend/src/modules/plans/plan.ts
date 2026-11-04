@@ -69,8 +69,8 @@ export function planOf(
 }
 
 /**
- * A self-hosted instance's limits in the shape of a tier's: downloads are never limited
- * (straight from storage) and rate limits are not multiplied.
+ * A self-hosted instance's limits in the shape of a tier's: downloads and traffic are never
+ * limited (straight from storage) and rate limits are not multiplied.
  */
 export function instanceTierLimits(l: InstanceLimits): TierLimits {
   return {
@@ -78,6 +78,7 @@ export function instanceTierLimits(l: InstanceLimits): TierLimits {
     downloadsPerMonth: 0,
     downloadSpeedBytesPerSec: 0,
     downloadConcurrency: 0,
+    trafficBytesPerMonth: 0,
     apiRateMultiplier: 1,
   };
 }

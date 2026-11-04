@@ -403,7 +403,10 @@
       "trash": "Tempo na lixeira",
       "trashDays": "{count, plural, one {# dia} many {# dias} other {# dias}}",
       "extension": "Vídeos pela extensão do navegador",
-      "extensionPerDay": "{{count}} por dia"
+      "extensionPerDay": "{{count}} por dia",
+      "traffic": "Tráfego neste mês",
+      "trafficNote": "Tráfego é tudo o que é assistido e baixado. Quando um vídeo começa, conta o tamanho inteiro dele, uma vez por dia por pessoa. Você gasta tráfego com vídeos de outras pessoas, e os convidados gastam o seu nos seus links e vídeos públicos. Os seus próprios vídeos não custam nada.",
+      "downloadsNoCount": "sem contagem"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "No {{plan}}, a velocidade é limitada a {{mb}} MB/s; restam {{left}} de {{limit}} downloads até {{date}}.",
     "limitsSpeed": "No {{plan}}, a velocidade é limitada a {{mb}} MB/s.",
     "limitsCount": "No {{plan}}, restam {{left}} de {{limit}} downloads até {{date}}.",
-    "pro": "Com o Pro não há limites nem espera.",
+    "pro": "Com o Pro, os downloads começam na hora, na velocidade máxima e sem contagem.",
     "proLink": "Mais sobre o Pro",
     "repeat": "Você já baixou este vídeo na última hora, então desta vez não conta.",
     "limitReached": "Os downloads deste mês acabaram; o próximo fica disponível em {{date}}.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "Mais espaço na estante, downloads sem limite, lixeira por mais tempo, o editor de vídeo, uma página que você pode ocultar, links anônimos para a sua estante e senhas nos links temporários.",
+    "lead": "Mais espaço na estante, mais tráfego, downloads na velocidade máxima, lixeira por mais tempo, o editor de vídeo, uma página que você pode ocultar, links anônimos para a sua estante e senhas nos links temporários.",
     "period": "Período de cobrança",
     "year": "Anual",
     "month": "Mensal",
@@ -1328,7 +1331,8 @@
       "editor": "Editor de vídeo",
       "hiddenPage": "Página oculta",
       "links": "Senha nos links temporários",
-      "anonymousLinks": "Links anônimos para a sua estante"
+      "anonymousLinks": "Links anônimos para a sua estante",
+      "traffic": "Tráfego por mês"
     },
     "upTo": "até {{size}}",
     "downloadsLimited": "{{count}} por mês, até {{mb}} MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "{{size}} na sua estante",
       "shelfAny": "Uma estante sem limite",
       "shelfText": "Só os vídeos que você envia ocupam espaço; os de outras pessoas, nunca.",
-      "downloads": "Downloads sem limite",
-      "downloadsText": "Na velocidade máxima, sem página de espera, quantos você precisar.",
+      "downloads": "Downloads na velocidade máxima",
+      "downloadsText": "Sem página de espera e sem contagem. Junto com as visualizações, eles dividem {{size}} de tráfego por mês.",
       "editor": "O editor de vídeo",
       "editorText": "Recorte, cortes, desfoque, cronômetros, legendas e som: abra o editor em qualquer vídeo seu.",
       "trash": "{count, plural, one {# dia} many {# dias} other {# dias}} para mudar de ideia",
@@ -1368,7 +1372,8 @@
       "start": "Vamos lá",
       "anonymousLinks": "Links anônimos para a sua estante",
       "anonymousLinksText": "Meus links: compartilhe sua estante sem mostrar seu nome de usuário e exclua o link quando não precisar mais dele."
-    }
+    },
+    "downloadsAny": "sem contagem, velocidade máxima"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "Gerenciar assinatura",
     "updatePayment": "Atualizar forma de pagamento",
     "upgrade": "Assinar o Pro",
-    "upgradeHint": "Mais espaço e downloads sem limite.",
+    "upgradeHint": "Mais espaço, mais tráfego e downloads mais rápidos.",
     "deleteNote": "Sua assinatura Pro é cancelada na hora; o período pago não é reembolsado."
   },
   "demo": {

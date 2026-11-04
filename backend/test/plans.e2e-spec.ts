@@ -114,6 +114,7 @@ describe('plans (e2e)', () => {
         downloadsResetAt: expect.stringMatching(
           /^\d{4}-\d{2}-01T00:00:00\.000Z$/,
         ),
+        trafficBytesThisMonth: 0,
       },
       subscription: null,
     });

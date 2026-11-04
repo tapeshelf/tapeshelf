@@ -403,7 +403,10 @@
       "trash": "삭제한 동영상 보관 기간",
       "trashDays": "{count, plural, other {#일}}",
       "extension": "브라우저 확장 프로그램으로 저장",
-      "extensionPerDay": "하루 {{count}}개"
+      "extensionPerDay": "하루 {{count}}개",
+      "traffic": "이번 달 트래픽",
+      "trafficNote": "트래픽은 시청과 다운로드에 쓰는 데이터 양이에요. 동영상이 시작되면 전체 크기가 계산되고, 한 사람당 하루에 한 번만 계산돼요. 다른 사람의 동영상에는 내 트래픽을 쓰고, 내 링크와 공개 동영상에서 게스트가 쓰는 것도 내 트래픽이에요. 내 동영상은 트래픽을 쓰지 않아요.",
+      "downloadsNoCount": "횟수 세지 않음"
     }
   },
   "profile": {
@@ -1287,7 +1290,7 @@
     "limitsBoth": "{{plan}}에서는 속도가 {{mb}}MB/s로 제한되고, {{date}}까지 다운로드가 {{limit}}회 중 {{left}}회 남았어요.",
     "limitsSpeed": "{{plan}}에서는 속도가 {{mb}}MB/s로 제한돼요.",
     "limitsCount": "{{plan}}에서는 {{date}}까지 다운로드가 {{limit}}회 중 {{left}}회 남았어요.",
-    "pro": "Pro에는 제한도 기다림도 없어요.",
+    "pro": "Pro에서는 다운로드가 바로 시작되고, 최고 속도로 진행되며, 횟수를 세지 않아요.",
     "proLink": "Pro 자세히 보기",
     "repeat": "최근 1시간 안에 다운로드한 동영상이라 이번에는 횟수에 포함되지 않아요.",
     "limitReached": "이번 달 다운로드 횟수를 다 썼어요. 다음 다운로드는 {{date}}부터 가능해요.",
@@ -1305,7 +1308,7 @@
   },
   "pro": {
     "title": "Pro",
-    "lead": "더 넓은 선반, 제한 없는 다운로드, 더 오래 보관되는 휴지통, 동영상 편집기, 숨길 수 있는 페이지, 선반 익명 링크, 임시 링크 비밀번호.",
+    "lead": "더 넓은 선반, 더 많은 트래픽, 최고 속도 다운로드, 더 오래 보관되는 휴지통, 동영상 편집기, 숨길 수 있는 페이지, 선반 익명 링크, 임시 링크 비밀번호.",
     "period": "결제 주기",
     "year": "연간",
     "month": "월간",
@@ -1328,7 +1331,8 @@
       "editor": "동영상 편집기",
       "hiddenPage": "페이지 숨기기",
       "links": "임시 링크 비밀번호",
-      "anonymousLinks": "선반 익명 링크"
+      "anonymousLinks": "선반 익명 링크",
+      "traffic": "월 트래픽"
     },
     "upTo": "최대 {{size}}",
     "downloadsLimited": "월 {{count}}회, 최대 {{mb}}MB/s",
@@ -1352,8 +1356,8 @@
       "shelf": "선반 용량 {{size}}",
       "shelfAny": "용량 제한 없는 선반",
       "shelfText": "내가 업로드한 동영상만 용량을 차지해요. 다른 사람에게 받은 동영상은 차지하지 않아요.",
-      "downloads": "제한 없는 다운로드",
-      "downloadsText": "대기 페이지 없이 최고 속도로, 필요한 만큼 받으세요.",
+      "downloads": "최고 속도 다운로드",
+      "downloadsText": "대기 페이지가 없고 횟수도 세지 않아요. 시청과 다운로드가 월 {{size}} 트래픽을 함께 써요.",
       "editor": "동영상 편집기",
       "editorText": "자르기, 구간 삭제, 흐림, 타이머, 자막, 소리까지. 내 동영상 어디에서든 열 수 있어요.",
       "trash": "마음을 바꿀 시간 {count, plural, other {#일}}",
@@ -1368,7 +1372,8 @@
       "start": "시작하기",
       "anonymousLinks": "선반 익명 링크",
       "anonymousLinksText": "내 링크: 사용자 이름을 드러내지 않고 선반을 공유하고, 다 쓴 링크는 삭제하세요."
-    }
+    },
+    "downloadsAny": "횟수 세지 않음, 최고 속도"
   },
   "billing": {
     "interval": {
@@ -1382,7 +1387,7 @@
     "manage": "구독 관리",
     "updatePayment": "결제 수단 업데이트",
     "upgrade": "Pro로 업그레이드",
-    "upgradeHint": "더 넓은 공간과 제한 없는 다운로드.",
+    "upgradeHint": "더 넓은 공간, 더 많은 트래픽, 더 빠른 다운로드.",
     "deleteNote": "Pro 구독은 바로 해지되고, 결제한 기간은 환불되지 않아요."
   },
   "demo": {

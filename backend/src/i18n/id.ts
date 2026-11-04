@@ -208,6 +208,12 @@ export const id = {
         'Tautan unduhan ini sudah kedaluwarsa. Mulai unduhan lagi dari halaman video.',
       range: 'Bagian file ini tidak ada.',
     },
+    traffic: {
+      limitReached:
+        'Anda sudah memakai semua trafik bulan ini di paket Anda. Trafik diperbarui pada awal bulan depan.',
+      sharerLimitReached:
+        'Orang yang membagikan video ini sudah memakai semua trafik bulan ini. Trafik diperbarui pada awal bulan depan.',
+    },
     admin: {
       selfAction: 'Anda tidak bisa melakukan ini pada akun Anda sendiri.',
       adminTarget: 'Cabut dulu peran admin.',

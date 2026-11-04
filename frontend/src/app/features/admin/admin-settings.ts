@@ -238,6 +238,13 @@ export class AdminSettingsPage {
       step: 1,
     },
     {
+      key: 'trafficGiB',
+      label: 'admin.settings.trafficPerMonth',
+      min: 0,
+      max: 1048576,
+      step: 1,
+    },
+    {
       key: 'trashRetentionDays',
       label: 'admin.settings.trashRetentionDays',
       min: 1,
