@@ -1,5 +1,6 @@
 export const ko = {
   errors: {
+    deviceUnknown: '이 휴대폰은 더 이상 로그인되어 있지 않아요. 앱을 여세요.',
     clientTooOld: '이 버전의 앱은 너무 오래돼서 이 서버에서 쓸 수 없어요.',
     internal: '서버에 문제가 생겼어요. 나중에 다시 시도해 주세요.',
     generic: '요청을 처리하지 못했어요.',

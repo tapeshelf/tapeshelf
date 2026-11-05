@@ -1,5 +1,6 @@
 export const fr = {
   errors: {
+    deviceUnknown: 'Ce téléphone n’est plus connecté. Ouvrez l’application.',
     clientTooOld:
       'Cette version de l’application est trop ancienne pour ce serveur.',
     internal:

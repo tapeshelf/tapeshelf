@@ -20,6 +20,8 @@ export const QUEUES = {
   mail: 'mail',
   /** Video editor renders: one at a time, they are long. */
   edit: 'edit',
+  /** Signals to the phone app's devices. */
+  push: 'push',
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
@@ -48,6 +50,7 @@ export const JOB = {
   trafficSweep: 'traffic.sweep',
   outboxDrain: 'outbox.drain',
   mail: 'mail',
+  push: 'push',
   editRender: 'edit.render',
   /** Files of a replaced version, deleted a while later so nobody watching is cut off. */
   filesDelete: 'files.delete',
@@ -159,3 +162,8 @@ export interface RenderedMailJob {
 }
 
 export type MailQueueJob = MailJob | RenderedMailJob;
+
+/** One push message (PushMessage row) to signal to its person's phones. */
+export interface PushQueueJob {
+  pushId: string;
+}

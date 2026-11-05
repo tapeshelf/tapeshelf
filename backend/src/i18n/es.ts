@@ -1,5 +1,7 @@
 export const es = {
   errors: {
+    deviceUnknown:
+      'Este teléfono ya no tiene la sesión iniciada. Abre la aplicación.',
     clientTooOld:
       'Esta versión de la app es demasiado antigua para este servidor.',
     internal: 'Algo salió mal por nuestra parte. Inténtalo más tarde.',

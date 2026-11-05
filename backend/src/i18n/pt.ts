@@ -1,5 +1,6 @@
 export const pt = {
   errors: {
+    deviceUnknown: 'Este telefone não está mais conectado. Abra o app.',
     clientTooOld: 'Esta versão do app é antiga demais para este servidor.',
     internal: 'Algo deu errado do nosso lado. Tente de novo mais tarde.',
     generic: 'Não foi possível concluir a solicitação.',

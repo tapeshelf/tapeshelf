@@ -374,10 +374,14 @@
       "title": "Thông báo",
       "hint": "Chọn cách bạn muốn được báo về từng sự kiện. Thông báo trong ứng dụng hiện dưới biểu tượng chuông; email được gửi tới địa chỉ của bạn.",
       "hintNoEmail": "Chọn các sự kiện hiển thị dưới biểu tượng chuông.",
+      "hintPush": "Chọn cách bạn muốn biết về từng sự kiện. Thông báo trong ứng dụng hiện dưới biểu tượng chuông, email gửi tới địa chỉ của bạn, còn thông báo đẩy tới điện thoại có cài ứng dụng.",
+      "hintPushNoEmail": "Chọn cách bạn muốn biết về từng sự kiện: dưới biểu tượng chuông, hoặc bằng thông báo đẩy trên điện thoại có cài ứng dụng.",
       "newMessageNoEmail": "Tin nhắn mới trong trò chuyện",
+      "newMessagePush": "Tin nhắn trò chuyện mới (chỉ gửi email khi tôi ngoại tuyến và tin không tới được điện thoại)",
       "event": "Sự kiện",
       "inApp": "Trong ứng dụng",
-      "email": "Email"
+      "email": "Email",
+      "push": "Push"
     },
     "blocked": {
       "title": "Người dùng đã chặn",

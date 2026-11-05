@@ -64,6 +64,13 @@ export class CaptchaComponent {
   readonly token = output<string | null>();
   /** The script could not load (blocked or offline). */
   readonly failed = output<void>();
+  /** The widget is on the page (its script came and drew it). */
+  readonly shown = output<void>();
+  /**
+   * The widget gave up on a try: its frame did not load, or the check did not go through. It
+   * tries again by itself; a page with nothing else to show may say so instead.
+   */
+  readonly broken = output<void>();
 
   private readonly box = viewChild.required<ElementRef<HTMLElement>>('box');
   private readonly theme = inject(ThemeService);
@@ -85,8 +92,12 @@ export class CaptchaComponent {
             language: document.documentElement.lang || 'en',
             callback: (token) => this.token.emit(token),
             'expired-callback': () => this.token.emit(null),
-            'error-callback': () => this.token.emit(null),
+            'error-callback': () => {
+              this.token.emit(null);
+              this.broken.emit();
+            },
           });
+          this.shown.emit();
         })
         .catch(() => this.failed.emit());
     });

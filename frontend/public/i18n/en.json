@@ -374,10 +374,14 @@
       "title": "Notifications",
       "hint": "Choose how you want to hear about each event. In-app notifications show under the bell; emails go to your address.",
       "hintNoEmail": "Choose which events show under the bell.",
+      "hintPush": "Choose how you want to hear about each event. In-app notifications show under the bell, emails go to your address, push notifications to your phone with the app.",
+      "hintPushNoEmail": "Choose how you want to hear about each event: under the bell, or as a push notification on your phone with the app.",
       "newMessageNoEmail": "New chat message",
+      "newMessagePush": "New chat message (email only while I am offline and it does not reach my phone)",
       "event": "Event",
       "inApp": "In-app",
-      "email": "Email"
+      "email": "Email",
+      "push": "Push"
     },
     "blocked": {
       "title": "Blocked users",

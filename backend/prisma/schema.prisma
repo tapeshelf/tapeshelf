@@ -147,6 +147,9 @@ model User {
   deletedAt            DateTime?
 
   sessions                Session[]
+  devices                 Device[]
+  pushMessages            PushMessage[]
+  offlineCopies           OfflineCopy[]
   passkeys                Passkey[]
   recoveryCodes           RecoveryCode[]
   emailTokens             EmailToken[]
@@ -234,9 +237,68 @@ model Session {
   /// to the two-step sign-in need it from the last ten minutes.
   secondFactorAt   DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// The phone this session is: it goes with the session.
+  device Device?
 
   @@index([userId])
+}
+
+/// A phone with the app: one per session, gone with it (a revoked session's device is
+/// skipped until the session itself is swept). `token` is where push signals go (Firebase Cloud
+/// Messaging); null when the phone cannot get them (no push on this server, notifications not
+/// allowed): the app then asks for news itself.
+model Device {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @db.Uuid
+  sessionId String   @unique @db.Uuid
+  /// `android` or `ios`.
+  platform  String
+  token     String?  @unique
+  /// The app reads its pushes with this key, not with the session: woken in the background it
+  /// must not renew the session behind the app's back. Only the SHA-256 is kept; a new one each
+  /// time the app registers.
+  keyHash   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// What a push says: only its id goes through Google; the phone fetches the rest here,
+/// with its device key. Kept a week.
+model PushMessage {
+  id             String           @id @default(uuid(7)) @db.Uuid
+  userId         String           @db.Uuid
+  type           NotificationType
+  payload        Json
+  /// The bell item of the same news, when the bell has it.
+  notificationId String?          @db.Uuid
+  createdAt      DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, id])
+  @@index([createdAt])
+}
+
+/// A video saved to a phone for watching without a network: its traffic is
+/// charged when it is saved, and for a week after that the phone may ask for fresh links to finish
+/// or redo the copy without being charged again — a download that waited for Wi-Fi, or a copy the
+/// author's edit replaced. One row per person and video, whatever the phone.
+model OfflineCopy {
+  userId  String   @db.Uuid
+  videoId String   @db.Uuid
+  savedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, videoId])
+  @@index([videoId])
 }
 
 /// A connected app: the browser extension saves videos to its owner's shelf with this
@@ -543,6 +605,7 @@ model Video {
   shareLinkItems    ShareLinkItem[]
   exchangeLinkItems ExchangeLinkItem[]
   anonymousCodes    AnonymousCode[]
+  offlineCopies     OfflineCopy[]
   /// The deal a guest uploaded it for: only that deal's other side ever sees it.
   dealId            String?             @db.Uuid
   deal              VideoRequest?       @relation("DealUploads", fields: [dealId], references: [id], onDelete: SetNull)
@@ -705,6 +768,8 @@ model NotificationPreference {
   type   NotificationType
   inApp  Boolean
   email  Boolean
+  /// Null: the default of the type (rows written before push existed, or changing another channel).
+  push   Boolean?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1148,11 +1213,11 @@ model DownloadEvent {
 
 /// An account's traffic in one calendar month (UTC): one number, nothing about who watched what.
 model TrafficUsage {
-  userId    String   @db.Uuid
+  userId    String    @db.Uuid
   /// The first day of the month.
-  month     DateTime @db.Date
-  bytes     BigInt   @default(0)
-  updatedAt DateTime @default(now()) @updatedAt
+  month     DateTime  @db.Date
+  bytes     BigInt    @default(0)
+  updatedAt DateTime  @default(now()) @updatedAt
   /// When the account was told its traffic is running out, and that it is used up: once a month each.
   warnedAt  DateTime?
   usedUpAt  DateTime?

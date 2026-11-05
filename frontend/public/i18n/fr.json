@@ -374,10 +374,14 @@
       "title": "Notifications",
       "hint": "Choisissez comment chaque événement vous est signalé. Les notifications de l’appli s’affichent sous la cloche ; les e-mails arrivent à votre adresse.",
       "hintNoEmail": "Choisissez les événements affichés sous la cloche.",
+      "hintPush": "Choisissez comment être prévenu de chaque événement. Les notifications de l’app s’affichent sous la cloche, les e-mails arrivent à votre adresse, les notifications push sur votre téléphone avec l’app.",
+      "hintPushNoEmail": "Choisissez comment être prévenu de chaque événement : sous la cloche, ou par une notification push sur votre téléphone avec l’app.",
       "newMessageNoEmail": "Nouveau message",
+      "newMessagePush": "Nouveau message de chat (e-mail seulement si je suis hors ligne et qu’il n’arrive pas sur mon téléphone)",
       "event": "Événement",
       "inApp": "Dans l’appli",
-      "email": "E-mail"
+      "email": "E-mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Utilisateurs bloqués",

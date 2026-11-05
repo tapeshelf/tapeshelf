@@ -59,6 +59,13 @@ export const envSchema = z.object({
     .url()
     .default('https://challenges.cloudflare.com/turnstile/v0/siteverify'),
   /**
+   * Push to the phone app through Firebase Cloud Messaging: the Firebase project's service
+   * account key, as its JSON or that JSON in base64. Off without it (a self-hosted server: the app
+   * then asks for news itself). The API base is overridden by tests only.
+   */
+  FCM_SERVICE_ACCOUNT: optional(z.string().min(1)),
+  FCM_API_URL: z.url().default('https://fcm.googleapis.com'),
+  /**
    * The public demo: a banner with the demo account, sign-up without the confirmation email,
    * no email sent at all, and everything erased and seeded again daily (04:00 UTC). Never with
    * EDITION=cloud.

@@ -374,10 +374,14 @@
       "title": "Aviseringar",
       "hint": "Välj hur du vill få veta om varje händelse. Aviseringar i appen visas under klockan. Mejl skickas till din adress.",
       "hintNoEmail": "Välj vilka händelser som visas under klockan.",
+      "hintPush": "Välj hur du vill få veta om varje händelse. Aviseringar i appen visas under klockan, e-post går till din adress och pushaviseringar till din telefon med appen.",
+      "hintPushNoEmail": "Välj hur du vill få veta om varje händelse: under klockan eller som pushavisering på din telefon med appen.",
       "newMessageNoEmail": "Nytt chattmeddelande",
+      "newMessagePush": "Nytt chattmeddelande (e-post bara när jag är offline och det inte når min telefon)",
       "event": "Händelse",
       "inApp": "I appen",
-      "email": "Mejl"
+      "email": "Mejl",
+      "push": "Push"
     },
     "blocked": {
       "title": "Blockerade användare",

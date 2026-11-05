@@ -374,10 +374,14 @@
       "title": "Notifikasi",
       "hint": "Pilih cara Anda ingin diberi tahu tentang setiap peristiwa. Notifikasi di aplikasi muncul di bawah ikon lonceng; email dikirim ke alamat Anda.",
       "hintNoEmail": "Pilih peristiwa yang muncul di ikon lonceng.",
+      "hintPush": "Pilih cara Anda ingin tahu tentang setiap peristiwa. Notifikasi dalam aplikasi muncul di bawah lonceng, email dikirim ke alamat Anda, dan notifikasi push ke ponsel Anda yang memakai aplikasi.",
+      "hintPushNoEmail": "Pilih cara Anda ingin tahu tentang setiap peristiwa: di bawah lonceng, atau lewat notifikasi push di ponsel yang memakai aplikasi.",
       "newMessageNoEmail": "Pesan obrolan baru",
+      "newMessagePush": "Pesan obrolan baru (email hanya saat saya offline dan pesan tidak sampai ke ponsel saya)",
       "event": "Peristiwa",
       "inApp": "Di aplikasi",
-      "email": "Email"
+      "email": "Email",
+      "push": "Push"
     },
     "blocked": {
       "title": "Pengguna diblokir",

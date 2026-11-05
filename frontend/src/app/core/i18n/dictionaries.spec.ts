@@ -89,7 +89,7 @@ describe.each([
     // the brand (the footer's "© {{year}} TapeShelf"), the plan names (Free, Pro) and language
     // names (each named in itself).
     const allowed =
-      /^(?:Email|ffprobe|Free|(?:\{\{\w+\}\}|[\d\s\W]|TapeShelf|tapeshelf)*|[A-Z]{2,}.*|.{0,3})$/;
+      /^(?:Email|Push|ffprobe|Free|(?:\{\{\w+\}\}|[\d\s\W]|TapeShelf|tapeshelf)*|[A-Z]{2,}.*|.{0,3})$/;
     const same = [...enKeys]
       .filter(([key]) => !key.startsWith('languages.'))
       .filter(([key, text]) => ruKeys.get(key) === text && !allowed.test(text))

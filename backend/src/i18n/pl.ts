@@ -1,5 +1,6 @@
 export const pl = {
   errors: {
+    deviceUnknown: 'Ten telefon nie jest już zalogowany. Otwórz aplikację.',
     clientTooOld: 'Ta wersja aplikacji jest za stara dla tego serwera.',
     internal: 'Coś poszło nie tak po naszej stronie. Spróbuj ponownie później.',
     generic: 'Nie udało się wykonać żądania.',

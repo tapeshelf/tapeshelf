@@ -374,10 +374,14 @@
       "title": "Meldingen",
       "hint": "Kies per gebeurtenis hoe je ervan wilt horen. Meldingen in de app verschijnen onder het belletje; e-mails gaan naar je adres.",
       "hintNoEmail": "Kies welke gebeurtenissen onder het belletje verschijnen.",
+      "hintPush": "Kies hoe je over elke gebeurtenis hoort. Meldingen in de app staan onder de bel, e-mails gaan naar je adres en pushmeldingen naar je telefoon met de app.",
+      "hintPushNoEmail": "Kies hoe je over elke gebeurtenis hoort: onder de bel, of met een pushmelding op je telefoon met de app.",
       "newMessageNoEmail": "Nieuw chatbericht",
+      "newMessagePush": "Nieuw chatbericht (e-mail alleen als ik offline ben en het niet op mijn telefoon binnenkomt)",
       "event": "Gebeurtenis",
       "inApp": "In de app",
-      "email": "E-mail"
+      "email": "E-mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Geblokkeerde gebruikers",

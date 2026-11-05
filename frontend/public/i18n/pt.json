@@ -374,10 +374,14 @@
       "title": "Notificações",
       "hint": "Escolha como você quer saber de cada acontecimento. As notificações no app aparecem no sininho; os e-mails vão para o seu endereço.",
       "hintNoEmail": "Escolha quais eventos aparecem no sino.",
+      "hintPush": "Escolha como quer saber de cada evento. As notificações no app aparecem no sino, os e-mails vão para o seu endereço e as notificações push para o seu celular com o app.",
+      "hintPushNoEmail": "Escolha como quer saber de cada evento: no sino ou com uma notificação push no seu celular com o app.",
       "newMessageNoEmail": "Nova mensagem no chat",
+      "newMessagePush": "Nova mensagem no chat (e-mail só quando estou offline e ela não chega ao meu celular)",
       "event": "Acontecimento",
       "inApp": "No app",
-      "email": "E-mail"
+      "email": "E-mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Usuários bloqueados",

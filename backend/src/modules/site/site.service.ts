@@ -9,6 +9,7 @@ import { AppException } from '../../common/errors/app.exception.js';
 import { DEFAULT_LOCALE, toSupportedLocale } from '../../common/i18n/i18n.js';
 import type { Env } from '../../config/env.js';
 import { SignupCaptchaService } from '../captcha/signup-captcha.service.js';
+import { readServiceAccount } from '../notifications/fcm.js';
 import { DEMO_ACCOUNT } from '../demo/demo.service.js';
 import { SettingsService } from '../settings/settings.service.js';
 import { PlansService } from '../plans/plans.service.js';
@@ -32,6 +33,7 @@ export class SiteService {
   private readonly emailEnabled: boolean;
 
   private readonly mediaOrigin: string | null;
+  private readonly push: boolean;
 
   constructor(
     config: ConfigService<Env, true>,
@@ -47,6 +49,8 @@ export class SiteService {
       /* a relative public URL: same origin, nothing to preconnect to */
     }
     this.mediaOrigin = origin;
+    const fcm = config.get('FCM_SERVICE_ACCOUNT', { infer: true });
+    this.push = !!fcm && readServiceAccount(fcm) !== null;
     this.name = config.get('SITE_NAME', { infer: true });
     this.contactEmail = config.get('CONTACT_EMAIL', { infer: true }) ?? null;
     const dir = config.get('LEGAL_DIR', { infer: true });
@@ -83,6 +87,7 @@ export class SiteService {
       emailEnabled: this.emailEnabled,
       registrationOpen: await this.settings.get('registrationOpen'),
       mediaOrigin: this.mediaOrigin,
+      push: this.push,
     };
   }
 

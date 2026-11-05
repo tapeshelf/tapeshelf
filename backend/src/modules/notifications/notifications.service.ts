@@ -11,6 +11,7 @@ import { isOnline } from '../../infra/ws/presence.js';
 import { publishUserEvent } from '../../infra/ws/ws-events.js';
 import { GuestMailService } from '../deals/guest-mail.service.js';
 import { PlansService } from '../plans/plans.service.js';
+import { PushService } from './push.service.js';
 import {
   ACTIVE_NOTIFICATION_TYPES,
   type ActiveNotificationType,
@@ -46,9 +47,9 @@ export const EXCHANGE_CHANGED_WS_EVENT = 'exchange.changed';
 
 /**
  * Delivery: preferences decide the channels; an in-app row is pushed over the
- * websocket at once, an email goes through the mail queue. Called by the outbox relay, never directly
- * from request handlers.
- */
+ * websocket at once, an email goes through the mail queue, a push to the person's phones goes
+ * through the push queue. Called by the outbox relay, never directly from request handlers.
+ * */
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
@@ -59,6 +60,7 @@ export class NotificationsService {
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     private readonly plans: PlansService,
     private readonly guestMail: GuestMailService,
+    private readonly push: PushService,
   ) {}
 
   async deliver<T extends ActiveNotificationType>(
@@ -116,6 +118,13 @@ export class NotificationsService {
       );
       await this.publishUnread(userId);
     }
+    if (prefs.push)
+      await this.push.notify(
+        userId,
+        type,
+        payload as unknown as Record<string, unknown>,
+        notification?.id ?? null,
+      );
     if (prefs.email && user.email && user.emailVerifiedAt) {
       await this.queues.enqueueMail({
         userId,
@@ -143,7 +152,7 @@ export class NotificationsService {
       emailVerifiedAt: Date | null;
       locale: string;
     },
-    prefs: { inApp: boolean; email: boolean },
+    prefs: { inApp: boolean; email: boolean; push: boolean },
     payload: NotificationPayloads['NEW_MESSAGE'],
   ): Promise<Notification | null> {
     // Read already: the conversation was open when the message came (the reader's app marks it read
@@ -192,11 +201,22 @@ export class NotificationsService {
       );
       await this.publishUnread(userId);
     }
+    // Each message rings the phone; its notification there is one per conversation (the app
+    // replaces it), like the bell's.
+    if (prefs.push)
+      await this.push.notify(
+        userId,
+        'NEW_MESSAGE',
+        data as unknown as Record<string, unknown>,
+        notification?.id ?? null,
+      );
     if (
       prefs.email &&
       user.email &&
       user.emailVerifiedAt &&
       !(await isOnline(this.redis, userId)) &&
+      // A phone that gets a push of messages hears of it there.
+      !(prefs.push && (await this.push.reachable(userId))) &&
       (await this.redis.set(
         `vs:chat-mail:${userId}:${payload.conversationId}`,
         '1',
@@ -360,8 +380,14 @@ export class NotificationsService {
             type: item.type,
             inApp: item.inApp,
             email: item.email,
+            push: item.push ?? null,
           },
-          update: { inApp: item.inApp, email: item.email },
+          // A client that does not know push leaves it as it is.
+          update: {
+            inApp: item.inApp,
+            email: item.email,
+            ...(item.push === undefined ? {} : { push: item.push }),
+          },
         }),
       ),
     );

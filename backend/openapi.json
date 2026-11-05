@@ -4519,6 +4519,119 @@
         ]
       }
     },
+    "/api/offline/quote": {
+      "post": {
+        "operationId": "Offline_quote",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfflineQuoteRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineQuoteDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "What saving these videos to the phone would take: sizes, which cost traffic, what is left",
+        "tags": [
+          "offline"
+        ]
+      }
+    },
+    "/api/videos/{id}/offline": {
+      "post": {
+        "operationId": "Offline_save",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineCopyDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "trafficLimitReached; details.resetAt"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Save a video to the phone: its playlist, segment links and key; charged like a view the first time, free again within a week",
+        "tags": [
+          "offline"
+        ]
+      }
+    },
+    "/api/offline/check": {
+      "post": {
+        "operationId": "Offline_check",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfflineCheckRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineCheckDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "The phone’s copies against the server: keep, remove (no longer watchable) or update (edited)",
+        "tags": [
+          "offline"
+        ]
+      }
+    },
     "/api/downloads/{code}": {
       "get": {
         "operationId": "Downloads_info",
@@ -6219,6 +6332,181 @@
         "summary": "What a link is about, for its page",
         "tags": [
           "notifications"
+        ]
+      }
+    },
+    "/api/me/device": {
+      "put": {
+        "operationId": "Push_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceKeyDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "The phone app of this session: where its pushes go; returns the key it reads them with",
+        "tags": [
+          "push"
+        ]
+      },
+      "delete": {
+        "operationId": "Push_unregister",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "The phone app of this session wants no more news",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/api/me/devices": {
+      "get": {
+        "operationId": "Push_devices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Phones with the app signed in to this account (the web shows the Push column when there is one)",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/api/device/pushes": {
+      "get": {
+        "operationId": "Push_since",
+        "parameters": [
+          {
+            "name": "after",
+            "required": false,
+            "in": "query",
+            "description": "Only pushes after this one (the last the phone has seen)",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tapeshelf-device",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PushMessageDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "What was pushed to this phone since the last one it saw (a phone without push signals asks itself)",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/api/device/pushes/{id}": {
+      "get": {
+        "operationId": "Push_read",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tapeshelf-device",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushMessageDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "One push, for the phone its signal woke",
+        "tags": [
+          "push"
         ]
       }
     },
@@ -9091,6 +9379,10 @@
                 "$ref": "#/components/schemas/ApiInfoDto"
               }
             ]
+          },
+          "push": {
+            "type": "boolean",
+            "description": "Whether this server pushes news to the phone app; without it the app asks for news\nitself. Always sent; optional in the contract for the same reason as `api`."
           }
         },
         "required": [
@@ -13489,6 +13781,200 @@
           "dissolved"
         ]
       },
+      "OfflineQuoteRequestDto": {
+        "type": "object",
+        "properties": {
+          "videoIds": {
+            "minItems": 1,
+            "maxItems": 500,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "videoIds"
+        ]
+      },
+      "OfflineQuoteVideoDto": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean",
+            "description": "The person may save it: it plays for them now"
+          },
+          "bytes": {
+            "type": "number",
+            "description": "What the copy weighs, in bytes"
+          },
+          "spends": {
+            "type": "boolean",
+            "description": "Saving it now takes its size off the month’s traffic: not one’s own, not watched or saved lately"
+          }
+        },
+        "required": [
+          "videoId",
+          "allowed",
+          "bytes",
+          "spends"
+        ]
+      },
+      "OfflineTrafficDto": {
+        "type": "object",
+        "properties": {
+          "usedBytes": {
+            "type": "number"
+          },
+          "limitBytes": {
+            "type": "number",
+            "description": "0 = no limit"
+          },
+          "resetAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "usedBytes",
+          "limitBytes",
+          "resetAt"
+        ]
+      },
+      "OfflineQuoteDto": {
+        "type": "object",
+        "properties": {
+          "videos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfflineQuoteVideoDto"
+            }
+          },
+          "traffic": {
+            "$ref": "#/components/schemas/OfflineTrafficDto"
+          }
+        },
+        "required": [
+          "videos",
+          "traffic"
+        ]
+      },
+      "OfflineCopyDto": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string"
+          },
+          "keyVersion": {
+            "type": "number",
+            "description": "The version of the video the copy holds; an edit makes a new one"
+          },
+          "key": {
+            "type": "string",
+            "description": "The AES-128 key of the segments, base64; keep it as a secret"
+          },
+          "playlist": {
+            "type": "string",
+            "description": "The media playlist: the key addressed as \"key\", each segment by a signed link to the storage"
+          },
+          "bytes": {
+            "type": "number",
+            "description": "What the copy weighs, in bytes"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the segment links stop working; ask again then, which within a week costs nothing"
+          }
+        },
+        "required": [
+          "videoId",
+          "keyVersion",
+          "key",
+          "playlist",
+          "bytes",
+          "expiresAt"
+        ]
+      },
+      "OfflineHeldDto": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "keyVersion": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "videoId",
+          "keyVersion"
+        ]
+      },
+      "OfflineCheckRequestDto": {
+        "type": "object",
+        "properties": {
+          "copies": {
+            "maxItems": 2000,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfflineHeldDto"
+            }
+          }
+        },
+        "required": [
+          "copies"
+        ]
+      },
+      "OfflineState": {
+        "type": "string",
+        "enum": [
+          "keep",
+          "remove",
+          "update"
+        ],
+        "description": "keep; remove: the person may no longer watch it; update: an edit replaced it, save it again (free within a week)"
+      },
+      "OfflineVerdictDto": {
+        "type": "object",
+        "properties": {
+          "videoId": {
+            "type": "string"
+          },
+          "state": {
+            "description": "keep; remove: the person may no longer watch it; update: an edit replaced it, save it again (free within a week)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OfflineState"
+              }
+            ]
+          }
+        },
+        "required": [
+          "videoId",
+          "state"
+        ]
+      },
+      "OfflineCheckDto": {
+        "type": "object",
+        "properties": {
+          "copies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfflineVerdictDto"
+            }
+          }
+        },
+        "required": [
+          "copies"
+        ]
+      },
       "DownloadInfoDto": {
         "type": "object",
         "properties": {
@@ -15425,6 +15911,10 @@
           },
           "email": {
             "type": "boolean"
+          },
+          "push": {
+            "type": "boolean",
+            "description": "To the phone app. Always in an answer; a request without it leaves it as it is (the\nweb before push)."
           }
         },
         "required": [
@@ -15466,6 +15956,113 @@
         "required": [
           "type",
           "email"
+        ]
+      },
+      "RegisterDeviceDto": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "enum": [
+              "android",
+              "ios"
+            ],
+            "type": "string"
+          },
+          "token": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4096,
+            "description": "Where push signals go (a Firebase Cloud Messaging registration token); null or absent when the phone gets none (the server has no push, notifications are not allowed)"
+          }
+        },
+        "required": [
+          "platform"
+        ]
+      },
+      "DeviceKeyDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Reads this phone’s pushes (header X-Tapeshelf-Device) without the session; a new one at each registration"
+          }
+        },
+        "required": [
+          "key"
+        ]
+      },
+      "DeviceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "android",
+              "ios"
+            ]
+          },
+          "push": {
+            "type": "boolean",
+            "description": "Push signals reach it"
+          },
+          "client": {
+            "type": "string",
+            "nullable": true,
+            "description": "The app, its version and the phone (X-Tapeshelf-Client)"
+          },
+          "current": {
+            "type": "boolean",
+            "description": "The session this request comes from"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "platform",
+          "push",
+          "client",
+          "current",
+          "createdAt"
+        ]
+      },
+      "PushMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationType"
+              }
+            ]
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "As in the bell (NotificationDto.payload)"
+          },
+          "notificationId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bell item of the same news, when the bell has it"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "payload",
+          "notificationId",
+          "createdAt"
         ]
       },
       "WhatsNewItemDto": {

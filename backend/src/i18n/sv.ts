@@ -1,5 +1,6 @@
 export const sv = {
   errors: {
+    deviceUnknown: 'Den här telefonen är inte längre inloggad. Öppna appen.',
     clientTooOld:
       'Den här versionen av appen är för gammal för den här servern.',
     internal: 'Något gick fel hos oss. Försök igen senare.',

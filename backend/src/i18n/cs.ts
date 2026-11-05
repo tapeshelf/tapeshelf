@@ -1,5 +1,6 @@
 export const cs = {
   errors: {
+    deviceUnknown: 'Tento telefon už není přihlášen. Otevřete aplikaci.',
     clientTooOld: 'Tato verze aplikace je pro tento server příliš stará.',
     internal: 'Na naší straně se něco pokazilo. Zkuste to prosím později.',
     generic: 'Akci se nepodařilo dokončit.',

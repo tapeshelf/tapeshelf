@@ -1,5 +1,6 @@
 export const id = {
   errors: {
+    deviceUnknown: 'Ponsel ini tidak lagi masuk. Buka aplikasinya.',
     clientTooOld: 'Versi aplikasi ini terlalu lama untuk server ini.',
     internal: 'Terjadi kesalahan di pihak kami. Silakan coba lagi nanti.',
     generic: 'Permintaan tidak dapat diselesaikan.',

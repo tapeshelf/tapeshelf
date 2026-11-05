@@ -20,13 +20,21 @@ export const FRAME_NARROW = 'mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10';
 @Injectable({ providedIn: 'root' })
 export class LayoutFrame {
   private readonly router = inject(Router);
-  readonly narrow = toSignal(
+  /** What the open page asked for in its route data: `frame: 'narrow'` or `'bare'`. */
+  private readonly wanted = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
-      map(() => leaf(this.router.routerState.snapshot.root).data['frame'] === 'narrow'),
+      map(() => leaf(this.router.routerState.snapshot.root).data['frame'] as unknown),
     ),
-    { initialValue: false },
+    { initialValue: undefined },
   );
+  readonly narrow = computed(() => this.wanted() === 'narrow');
+  /**
+   * A page that stands alone (route data `frame: 'bare'`): no header, banners or footer around it.
+   * The phone app shows such a page in a frame of its own, and the page cannot cover the
+   * header itself: it is drawn inside the page transition's layer, below the header's.
+   */
+  readonly bare = computed(() => this.wanted() === 'bare');
   readonly frame = computed(() => (this.narrow() ? FRAME_NARROW : FRAME));
 
   private readonly footerHolds = signal(0);

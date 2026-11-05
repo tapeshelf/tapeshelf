@@ -1,5 +1,6 @@
 export const vi = {
   errors: {
+    deviceUnknown: 'Điện thoại này không còn đăng nhập. Hãy mở ứng dụng.',
     clientTooOld: 'Phiên bản ứng dụng này quá cũ so với máy chủ này.',
     internal: 'Đã xảy ra lỗi ở phía chúng tôi. Hãy thử lại sau.',
     generic: 'Không thể hoàn tất yêu cầu.',

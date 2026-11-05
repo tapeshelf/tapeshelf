@@ -127,6 +127,15 @@ export class LanguageService {
     this.apply(lang);
   }
 
+  /**
+   * Speaks a language for this visit only, remembering nothing: a page the phone app shows in its
+   * own language leaves the browser's next visit as it was.
+   */
+  show(lang: Lang): void {
+    this.current.set(lang);
+    this.apply(lang);
+  }
+
   /** A pick made in this browser (here or on the site) that the account does not have yet. */
   pickedUnsaved(): boolean {
     try {

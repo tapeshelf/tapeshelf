@@ -123,6 +123,13 @@ export class SiteInfoDto {
    */
   @ApiProperty({ type: ApiInfoDto, required: false })
   api?: ApiInfoDto;
+
+  /**
+   * Whether this server pushes news to the phone app; without it the app asks for news
+   * itself. Always sent; optional in the contract for the same reason as `api`.
+   */
+  @ApiProperty({ required: false })
+  push?: boolean;
 }
 
 export class LegalDocDto {

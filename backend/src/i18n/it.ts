@@ -1,5 +1,6 @@
 export const it = {
   errors: {
+    deviceUnknown: 'Questo telefono non ha più l’accesso. Apri l’app.',
     clientTooOld:
       'Questa versione dell’app è troppo vecchia per questo server.',
     internal: 'Qualcosa è andato storto da parte nostra. Riprova più tardi.',

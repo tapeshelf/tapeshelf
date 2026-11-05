@@ -1,5 +1,6 @@
 export const en = {
   errors: {
+    deviceUnknown: 'This phone is no longer signed in. Open the app.',
     clientTooOld: 'This version of the app is too old for this server.',
     internal: 'Something went wrong on our side. Please try again later.',
     generic: 'The request could not be completed.',

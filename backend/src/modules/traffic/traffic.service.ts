@@ -176,6 +176,21 @@ export class TrafficService {
   }
 
   /**
+   * For each set of keys, whether it was spent within its window already, without marking anything:
+   * what a quote says before anything is charged. Redis away: nothing looks spent.
+   */
+  async seenLately(sets: string[][]): Promise<boolean[]> {
+    if (!sets.length) return [];
+    const pipe = this.redis.pipeline();
+    for (const keys of sets) pipe.exists(...keys);
+    const answers = await pipe.exec().catch(() => null);
+    return sets.map((_, i) => {
+      const [err, n] = answers?.[i] ?? [null, 0];
+      return !err && Number(n) > 0;
+    });
+  }
+
+  /**
    * Tells the account once a month that its traffic is running out, and once that it is used up
    * the month's row remembers each. A word that fails to go out never fails the charge.
    */

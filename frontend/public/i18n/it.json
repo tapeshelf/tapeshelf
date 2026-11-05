@@ -374,10 +374,14 @@
       "title": "Notifiche",
       "hint": "Scegli come ricevere gli avvisi per ogni evento. Le notifiche nell’app compaiono sotto la campanella; le email arrivano al tuo indirizzo.",
       "hintNoEmail": "Scegli quali eventi mostrare sotto la campanella.",
+      "hintPush": "Scegli come vuoi sapere di ogni evento. Le notifiche nell’app compaiono sotto la campanella, le email arrivano al tuo indirizzo e le notifiche push sul tuo telefono con l’app.",
+      "hintPushNoEmail": "Scegli come vuoi sapere di ogni evento: sotto la campanella o con una notifica push sul telefono con l’app.",
       "newMessageNoEmail": "Nuovo messaggio in chat",
+      "newMessagePush": "Nuovo messaggio in chat (email solo se sono offline e non arriva sul mio telefono)",
       "event": "Evento",
       "inApp": "Nell’app",
-      "email": "Email"
+      "email": "Email",
+      "push": "Push"
     },
     "blocked": {
       "title": "Utenti bloccati",

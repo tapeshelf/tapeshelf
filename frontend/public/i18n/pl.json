@@ -374,10 +374,14 @@
       "title": "Powiadomienia",
       "hint": "Wybierz, jak chcesz się dowiadywać o każdym zdarzeniu. Powiadomienia w aplikacji pojawiają się pod dzwonkiem, a e-maile przychodzą na Twój adres.",
       "hintNoEmail": "Wybierz, które zdarzenia mają się pojawiać pod dzwonkiem.",
+      "hintPush": "Wybierz, jak chcesz dowiadywać się o każdym zdarzeniu. Powiadomienia w aplikacji są pod dzwonkiem, e-maile trafiają na Twój adres, a powiadomienia push na telefon z aplikacją.",
+      "hintPushNoEmail": "Wybierz, jak chcesz dowiadywać się o każdym zdarzeniu: pod dzwonkiem albo powiadomieniem push na telefonie z aplikacją.",
       "newMessageNoEmail": "Nowa wiadomość na czacie",
+      "newMessagePush": "Nowa wiadomość na czacie (e-mail tylko gdy jestem offline i nie trafi na mój telefon)",
       "event": "Zdarzenie",
       "inApp": "W aplikacji",
-      "email": "E-mail"
+      "email": "E-mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Zablokowani",

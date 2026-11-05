@@ -1,5 +1,6 @@
 export const nl = {
   errors: {
+    deviceUnknown: 'Deze telefoon is niet meer aangemeld. Open de app.',
     clientTooOld: 'Deze versie van de app is te oud voor deze server.',
     internal: 'Er ging bij ons iets mis. Probeer het later opnieuw.',
     generic: 'Het verzoek kon niet worden uitgevoerd.',

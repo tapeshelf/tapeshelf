@@ -374,10 +374,14 @@
       "title": "Bildirimler",
       "hint": "Her olaydan nasıl haberdar olmak istediğinizi seçin. Uygulama içi bildirimler zil simgesinin altında görünür; e-postalar adresinize gelir.",
       "hintNoEmail": "Zilin altında hangi olayların görüneceğini seçin.",
+      "hintPush": "Her olayı nasıl öğrenmek istediğinizi seçin. Uygulama bildirimleri zilin altında görünür, e-postalar adresinize, push bildirimleri uygulamanın yüklü olduğu telefonunuza gider.",
+      "hintPushNoEmail": "Her olayı nasıl öğrenmek istediğinizi seçin: zilin altında veya uygulamanın yüklü olduğu telefonunuzda push bildirimiyle.",
       "newMessageNoEmail": "Yeni sohbet mesajı",
+      "newMessagePush": "Yeni sohbet mesajı (e-posta yalnızca çevrimdışıyken ve telefonuma ulaşmadığında)",
       "event": "Olay",
       "inApp": "Uygulamada",
-      "email": "E-posta"
+      "email": "E-posta",
+      "push": "Push"
     },
     "blocked": {
       "title": "Engellenen kullanıcılar",

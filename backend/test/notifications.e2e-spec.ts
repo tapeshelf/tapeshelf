@@ -240,13 +240,18 @@ describe('notifications and outbox (e2e)', () => {
     );
     expect(defaults).toEqual(
       expect.arrayContaining([
-        { type: 'REQUEST_RECEIVED', inApp: true, email: true },
-        { type: 'REQUEST_CANCELLED', inApp: true, email: false },
-        { type: 'VIDEO_PROCESSED', inApp: true, email: false },
-        { type: 'VIDEO_FAILED', inApp: true, email: false },
-        { type: 'VIDEO_REMOVED', inApp: true, email: false },
-        { type: 'TRAFFIC_RUNNING_OUT', inApp: true, email: false },
-        { type: 'TRAFFIC_USED_UP', inApp: true, email: true },
+        { type: 'REQUEST_RECEIVED', inApp: true, email: true, push: true },
+        { type: 'REQUEST_CANCELLED', inApp: true, email: false, push: false },
+        { type: 'VIDEO_PROCESSED', inApp: true, email: false, push: true },
+        { type: 'VIDEO_FAILED', inApp: true, email: false, push: true },
+        { type: 'VIDEO_REMOVED', inApp: true, email: false, push: false },
+        {
+          type: 'TRAFFIC_RUNNING_OUT',
+          inApp: true,
+          email: false,
+          push: false,
+        },
+        { type: 'TRAFFIC_USED_UP', inApp: true, email: true, push: true },
       ]),
     );
     await author

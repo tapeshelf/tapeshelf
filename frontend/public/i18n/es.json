@@ -374,10 +374,14 @@
       "title": "Notificaciones",
       "hint": "Elige cómo quieres enterarte de cada cosa. Las notificaciones de la app aparecen bajo la campana; los correos llegan a tu dirección.",
       "hintNoEmail": "Elige qué eventos aparecen en la campana.",
+      "hintPush": "Elige cómo quieres enterarte de cada evento. Las notificaciones en la app aparecen bajo la campana, los correos llegan a tu dirección y las notificaciones push a tu teléfono con la app.",
+      "hintPushNoEmail": "Elige cómo quieres enterarte de cada evento: bajo la campana o con una notificación push en tu teléfono con la app.",
       "newMessageNoEmail": "Nuevo mensaje de chat",
+      "newMessagePush": "Nuevo mensaje de chat (correo solo si estoy desconectado y no llega a mi teléfono)",
       "event": "Evento",
       "inApp": "En la app",
-      "email": "Correo"
+      "email": "Correo",
+      "push": "Push"
     },
     "blocked": {
       "title": "Usuarios bloqueados",

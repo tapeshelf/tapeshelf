@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../infra/prisma/prisma.service.js';
 import { LINK_KEEP_DAYS } from '../links/link-rules.js';
+import { PUSH_KEEP_DAYS } from '../notifications/push.service.js';
 
 const DAY_MS = 24 * 3600 * 1000;
 
@@ -24,6 +25,8 @@ export const RETENTION_DAYS = {
   billingEvents: 90,
   /** Temporary links after they ran out or were taken back. */
   shareLinks: LINK_KEEP_DAYS,
+  /** What a push said: the phone fetches it within minutes; a week covers one switched off. */
+  pushMessages: PUSH_KEEP_DAYS,
 } as const;
 
 /**
@@ -48,6 +51,11 @@ export class RetentionService {
               { createdAt: { lt: before(R.notifications) } },
             ],
           },
+        })
+      ).count,
+      pushMessages: (
+        await this.prisma.pushMessage.deleteMany({
+          where: { createdAt: { lt: before(R.pushMessages) } },
         })
       ).count,
       auditLog: (

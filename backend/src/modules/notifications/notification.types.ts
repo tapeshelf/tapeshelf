@@ -3,44 +3,48 @@ import { NotificationType } from '../../generated/prisma/enums.js';
 export interface ChannelPrefs {
   inApp: boolean;
   email: boolean;
+  /** A phone with the app. */
+  push: boolean;
 }
 
 export const NOTIFICATION_TYPES = Object.values(NotificationType);
 
 /**
  * Defaults from (table). Email by default only for what needs an answer, ends
- * something a person waits for, or concerns their money and account.
+ * something a person waits for, or concerns their money and account. Push: what
+ * needs an answer or ends a wait — requests, messages, support, moderation, the account's money and
+ * traffic, a video or an edit done; the rest only rings the bell until switched on.
  */
 export const DEFAULT_PREFERENCES: Record<NotificationType, ChannelPrefs> = {
-  REQUEST_RECEIVED: { inApp: true, email: true },
-  OFFER_RECEIVED: { inApp: true, email: true },
-  REQUEST_SHARED: { inApp: true, email: true },
-  EXCHANGE_COMPLETED: { inApp: true, email: true },
-  REQUEST_DECLINED: { inApp: true, email: false },
-  REQUEST_CANCELLED: { inApp: true, email: false },
-  REQUEST_INVALIDATED: { inApp: true, email: false },
-  NEW_FOLLOWER: { inApp: true, email: false },
-  FRIEND_ACCEPTED: { inApp: true, email: false },
-  FOLLOWED_NEW_VIDEO: { inApp: true, email: false },
-  NEW_MESSAGE: { inApp: true, email: true },
-  VIDEO_PROCESSED: { inApp: true, email: false },
-  VIDEO_FAILED: { inApp: true, email: false },
-  VIDEO_REMOVED: { inApp: true, email: false },
-  REPORT_RESOLVED: { inApp: true, email: false },
-  ADMIN_NOTICE: { inApp: true, email: true },
-  PLAN_EXPIRING: { inApp: true, email: false },
-  PLAN_EXPIRED: { inApp: true, email: true },
-  VIDEO_TAKEN_DOWN: { inApp: true, email: true },
-  PLAN_PAYMENT_FAILED: { inApp: true, email: true },
-  VIDEO_EDITED: { inApp: true, email: false },
-  VIDEO_EDIT_FAILED: { inApp: true, email: false },
-  SUPPORT_REPLY: { inApp: true, email: true },
-  SUPPORT_TICKET: { inApp: true, email: true },
-  LINK_OPENED: { inApp: true, email: false },
-  LINK_SAVED: { inApp: true, email: false },
+  REQUEST_RECEIVED: { inApp: true, email: true, push: true },
+  OFFER_RECEIVED: { inApp: true, email: true, push: true },
+  REQUEST_SHARED: { inApp: true, email: true, push: true },
+  EXCHANGE_COMPLETED: { inApp: true, email: true, push: true },
+  REQUEST_DECLINED: { inApp: true, email: false, push: false },
+  REQUEST_CANCELLED: { inApp: true, email: false, push: false },
+  REQUEST_INVALIDATED: { inApp: true, email: false, push: false },
+  NEW_FOLLOWER: { inApp: true, email: false, push: false },
+  FRIEND_ACCEPTED: { inApp: true, email: false, push: false },
+  FOLLOWED_NEW_VIDEO: { inApp: true, email: false, push: false },
+  NEW_MESSAGE: { inApp: true, email: true, push: true },
+  VIDEO_PROCESSED: { inApp: true, email: false, push: true },
+  VIDEO_FAILED: { inApp: true, email: false, push: true },
+  VIDEO_REMOVED: { inApp: true, email: false, push: false },
+  REPORT_RESOLVED: { inApp: true, email: false, push: false },
+  ADMIN_NOTICE: { inApp: true, email: true, push: true },
+  PLAN_EXPIRING: { inApp: true, email: false, push: false },
+  PLAN_EXPIRED: { inApp: true, email: true, push: true },
+  VIDEO_TAKEN_DOWN: { inApp: true, email: true, push: true },
+  PLAN_PAYMENT_FAILED: { inApp: true, email: true, push: true },
+  VIDEO_EDITED: { inApp: true, email: false, push: false },
+  VIDEO_EDIT_FAILED: { inApp: true, email: false, push: true },
+  SUPPORT_REPLY: { inApp: true, email: true, push: true },
+  SUPPORT_TICKET: { inApp: true, email: true, push: false },
+  LINK_OPENED: { inApp: true, email: false, push: false },
+  LINK_SAVED: { inApp: true, email: false, push: false },
   // Running out is a heads-up; used up ends sharing for the month, like the end of Pro.
-  TRAFFIC_RUNNING_OUT: { inApp: true, email: false },
-  TRAFFIC_USED_UP: { inApp: true, email: true },
+  TRAFFIC_RUNNING_OUT: { inApp: true, email: false, push: false },
+  TRAFFIC_USED_UP: { inApp: true, email: true, push: true },
 };
 
 /**
@@ -302,6 +306,8 @@ export interface PreferenceRow {
   type: NotificationType;
   inApp: boolean;
   email: boolean;
+  /** Null: the type's default. */
+  push?: boolean | null;
 }
 
 /** Stored rows override the defaults; the result always covers every type. */
@@ -310,6 +316,11 @@ export function resolvePreferences(
 ): Record<NotificationType, ChannelPrefs> {
   const out = { ...DEFAULT_PREFERENCES };
   for (const row of rows)
-    if (row.type in out) out[row.type] = { inApp: row.inApp, email: row.email };
+    if (row.type in out)
+      out[row.type] = {
+        inApp: row.inApp,
+        email: row.email,
+        push: row.push ?? DEFAULT_PREFERENCES[row.type].push,
+      };
   return out;
 }

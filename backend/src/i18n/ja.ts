@@ -1,5 +1,6 @@
 export const ja = {
   errors: {
+    deviceUnknown: 'この端末はサインインしていません。アプリを開いてください。',
     clientTooOld:
       'このバージョンのアプリは古すぎて、このサーバーでは使えません。',
     internal:

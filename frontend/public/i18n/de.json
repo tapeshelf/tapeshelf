@@ -374,10 +374,14 @@
       "title": "Benachrichtigungen",
       "hint": "Wähle, wie du von jedem Ereignis erfahren möchtest. Benachrichtigungen in der App erscheinen unter der Glocke, E-Mails gehen an deine Adresse.",
       "hintNoEmail": "Wähle, welche Ereignisse unter der Glocke erscheinen.",
+      "hintPush": "Wähle, wie du von jedem Ereignis erfährst. In-App-Benachrichtigungen erscheinen unter der Glocke, E-Mails gehen an deine Adresse, Push-Nachrichten an dein Telefon mit der App.",
+      "hintPushNoEmail": "Wähle, wie du von jedem Ereignis erfährst: unter der Glocke oder per Push auf dein Telefon mit der App.",
       "newMessageNoEmail": "Neue Chatnachricht",
+      "newMessagePush": "Neue Chatnachricht (E-Mail nur, wenn ich offline bin und sie nicht aufs Telefon kommt)",
       "event": "Ereignis",
       "inApp": "In der App",
-      "email": "E-Mail"
+      "email": "E-Mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Blockierte Nutzer",

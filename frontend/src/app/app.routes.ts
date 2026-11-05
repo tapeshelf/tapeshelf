@@ -108,6 +108,13 @@ export const routes: Routes = [
       import('./features/unsubscribe/unsubscribe-page').then((m) => m.UnsubscribePage),
   },
   {
+    // Shown by the phone app in a web view during sign-up (features/auth/app-captcha).
+    path: 'app-captcha',
+    data: { frame: 'bare' },
+    loadComponent: () =>
+      import('./features/auth/app-captcha/app-captcha').then((m) => m.AppCaptchaPage),
+  },
+  {
     path: 'verify-email',
     loadComponent: () =>
       import('./features/auth/verify-email/verify-email').then((m) => m.VerifyEmailPage),

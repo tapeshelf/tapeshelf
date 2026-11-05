@@ -1,5 +1,6 @@
 export const de = {
   errors: {
+    deviceUnknown: 'Dieses Telefon ist nicht mehr angemeldet. Öffne die App.',
     clientTooOld: 'Diese Version der App ist zu alt für diesen Server.',
     internal:
       'Bei uns ist etwas schiefgelaufen. Bitte versuch es später noch einmal.',

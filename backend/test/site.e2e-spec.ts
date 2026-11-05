@@ -37,6 +37,8 @@ describe('site (e2e)', () => {
       // What an app needs to know before anything else: how much the API can do and the oldest
       // app the server still talks to.
       api: { level: API_LEVEL, minClient: MIN_CLIENT },
+      // No push key in the tests: the app asks for news itself.
+      push: false,
     });
     expect(res.headers['cache-control']).toBe('public, max-age=60');
   });

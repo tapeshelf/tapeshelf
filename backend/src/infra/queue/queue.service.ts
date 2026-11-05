@@ -7,6 +7,7 @@ import {
   QUEUES,
   fairPriority,
   type MailQueueJob,
+  type PushQueueJob,
   type ProcessVideoJob,
   type SheetJob,
   type ThumbnailJob,
@@ -46,6 +47,7 @@ export class QueueService implements OnApplicationShutdown {
   readonly maintenance: Queue;
   readonly outbox: Queue;
   readonly mail: Queue<MailQueueJob>;
+  readonly push: Queue<PushQueueJob>;
   readonly edit: Queue<EditRenderJob, VideoJobResult>;
 
   constructor(@Inject(QUEUE_CONNECTION) connection: RedisOptions) {
@@ -83,6 +85,20 @@ export class QueueService implements OnApplicationShutdown {
         removeOnFail: { age: 7 * 24 * 3600 },
       },
     });
+    this.push = new Queue(QUEUES.push, {
+      ...opts,
+      defaultJobOptions: {
+        attempts: 4,
+        backoff: { type: 'exponential', delay: 5_000 },
+        removeOnComplete: { age: 3600, count: 1000 },
+        removeOnFail: { age: 24 * 3600 },
+      },
+    });
+  }
+
+  /** One push signal; tried a few times over a minute, then it is old news. */
+  async enqueuePush(data: PushQueueJob): Promise<void> {
+    await this.push.add(JOB.push, data);
   }
 
   /** Asks the worker to drain the outbox now; one pending drain at a time (fixed job id). */
@@ -305,6 +321,7 @@ export class QueueService implements OnApplicationShutdown {
         this.outbox,
         this.mail,
         this.edit,
+        this.push,
       ].map((q) => q.close().catch(() => undefined)),
     );
   }

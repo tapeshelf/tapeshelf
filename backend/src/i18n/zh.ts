@@ -1,5 +1,6 @@
 export const zh = {
   errors: {
+    deviceUnknown: '这台手机已不再登录。请打开应用。',
     clientTooOld: '此版本的应用太旧，无法用于此服务器。',
     internal: '我们这边出了点问题，请稍后再试。',
     generic: '请求未能完成。',

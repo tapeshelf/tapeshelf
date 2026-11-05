@@ -39,7 +39,7 @@ const DECISION_TTL_SEC = 60;
 const PLAYLIST_CACHE_TTL_SEC = 600;
 const KEY_URI_MARKER = '__VS_KEY_URI__';
 
-type StreamVideo = PolicyVideo & {
+export type StreamVideo = PolicyVideo & {
   durationSec: number | null;
   hlsPrefix: string | null;
   keyVersion: number;
@@ -265,7 +265,7 @@ export class StreamingService {
    * A view comes off someone's traffic when it starts: the viewer's, or for a guest the
    * author's, who made the video public. Own uploads and admins spend nothing.
    */
-  private async chargeView(
+  async chargeView(
     viewer: RequestUser | undefined,
     video: StreamVideo,
     guest: TrafficViewer,
@@ -427,11 +427,17 @@ export class StreamingService {
     return !!user && user.status === 'ACTIVE' && canManage(user, video);
   }
 
-  private async rewriteMediaPlaylist({
-    video,
-    prefix,
-  }: Playing): Promise<string> {
+  private rewriteMediaPlaylist({ video, prefix }: Playing): Promise<string> {
     const ttl = Math.max(Math.ceil(1.5 * (video.durationSec ?? 0)), 3600);
+    return this.signedMediaPlaylist(prefix, ttl, KEY_URI_MARKER);
+  }
+
+  /** The media playlist of the files under `prefix`: segments by signed links, the key at `keyUri`. */
+  async signedMediaPlaylist(
+    prefix: string,
+    ttlSec: number,
+    keyUri: string,
+  ): Promise<string> {
     const plain = await this.storage.getText('private', `${prefix}/index.m3u8`);
     const lines = await Promise.all(
       plain.split('\n').map(async (line) => {
@@ -440,12 +446,12 @@ export class StreamingService {
           return this.storage.presignGet(
             'private',
             `${prefix}/${trimmed}`,
-            ttl,
+            ttlSec,
           );
         if (trimmed.startsWith('#EXT-X-KEY'))
           return trimmed.replace(
             `URI="${HLS_KEY_URI_PLACEHOLDER}"`,
-            `URI="${KEY_URI_MARKER}"`,
+            `URI="${keyUri}"`,
           );
         return line;
       }),
@@ -467,7 +473,7 @@ export class StreamingService {
   }
 
   /** Deleted videos too: the policy lets only the admin stream one from the trash. */
-  private loadVideo(videoId: string): Promise<StreamVideo | null> {
+  loadVideo(videoId: string): Promise<StreamVideo | null> {
     return this.prisma.video.findFirst({
       where: { id: videoId },
       select: {
@@ -483,7 +489,7 @@ export class StreamingService {
     });
   }
 
-  private async viewerHolding(
+  async viewerHolding(
     viewer: RequestUser | undefined,
     videoId: string,
   ): Promise<PolicyHolding | null> {

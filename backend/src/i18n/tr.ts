@@ -1,5 +1,6 @@
 export const tr = {
   errors: {
+    deviceUnknown: 'Bu telefonda artık oturum açık değil. Uygulamayı açın.',
     clientTooOld: 'Uygulamanın bu sürümü bu sunucu için çok eski.',
     internal:
       'Bizim tarafımızda bir sorun oluştu. Lütfen daha sonra yeniden deneyin.',

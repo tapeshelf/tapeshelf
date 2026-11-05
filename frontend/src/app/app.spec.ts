@@ -18,6 +18,7 @@ describe('App', () => {
         provideRouter([
           { path: '', pathMatch: 'full', component: Blank },
           { path: 'settings', component: Blank },
+          { path: 'alone', component: Blank, data: { frame: 'bare' } },
         ]),
         provideHttpClient(),
       ],
@@ -30,6 +31,21 @@ describe('App', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('app-header')).toBeTruthy();
     expect(el.querySelector('app-logo')?.textContent).toContain('tapeshelf');
+  });
+
+  it('a bare page stands alone: no header, banners or footer, and they are back on the next page', async () => {
+    const fixture = TestBed.createComponent(App);
+    const router = TestBed.inject(Router);
+    const el = fixture.nativeElement as HTMLElement;
+    const shell = ['app-header', 'app-compact-footer', 'app-verify-banner', 'app-demo-banner'];
+    await router.navigateByUrl('/alone');
+    await fixture.whenStable();
+    for (const part of shell) expect(el.querySelector(part), part).toBeNull();
+    expect(el.querySelector('main router-outlet')).toBeTruthy();
+
+    await router.navigateByUrl('/settings');
+    await fixture.whenStable();
+    for (const part of shell) expect(el.querySelector(part), part).toBeTruthy();
   });
 
   it('ends every page with the compact footer: the operator’s rules and contact', async () => {

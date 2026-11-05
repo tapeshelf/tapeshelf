@@ -374,10 +374,14 @@
       "title": "Oznámení",
       "hint": "Vyberte, jak se chcete o jednotlivých událostech dozvídat. Oznámení v aplikaci najdete pod zvonečkem; e-maily chodí na vaši adresu.",
       "hintNoEmail": "Vyberte, o kterých událostech vás má informovat zvonek.",
+      "hintPush": "Vyberte, jak se chcete o každé události dozvědět. Oznámení v aplikaci jsou pod zvonkem, e-maily chodí na vaši adresu a push oznámení do telefonu s aplikací.",
+      "hintPushNoEmail": "Vyberte, jak se chcete o každé události dozvědět: pod zvonkem, nebo push oznámením v telefonu s aplikací.",
       "newMessageNoEmail": "Nová zpráva v konverzaci",
+      "newMessagePush": "Nová zpráva v chatu (e-mail jen když jsem offline a nedostanu ji do telefonu)",
       "event": "Událost",
       "inApp": "V aplikaci",
-      "email": "E-mail"
+      "email": "E-mail",
+      "push": "Push"
     },
     "blocked": {
       "title": "Zablokovaní",

@@ -30,6 +30,16 @@ describe('LanguageService', () => {
     expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('en');
   });
 
+  it('speaks a language for one visit without remembering it', () => {
+    const service = TestBed.inject(LanguageService);
+    service.show('ru');
+    expect(service.current()).toBe('ru');
+    expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('ru');
+    expect(TestBed.inject(DOCUMENT).documentElement.lang).toBe('ru');
+    expect(localStorage.getItem('vs.lang')).toBeNull();
+    expect(service.pickedUnsaved()).toBe(false);
+  });
+
   it('switches language, persists it and updates <html lang>', () => {
     const service = TestBed.inject(LanguageService);
     service.set('ru');

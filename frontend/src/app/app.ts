@@ -31,15 +31,20 @@ import { ConnectionStatusComponent } from './layout/connection-status/connection
     VisitorBannerComponent,
   ],
   template: `
-    <app-demo-banner />
-    <app-view-as-banner />
-    <app-visitor-banner />
-    <app-verify-banner />
-    <app-header />
+    <!-- A bare page (LayoutFrame.bare) is the page alone: the phone app shows it in its own frame. -->
+    @if (!layout.bare()) {
+      <app-demo-banner />
+      <app-view-as-banner />
+      <app-visitor-banner />
+      <app-verify-banner />
+      <app-header />
+    }
     <main class="vt-page flex-1 pt-3 pb-10" [class]="layout.frame()">
       <router-outlet />
     </main>
-    <app-compact-footer />
+    @if (!layout.bare()) {
+      <app-compact-footer />
+    }
     <app-panel-host />
     <!-- Its code comes with the first upload: it was in the first download of every page. -->
     @defer (when uploads.panelOpen() && uploads.items().length > 0) {

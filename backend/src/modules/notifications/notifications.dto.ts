@@ -64,6 +64,15 @@ export class NotificationPreferenceDto {
 
   @ApiProperty() @IsBoolean() inApp!: boolean;
   @ApiProperty() @IsBoolean() email!: boolean;
+
+  /**
+   * To the phone app. Always in an answer; a request without it leaves it as it is (the
+   * web before push).
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  push?: boolean;
 }
 
 export class UpdateNotificationPreferencesDto {
