@@ -37,7 +37,9 @@ import { UsersService } from '../users/users.service.js';
 import {
   ChangePasswordDto,
   ForgotPasswordDto,
+  AppExchangeDto,
   GoogleCompleteDto,
+  GoogleCompleteResultDto,
   GoogleStatusDto,
   LoginDto,
   MeDto,
@@ -48,6 +50,7 @@ import {
   SessionHintDto,
   TokenDto,
 } from './auth.dto.js';
+import { AppSignInService } from './app-sign-in.service.js';
 import { AuthService } from './auth.service.js';
 import { GoogleService, type GoogleIdentity } from './google.service.js';
 import { type ClientMeta, SessionService } from './session.service.js';
@@ -73,6 +76,9 @@ const OAUTH_COOKIE_PATH = '/api/auth/google';
 const SECOND_STEP_COOKIE = 'vs_2fa';
 const SECOND_STEP_COOKIE_PATH = '/api/auth/login';
 
+/** Not a failure: the identity has no account yet and goes to the username step. */
+class SignUpNeeded extends Error {}
+
 function meta(req: AppRequest): ClientMeta {
   return {
     userAgent: req.headers['user-agent'],
@@ -94,6 +100,7 @@ export class AuthController {
     private readonly sessions: SessionService,
     private readonly users: UsersService,
     private readonly google: GoogleService,
+    private readonly appSignIn: AppSignInService,
     private readonly captcha: SignupCaptchaService,
     private readonly twoFactor: TwoFactorService,
     private readonly guests: GuestDealsService,
@@ -431,6 +438,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Browser navigation endpoint: redirects to Google' })
   async googleStart(
     @Query('returnTo') returnTo: string | undefined,
+    // The phone app starts the sign-in with the hash of a secret it keeps, and gets its session
+    // by a hand-over instead of this browser's cookies (AppSignInService).
+    @Query('app') app: string | undefined,
     @Res() res: Response,
   ): Promise<void> {
     const { url, state, verifier } = await this.google.createAuthorization(
@@ -438,7 +448,12 @@ export class AuthController {
     );
     res.cookie(
       OAUTH_COOKIE,
-      JSON.stringify({ state, verifier, returnTo: safeReturnTo(returnTo) }),
+      JSON.stringify({
+        state,
+        verifier,
+        returnTo: safeReturnTo(returnTo),
+        app: this.appSignIn.isChallenge(app) ? app : null,
+      }),
       {
         httpOnly: true,
         sameSite: 'lax',
@@ -466,26 +481,55 @@ export class AuthController {
     res.clearCookie(OAUTH_COOKIE, { path: OAUTH_COOKIE_PATH });
     let identity: GoogleIdentity;
     let returnTo: string | null = null;
+    // Set when the phone app started this sign-in: nothing of it stays in the browser.
+    let app: string | null = null;
     try {
       if (typeof stored !== 'string') throw new Error('missing oauth cookie');
-      const {
-        state,
-        verifier,
-        returnTo: rt,
-      } = JSON.parse(stored) as {
+      const parsed = JSON.parse(stored) as {
         state: string;
         verifier: string;
         returnTo: string | null;
+        app?: string | null;
       };
-      returnTo = safeReturnTo(rt);
+      returnTo = safeReturnTo(parsed.returnTo);
+      app = this.appSignIn.isChallenge(parsed.app) ? parsed.app : null;
       const current = new URL(`${this.publicUrl}/api/auth/google/callback`);
       current.search = new URL(req.originalUrl, this.publicUrl).search;
-      identity = await this.google.exchange(current, verifier, state);
+      identity = await this.google.exchange(
+        current,
+        parsed.verifier,
+        parsed.state,
+      );
     } catch {
-      res.redirect(`${this.publicUrl}/login?error=googleFailed`);
+      res.redirect(
+        app
+          ? this.appSignIn.returnUrl({ error: 'googleFailed' })
+          : `${this.publicUrl}/login?error=googleFailed`,
+      );
       return;
     }
+    if (app) {
+      try {
+        const user = await this.auth.resolveGoogleUser(identity);
+        if (user) {
+          res.redirect(
+            this.appSignIn.returnUrl({
+              code: await this.appSignIn.issue(user.id, app),
+            }),
+          );
+          return;
+        }
+      } catch (err) {
+        const code =
+          err instanceof AppException
+            ? (err.getResponse() as { code: string }).code
+            : 'googleFailed';
+        res.redirect(this.appSignIn.returnUrl({ error: code }));
+        return;
+      }
+    }
     try {
+      if (app) throw new SignUpNeeded();
       const tokens = await this.auth.loginWithGoogle(identity, meta(req));
       if (tokens) {
         // Whoever was signed in in this browser before is signed out, not left behind the new cookies.
@@ -496,21 +540,29 @@ export class AuthController {
         return;
       }
     } catch (err) {
-      const code =
-        err instanceof AppException
-          ? (err.getResponse() as { code: string }).code
-          : 'googleFailed';
-      res.redirect(`${this.publicUrl}/login?error=${code}`);
-      return;
+      if (!(err instanceof SignUpNeeded)) {
+        const code =
+          err instanceof AppException
+            ? (err.getResponse() as { code: string }).code
+            : 'googleFailed';
+        res.redirect(`${this.publicUrl}/login?error=${code}`);
+        return;
+      }
     }
-    res.cookie(OAUTH_SIGNUP_COOKIE, JSON.stringify({ identity, returnTo }), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: this.secure,
-      signed: true,
-      path: OAUTH_COOKIE_PATH,
-      maxAge: 15 * 60_000,
-    });
+    // A new person: the username is chosen on the web page in either case; for the app the page
+    // ends with the hand-over instead of a session here.
+    res.cookie(
+      OAUTH_SIGNUP_COOKIE,
+      JSON.stringify({ identity, returnTo, app }),
+      {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: this.secure,
+        signed: true,
+        path: OAUTH_COOKIE_PATH,
+        maxAge: 15 * 60_000,
+      },
+    );
     res.redirect(`${this.publicUrl}/auth/google/complete`);
   }
 
@@ -518,13 +570,13 @@ export class AuthController {
   @RateLimit('googleComplete')
   @Post('google/complete')
   @ApiOperation({ summary: 'Finish Google sign-up by choosing a username' })
-  @ApiOkResponse({ type: MeDto })
+  @ApiOkResponse({ type: GoogleCompleteResultDto })
   @HttpCode(HttpStatus.OK)
   async googleComplete(
     @Body() dto: GoogleCompleteDto,
     @Req() req: AppRequest,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<MeDto> {
+  ): Promise<GoogleCompleteResultDto> {
     const stored = req.signedCookies?.[OAUTH_SIGNUP_COOKIE];
     if (typeof stored !== 'string')
       throw new AppException(
@@ -532,8 +584,27 @@ export class AuthController {
         'googleSignupExpired',
         'errors.auth.googleSignupExpired',
       );
-    const { identity } = JSON.parse(stored) as { identity: GoogleIdentity };
+    const { identity, app } = JSON.parse(stored) as {
+      identity: GoogleIdentity;
+      app?: string | null;
+    };
     await this.captcha.check(req.ip, dto.captchaToken);
+    if (this.appSignIn.isChallenge(app)) {
+      // Started by the phone app: the account is made, and the app signs in by the hand-over.
+      // This browser gets no session and keeps whichever it had.
+      const user = await this.auth.createGoogleUser(
+        identity,
+        dto,
+        req.headers['accept-language'],
+      );
+      await this.captcha.remember(req.ip);
+      res.clearCookie(OAUTH_SIGNUP_COOKIE, { path: OAUTH_COOKIE_PATH });
+      const result: GoogleCompleteResultDto = await this.users.getMe(user.id);
+      result.appRedirect = this.appSignIn.returnUrl({
+        code: await this.appSignIn.issue(user.id, app),
+      });
+      return result;
+    }
     const tokens = await this.auth.completeGoogleSignup(
       identity,
       dto,
@@ -547,6 +618,26 @@ export class AuthController {
     res.clearCookie(OAUTH_SIGNUP_COOKIE, { path: OAUTH_COOKIE_PATH });
     this.sessions.setCookies(res, tokens);
     await this.adoptGuest(req, res, tokens.userId);
+    return this.users.getMe(tokens.userId);
+  }
+
+  @Public()
+  @RateLimit('appExchange')
+  @Post('app/exchange')
+  @ApiOperation({
+    summary:
+      'The phone app picks up a sign-in the browser handed over: a one-time code and the secret behind the challenge, for a session',
+  })
+  @ApiOkResponse({ type: MeDto })
+  @HttpCode(HttpStatus.OK)
+  async appExchange(
+    @Body() dto: AppExchangeDto,
+    @Req() req: AppRequest,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<MeDto> {
+    const userId = await this.appSignIn.redeem(dto.code, dto.verifier);
+    const tokens = await this.auth.startSession(userId, meta(req));
+    this.sessions.setCookies(res, tokens);
     return this.users.getMe(tokens.userId);
   }
 }

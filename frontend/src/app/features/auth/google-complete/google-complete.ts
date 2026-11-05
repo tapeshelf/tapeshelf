@@ -119,6 +119,12 @@ export class GoogleCompletePage {
           },
         }),
       );
+      if (me.appRedirect) {
+        // The phone app started this sign-up: the account is made, the app signs in with the code
+        // in this address, and this browser stays as it was (no session was started here).
+        window.location.assign(me.appRedirect);
+        return;
+      }
       const target = this.router.serializeUrl(this.router.createUrlTree(profileLink(me.username)));
       if (this.signedInAs) {
         // Another account was loaded in this tab: start clean rather than carry its state over.

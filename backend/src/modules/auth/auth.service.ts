@@ -344,6 +344,19 @@ export class AuthService {
     identity: GoogleIdentity,
     meta: ClientMeta,
   ): Promise<(IssuedTokens & { userId: string; username: string }) | null> {
+    const user = await this.resolveGoogleUser(identity);
+    if (!user) return null;
+    const tokens = await this.sessions.create(user, meta);
+    return { ...tokens, userId: user.id, username: user.username };
+  }
+
+  /**
+   * The account a Google identity signs in to, with no session started: the browser gets one
+   * from `loginWithGoogle`, the phone app starts its own after the hand-over (AppSignInService).
+   */
+  async resolveGoogleUser(
+    identity: GoogleIdentity,
+  ): Promise<{ id: string; role: Role; username: string } | null> {
     const linked = await this.prisma.oAuthAccount.findUnique({
       where: {
         provider_providerUserId: {
@@ -416,8 +429,7 @@ export class AuthService {
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
-    const tokens = await this.sessions.create(user, meta);
-    return { ...tokens, userId: user.id, username: user.username };
+    return { id: user.id, role: user.role, username: user.username };
   }
 
   async completeGoogleSignup(
@@ -426,6 +438,17 @@ export class AuthService {
     meta: ClientMeta,
     acceptLanguage: string | undefined,
   ): Promise<IssuedTokens & { userId: string }> {
+    const user = await this.createGoogleUser(identity, input, acceptLanguage);
+    const tokens = await this.sessions.create(user, meta);
+    return { ...tokens, userId: user.id };
+  }
+
+  /** The new account of a Google sign-up, with no session started (see `resolveGoogleUser`). */
+  async createGoogleUser(
+    identity: GoogleIdentity,
+    input: { username: string; displayName?: string; showSensitive?: boolean },
+    acceptLanguage: string | undefined,
+  ): Promise<{ id: string; role: Role }> {
     await this.assertRegistrationOpen();
     const username = normalizeUsername(input.username);
     this.assertUsernameFormat(username);
@@ -465,6 +488,25 @@ export class AuthService {
       },
       select: { id: true, role: true },
     });
+    return user;
+  }
+
+  /** A session for an account that proved itself elsewhere: the app's side of a hand-over. */
+  async startSession(
+    userId: string,
+    meta: ClientMeta,
+  ): Promise<IssuedTokens & { userId: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true, status: true },
+    });
+    if (user?.status !== 'ACTIVE') {
+      throw new AppException(
+        HttpStatus.BAD_REQUEST,
+        'googleFailed',
+        'errors.auth.googleFailed',
+      );
+    }
     const tokens = await this.sessions.create(user, meta);
     return { ...tokens, userId: user.id };
   }

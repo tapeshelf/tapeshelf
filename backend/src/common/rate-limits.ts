@@ -19,6 +19,8 @@ export const RATE_LIMITS = {
   resetPassword: { limit: 10, ttl: MIN },
   googleStart: { limit: 10, ttl: MIN },
   googleComplete: { limit: 10, ttl: MIN },
+  /** The phone app picking up a sign-in the browser handed over. */
+  appExchange: { limit: 10, ttl: MIN },
   deleteAccount: { limit: 5, ttl: MIN },
   /** A link in a mail, signed: enough for a person and a mail provider behind one address. */
   unsubscribe: { limit: 30, ttl: MIN },

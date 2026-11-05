@@ -1,10 +1,12 @@
-import { createHmac } from 'node:crypto';
+import { createHash, createHmac, randomBytes } from 'node:crypto';
 
 import { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 
+import { AppSignInService } from '../src/modules/auth/app-sign-in.service.js';
 import { AuthService } from '../src/modules/auth/auth.service.js';
+import { GoogleService } from '../src/modules/auth/google.service.js';
 import { SettingsService } from '../src/modules/settings/settings.service.js';
 import { PrismaService } from '../src/infra/prisma/prisma.service.js';
 import { clearMailbox, extractToken, waitForMail } from './utils/mailpit.js';
@@ -837,6 +839,167 @@ describe('auth (e2e)', () => {
         ).body.code,
       ).toBe('usernameTaken');
       await c.get('/api/users/nobody_here').expect(404);
+    });
+
+    describe('started by the phone app', () => {
+      /** What the app keeps (the secret) and what it sends when it starts the sign-in (its hash). */
+      const secret = () => {
+        const verifier = randomBytes(32).toString('base64url');
+        return {
+          verifier,
+          challenge: createHash('sha256').update(verifier).digest('base64url'),
+        };
+      };
+      const APP = 'android/1.4.0 (Test phone; Android 15)';
+      const exchange = (code: string, verifier: string) =>
+        request(app.getHttpServer())
+          .post('/api/auth/app/exchange')
+          .set(XHR)
+          .set('X-Tapeshelf-Client', APP)
+          .send({ code, verifier });
+      const codeOf = (url: string) => new URL(url).searchParams.get('code')!;
+
+      it('a sign-up ends with a hand-over, not a session in the browser; the app trades the code for its own', async () => {
+        const server = app.getHttpServer();
+        const { verifier, challenge } = secret();
+        const cookieSecret = app
+          .get(ConfigService)
+          .get<string>('COOKIE_SECRET')!;
+        const pending = signedCookie(
+          'vs_oauth_signup',
+          JSON.stringify({
+            identity: {
+              sub: 'google-sub-app-1',
+              email: 'phone.person@gmail.com',
+              emailVerified: true,
+              name: 'Phone Person',
+            },
+            returnTo: null,
+            app: challenge,
+          }),
+          cookieSecret,
+        );
+        const res = await request(server)
+          .post('/api/auth/google/complete')
+          .set(XHR)
+          .set('Cookie', pending)
+          .send({ username: 'phoneperson' })
+          .expect(200);
+        expect(res.body.username).toBe('phoneperson');
+        expect(res.body.appRedirect).toMatch(
+          /^tapeshelf:\/\/app\/auth\/google\?code=[\w-]{20,}$/,
+        );
+        // Nothing of the sign-in stays in the browser.
+        expect(cookiesOf(res)).not.toMatch(/vs_access|vs_refresh/);
+
+        const code = codeOf(res.body.appRedirect);
+        const signedIn = await exchange(code, verifier).expect(200);
+        expect(signedIn.body.username).toBe('phoneperson');
+        const cookies = cookiesOf(signedIn);
+        expect(cookies).toMatch(/vs_access=/);
+        expect(cookies).toMatch(/vs_refresh=/);
+        const sessions = (
+          await request(server)
+            .get('/api/auth/sessions')
+            .set('Cookie', cookies)
+            .expect(200)
+        ).body as { client: string | null; current: boolean }[];
+        // One session, the app's own.
+        expect(sessions).toHaveLength(1);
+        expect(sessions[0]).toMatchObject({ client: APP, current: true });
+
+        // A code works once.
+        expect((await exchange(code, verifier).expect(400)).body.code).toBe(
+          'googleFailed',
+        );
+      });
+
+      it('the code is worth nothing without the secret, and the wrong secret spends it', async () => {
+        const ann = await client(app)
+          .post('/api/auth/register')
+          .send(ANN)
+          .expect(200);
+        const handOver = app.get(AppSignInService);
+        const { verifier, challenge } = secret();
+
+        const stolen = await handOver.issue(ann.body.id, challenge);
+        const wrong = await exchange(stolen, secret().verifier).expect(400);
+        expect(wrong.body.code).toBe('googleFailed');
+        expect(cookiesOf(wrong)).not.toMatch(/vs_access|vs_refresh/);
+        await exchange(stolen, verifier).expect(400);
+
+        const good = await handOver.issue(ann.body.id, challenge);
+        expect((await exchange(good, verifier).expect(200)).body.username).toBe(
+          'ann_v',
+        );
+
+        // Not a code at all, and a secret of the wrong shape.
+        await exchange('x'.repeat(43), verifier).expect(400);
+        expect((await exchange(good, 'short').expect(400)).body.code).toBe(
+          'validation',
+        );
+      });
+
+      it('an account that exists comes back to the app from the callback with a code; a failure, with its reason', async () => {
+        const server = app.getHttpServer();
+        await client(app).post('/api/auth/register').send(ANN).expect(200);
+        const { verifier, challenge } = secret();
+        const cookieSecret = app
+          .get(ConfigService)
+          .get<string>('COOKIE_SECRET')!;
+        const started = (withApp: boolean) =>
+          signedCookie(
+            'vs_oauth',
+            JSON.stringify({
+              state: 'state-1',
+              verifier: 'google-verifier',
+              returnTo: null,
+              app: withApp ? challenge : null,
+            }),
+            cookieSecret,
+          );
+        const google = vi.spyOn(app.get(GoogleService), 'exchange');
+        try {
+          google.mockResolvedValue({
+            sub: 'google-sub-ann',
+            email: ANN.email.toLowerCase(),
+            emailVerified: true,
+            name: 'Ann',
+          });
+          const back = await request(server)
+            .get('/api/auth/google/callback?code=abc&state=state-1')
+            .set('Cookie', started(true))
+            .expect(302);
+          expect(back.headers.location).toMatch(
+            /^tapeshelf:\/\/app\/auth\/google\?code=[\w-]{20,}$/,
+          );
+          expect(cookiesOf(back)).not.toMatch(/vs_access|vs_refresh/);
+          const signedIn = await exchange(
+            codeOf(back.headers.location),
+            verifier,
+          ).expect(200);
+          expect(signedIn.body.username).toBe('ann_v');
+
+          // The same sign-in started by a browser is as it was: cookies and the person's page.
+          const browser = await request(server)
+            .get('/api/auth/google/callback?code=abc&state=state-1')
+            .set('Cookie', started(false))
+            .expect(302);
+          expect(browser.headers.location).toMatch(/\/@ann_v$/);
+          expect(cookiesOf(browser)).toMatch(/vs_refresh=/);
+
+          google.mockRejectedValue(new Error('google said no'));
+          const failed = await request(server)
+            .get('/api/auth/google/callback?error=access_denied&state=state-1')
+            .set('Cookie', started(true))
+            .expect(302);
+          expect(failed.headers.location).toBe(
+            'tapeshelf://app/auth/google?error=googleFailed',
+          );
+        } finally {
+          google.mockRestore();
+        }
+      });
     });
   });
 });

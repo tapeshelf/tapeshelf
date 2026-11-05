@@ -1,3 +1,4 @@
+import { AppSignInService } from './app-sign-in.service.js';
 import { Global, Module } from '@nestjs/common';
 
 import { DealsModule } from '../deals/deals.module.js';
@@ -23,6 +24,7 @@ import { TwoFactorService } from './two-factor/two-factor.service.js';
     LoginAttemptsService,
     GoogleService,
     TwoFactorService,
+    AppSignInService,
   ],
   exports: [TokenService, SessionService, AuthService, TwoFactorService],
 })

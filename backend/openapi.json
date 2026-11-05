@@ -740,6 +740,12 @@
         "operationId": "Auth_googleStart",
         "parameters": [
           {
+            "name": "app",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
             "name": "returnTo",
             "required": false,
             "in": "query",
@@ -792,13 +798,45 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MeDto"
+                  "$ref": "#/components/schemas/GoogleCompleteResultDto"
                 }
               }
             }
           }
         },
         "summary": "Finish Google sign-up by choosing a username",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/app/exchange": {
+      "post": {
+        "operationId": "Auth_appExchange",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppExchangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The phone app picks up a sign-in the browser handed over: a one-time code and the secret behind the challenge, for a session",
         "tags": [
           "auth"
         ]
@@ -9872,6 +9910,193 @@
         },
         "required": [
           "username"
+        ]
+      },
+      "GoogleCompleteResultDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "username": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "accentColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverPattern": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pattern of the generated cover; null derives it from the id"
+          },
+          "pageSettings": {
+            "$ref": "#/components/schemas/PageSettingsDto"
+          },
+          "pageHidden": {
+            "type": "boolean",
+            "description": "The page is hidden: 404 for everyone but the owner and admins"
+          },
+          "canHidePage": {
+            "type": "boolean",
+            "description": "May hide the page now: Pro or admin; everyone self-hosted"
+          },
+          "canProtectLinks": {
+            "type": "boolean",
+            "description": "May protect a temporary link with a password: Pro or admin; everyone self-hosted"
+          },
+          "canMakeAnonymousLinks": {
+            "type": "boolean",
+            "description": "May make anonymous links to the shelf, and they open: Pro or admin; everyone self-hosted"
+          },
+          "locale": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
+          },
+          "theme": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Theme"
+              }
+            ]
+          },
+          "showSensitive": {
+            "type": "boolean",
+            "description": "Show videos marked sensitive without asking"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Role"
+              }
+            ]
+          },
+          "tier": {
+            "description": "Effective tier (the same as plan.tier)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Tier"
+              }
+            ]
+          },
+          "plan": {
+            "$ref": "#/components/schemas/PlanDto"
+          },
+          "hasPassword": {
+            "type": "boolean"
+          },
+          "hasGoogle": {
+            "type": "boolean"
+          },
+          "twoFactor": {
+            "type": "boolean",
+            "description": "Two-step sign-in is on; an admin needs it for the admin panel"
+          },
+          "exchangeWants": {
+            "type": "string",
+            "nullable": true
+          },
+          "exchangeAvoid": {
+            "type": "string",
+            "nullable": true
+          },
+          "showExchangePrefs": {
+            "type": "boolean"
+          },
+          "acceptGuestExchanges": {
+            "type": "boolean"
+          },
+          "usernameChangedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "appRedirect": {
+            "type": "string",
+            "description": "Set when the sign-up was started by the phone app: the page goes there, and the app signs in. No session is started in the browser then.",
+            "example": "tapeshelf://app/auth/google?code=…"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "emailVerified",
+          "username",
+          "displayName",
+          "avatarUrl",
+          "coverUrl",
+          "bio",
+          "accentColor",
+          "coverPattern",
+          "pageSettings",
+          "pageHidden",
+          "canHidePage",
+          "canProtectLinks",
+          "canMakeAnonymousLinks",
+          "locale",
+          "theme",
+          "showSensitive",
+          "role",
+          "tier",
+          "plan",
+          "hasPassword",
+          "hasGoogle",
+          "twoFactor",
+          "exchangeWants",
+          "exchangeAvoid",
+          "showExchangePrefs",
+          "acceptGuestExchanges",
+          "usernameChangedAt",
+          "createdAt"
+        ]
+      },
+      "AppExchangeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200,
+            "description": "The one-time code the browser came back to the app with (`tapeshelf://app/auth/google?code=…`)"
+          },
+          "verifier": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43,128}$",
+            "description": "The secret whose SHA-256 (base64url) the app sent as `app` when it started the sign-in"
+          }
+        },
+        "required": [
+          "code",
+          "verifier"
         ]
       },
       "PasskeyDto": {

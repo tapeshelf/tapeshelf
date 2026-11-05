@@ -243,3 +243,31 @@ export class GoogleStatusDto {
 export class SessionHintDto {
   @ApiProperty({ type: String, nullable: true }) username!: string | null;
 }
+
+export class AppExchangeDto {
+  @ApiProperty({
+    description:
+      'The one-time code the browser came back to the app with (`tapeshelf://app/auth/google?code=…`)',
+  })
+  @IsString()
+  @Length(20, 200)
+  code!: string;
+
+  @ApiProperty({
+    description:
+      'The secret whose SHA-256 (base64url) the app sent as `app` when it started the sign-in',
+  })
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{43,128}$/)
+  verifier!: string;
+}
+
+export class GoogleCompleteResultDto extends MeDto {
+  @ApiProperty({
+    required: false,
+    description:
+      'Set when the sign-up was started by the phone app: the page goes there, and the app signs in. No session is started in the browser then.',
+    example: 'tapeshelf://app/auth/google?code=…',
+  })
+  appRedirect?: string;
+}
