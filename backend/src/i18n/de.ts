@@ -1,5 +1,6 @@
 export const de = {
   errors: {
+    clientTooOld: 'Diese Version der App ist zu alt für diesen Server.',
     internal:
       'Bei uns ist etwas schiefgelaufen. Bitte versuch es später noch einmal.',
     generic: 'Die Anfrage konnte nicht ausgeführt werden.',
@@ -522,6 +523,18 @@ export const de = {
         page: 'Deine Seite ist wieder für alle sichtbar: Verstecken kannst du sie mit Pro.',
         anonymousLinks:
           'Deine anonymen Links öffnen sich nicht mehr; mit Pro funktionieren sie wieder.',
+        button: 'Tarif öffnen',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Dein Datenvolumen wird knapp',
+        title: 'Datenvolumen wird knapp',
+        body: 'Du hast auf {{site}} in diesem Monat {{used}} von {{limit}} Datenvolumen verbraucht. Wenn es aufgebraucht ist, öffnen sich deine öffentlichen Videos und Links bis zum {{date}} (UTC) nicht mehr für andere.',
+        button: 'Tarif öffnen',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Das Datenvolumen für diesen Monat ist aufgebraucht',
+        title: 'Datenvolumen aufgebraucht',
+        body: 'Dein Datenvolumen auf {{site}} für diesen Monat ({{limit}}) ist aufgebraucht. Bis zum {{date}} (UTC) öffnen sich deine öffentlichen Videos und Links nicht für andere, und Videos von anderen kannst du nicht ansehen. Deine eigenen Videos siehst du weiterhin wie gewohnt.',
         button: 'Tarif öffnen',
       },
     },

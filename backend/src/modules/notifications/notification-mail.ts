@@ -184,6 +184,22 @@ export function renderNotificationMail(
       vars = { date: formatUtc(locale, str('until')) };
       url = `${publicUrl}/settings/plan`;
       break;
+    // The month's traffic: four fifths spent, and all of it.
+    case 'TRAFFIC_RUNNING_OUT':
+      vars = {
+        used: formatBytes(Number(payload['usedBytes'] ?? 0)),
+        limit: formatBytes(Number(payload['limitBytes'] ?? 0)),
+        date: formatUtc(locale, str('resetAt')),
+      };
+      url = `${publicUrl}/settings/plan`;
+      break;
+    case 'TRAFFIC_USED_UP':
+      vars = {
+        limit: formatBytes(Number(payload['limitBytes'] ?? 0)),
+        date: formatUtc(locale, str('resetAt')),
+      };
+      url = `${publicUrl}/settings/plan`;
+      break;
     case 'PLAN_EXPIRED':
       vars = {
         file: formatBytes(Number(payload['maxFileBytes'] ?? 0)),

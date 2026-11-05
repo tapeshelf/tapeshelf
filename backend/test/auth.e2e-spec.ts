@@ -241,6 +241,71 @@ describe('auth (e2e)', () => {
       expect(reused.body.code).toBe('sessionExpired');
     });
 
+    it('two refreshes with the same token at once: one gets the new token, the session lives on', async () => {
+      const login = await client(app)
+        .post('/api/auth/login')
+        .send({ email: ANN.email, password: ANN.password })
+        .expect(200);
+      const refresh = cookiesOf(login, 'vs_refresh');
+      const once = () =>
+        request(app.getHttpServer())
+          .post('/api/auth/refresh')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .set('Cookie', refresh);
+      // Many at once, so that some really overlap in the database.
+      const answers = await Promise.all(Array.from({ length: 8 }, once));
+      const won = answers.filter((a) => a.status === 200);
+      expect(won).toHaveLength(1);
+      for (const lost of answers.filter((a) => a.status !== 200)) {
+        expect(lost.status).toBe(401);
+        expect(lost.body.code).toBe('sessionExpired');
+      }
+      // The winner's token is the session's: it refreshes again and stays signed in.
+      const next = await request(app.getHttpServer())
+        .post('/api/auth/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .set('Cookie', cookiesOf(won[0]!, 'vs_refresh'))
+        .expect(200);
+      await request(app.getHttpServer())
+        .get('/api/auth/me')
+        .set('Cookie', cookiesOf(next))
+        .expect(200);
+    });
+
+    it('a session started by an app is listed with what the app said about itself', async () => {
+      const said = 'android/1.4.0 (Test phone; Android 15)';
+      const fromApp = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .set('X-Tapeshelf-Client', said)
+        .send({ email: ANN.email, password: ANN.password })
+        .expect(200);
+      const browser = client(app);
+      await browser
+        .post('/api/auth/login')
+        .send({ email: ANN.email, password: ANN.password })
+        .expect(200);
+      const list = (await browser.get('/api/auth/sessions').expect(200))
+        .body as { client: string | null; current: boolean }[];
+      // Registration signed Ann in too: three sessions, one of them the app's.
+      expect(list).toHaveLength(3);
+      expect(list.map((s) => s.client).filter(Boolean)).toEqual([said]);
+      expect(list.find((s) => s.current)!.client).toBeNull();
+
+      // The app updated: its next refresh says the new version.
+      await request(app.getHttpServer())
+        .post('/api/auth/refresh')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .set('X-Tapeshelf-Client', 'android/1.5.0 (Test phone; Android 15)')
+        .set('Cookie', cookiesOf(fromApp, 'vs_refresh'))
+        .expect(200);
+      const after = (await browser.get('/api/auth/sessions').expect(200))
+        .body as { client: string | null }[];
+      expect(after.map((s) => s.client)).toContain(
+        'android/1.5.0 (Test phone; Android 15)',
+      );
+    });
+
     it('a public page asked by an app that believes it is signed in, without a live access cookie, says 401 so the app renews the session', async () => {
       const c = client(app);
       const login = await c

@@ -1,5 +1,6 @@
 export const tr = {
   errors: {
+    clientTooOld: 'Uygulamanın bu sürümü bu sunucu için çok eski.',
     internal:
       'Bizim tarafımızda bir sorun oluştu. Lütfen daha sonra yeniden deneyin.',
     generic: 'İşlem tamamlanamadı.',
@@ -511,6 +512,18 @@ export const tr = {
         page: 'Sayfanız yeniden herkese görünüyor: sayfayı gizlemek Pro’ya dahil.',
         anonymousLinks:
           'Anonim bağlantılarınız artık açılmıyor; tekrar Pro’ya geçtiğinizde yeniden çalışır.',
+        button: 'Planı aç',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Trafiğiniz bitmek üzere',
+        title: 'Trafik bitmek üzere',
+        body: '{{site}} üzerindeki bu ayki {{limit}} trafiğinizin {{used}} kadarını kullandınız. Trafik bittiğinde herkese açık videolarınız ve bağlantılarınız {{date}} (UTC) tarihine kadar başkaları için açılmaz.',
+        button: 'Planı aç',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Bu ayki trafiğiniz tükendi',
+        title: 'Trafik tükendi',
+        body: '{{site}} üzerindeki bu ayki trafiğiniz ({{limit}}) tükendi. {{date}} (UTC) tarihine kadar herkese açık videolarınız ve bağlantılarınız başkaları için açılmaz, siz de başkalarının videolarını izleyemezsiniz. Kendi videolarınızı her zamanki gibi izleyebilirsiniz.',
         button: 'Planı aç',
       },
     },

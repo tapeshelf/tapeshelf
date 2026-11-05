@@ -1,5 +1,7 @@
 export const it = {
   errors: {
+    clientTooOld:
+      'Questa versione dell’app è troppo vecchia per questo server.',
     internal: 'Qualcosa è andato storto da parte nostra. Riprova più tardi.',
     generic: 'Non è stato possibile completare l’operazione.',
     badRequest: 'Richiesta non valida.',
@@ -526,6 +528,18 @@ export const it = {
         page: 'La tua pagina è di nuovo visibile a tutti: per nasconderla serve Pro.',
         anonymousLinks:
           'I tuoi link anonimi non si aprono più; con Pro torneranno a funzionare.',
+        button: 'Apri il tuo piano',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Il tuo traffico sta per esaurirsi',
+        title: 'Il traffico sta per esaurirsi',
+        body: 'Su {{site}} hai usato {{used}} dei {{limit}} di traffico di questo mese. Quando si esaurirà, i tuoi video pubblici e i tuoi link smetteranno di aprirsi per gli altri fino al {{date}} (UTC).',
+        button: 'Apri il tuo piano',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Il traffico di questo mese è esaurito',
+        title: 'Traffico esaurito',
+        body: 'Il traffico di questo mese ({{limit}}) su {{site}} è esaurito. Fino al {{date}} (UTC) i tuoi video pubblici e i tuoi link non si aprono per gli altri, e tu non puoi guardare i video degli altri. I tuoi video continui a vederli come sempre.',
         button: 'Apri il tuo piano',
       },
     },

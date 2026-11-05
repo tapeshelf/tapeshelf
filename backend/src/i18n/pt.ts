@@ -1,5 +1,6 @@
 export const pt = {
   errors: {
+    clientTooOld: 'Esta versão do app é antiga demais para este servidor.',
     internal: 'Algo deu errado do nosso lado. Tente de novo mais tarde.',
     generic: 'Não foi possível concluir a solicitação.',
     badRequest: 'A solicitação é inválida.',
@@ -520,6 +521,18 @@ export const pt = {
         page: 'Sua página voltou a ficar visível para todos: ocultá-la é um recurso do Pro.',
         anonymousLinks:
           'Seus links anônimos não abrem mais; com o Pro, eles voltam a funcionar.',
+        button: 'Abrir seu plano',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Seu tráfego está acabando',
+        title: 'O tráfego está acabando',
+        body: 'No {{site}} você já usou {{used}} dos {{limit}} de tráfego deste mês. Quando ele acabar, seus vídeos públicos e seus links param de abrir para os outros até {{date}} (UTC).',
+        button: 'Abrir seu plano',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'O tráfego deste mês acabou',
+        title: 'O tráfego acabou',
+        body: 'O tráfego deste mês ({{limit}}) no {{site}} acabou. Até {{date}} (UTC), seus vídeos públicos e seus links não abrem para os outros, e você não consegue assistir aos vídeos de outras pessoas. Os seus próprios vídeos continuam abrindo normalmente.',
         button: 'Abrir seu plano',
       },
     },

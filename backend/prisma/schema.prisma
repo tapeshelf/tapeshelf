@@ -224,6 +224,8 @@ model Session {
   refreshTokenHash String    @unique
   userAgent        String?
   ip               String?
+  /// `X-Tapeshelf-Client` of a native app (`android/1.2.3 (Pixel 8; Android 15)`); null for a browser.
+  client           String?
   createdAt        DateTime  @default(now())
   lastUsedAt       DateTime  @default(now())
   expiresAt        DateTime
@@ -673,6 +675,10 @@ enum NotificationType {
   LINK_OPENED
   /// To the sender: someone put videos of their temporary link on their shelf.
   LINK_SAVED
+  /// Four fifths of the month's traffic are spent.
+  TRAFFIC_RUNNING_OUT
+  /// The month's traffic is spent: nothing of theirs opens for others until next month.
+  TRAFFIC_USED_UP
 }
 
 /// In-app notification; the payload shape depends on the type (notification.types.ts).
@@ -1147,6 +1153,9 @@ model TrafficUsage {
   month     DateTime @db.Date
   bytes     BigInt   @default(0)
   updatedAt DateTime @default(now()) @updatedAt
+  /// When the account was told its traffic is running out, and that it is used up: once a month each.
+  warnedAt  DateTime?
+  usedUpAt  DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

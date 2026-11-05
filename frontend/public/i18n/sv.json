@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Svar från supporten",
       "SUPPORT_TICKET": "Supportärenden (administratörer)",
       "LINK_OPENED": "Min tillfälliga länk öppnades",
-      "LINK_SAVED": "Videor från min länk hamnade på någons hylla"
+      "LINK_SAVED": "Videor från min länk hamnade på någons hylla",
+      "TRAFFIC_RUNNING_OUT": "Min datatrafik för månaden håller på att ta slut",
+      "TRAFFIC_USED_UP": "Min datatrafik för månaden har tagit slut"
     },
     "text": {
       "VIDEO_PROCESSED": "”{{title}}” är klar att titta på.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} öppnade din tillfälliga länk med ”{{title}}” ({count, plural, one {# video} other {# videor}}).",
       "LINK_OPENED_guest": "Någon öppnade din tillfälliga länk med ”{{title}}” ({count, plural, one {# video} other {# videor}}).",
       "LINK_SAVED": "@{{name}} lade till videor från din tillfälliga länk på sin hylla: ”{{title}}” ({count, plural, one {# video} other {# videor}}).",
+      "TRAFFIC_RUNNING_OUT": "Du har använt {{used}} av månadens {{limit}} datatrafik. När den är slut öppnas dina offentliga videor och länkar inte för andra fram till {{date}}.",
+      "TRAFFIC_USED_UP": "Månadens datatrafik ({{limit}}) är slut. Fram till {{date}} öppnas dina offentliga videor och länkar inte för andra, och du kan inte titta på andras videor. Dina egna videor spelas upp som vanligt.",
       "REQUEST_INVALIDATED_expired": "Bytet med en gäst om ”{{title}}” löpte ut: ingen gjorde något på tre dagar.",
       "PLAN_EXPIRING_links": "Ditt Pro-abonnemang tar slut den {{date}}. Efter det gäller gränserna för Free på din hylla och dina anonyma länkar öppnas inte förrän du har Pro igen. Inget raderas.",
       "PLAN_EXPIRING_page_links": "Ditt Pro-abonnemang tar slut den {{date}}. Efter det gäller gränserna för Free på din hylla, din dolda sida blir synlig för alla igen och dina anonyma länkar öppnas inte förrän du har Pro igen. Inget raderas.",

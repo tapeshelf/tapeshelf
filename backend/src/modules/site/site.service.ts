@@ -1,3 +1,4 @@
+import { API_LEVEL, MIN_CLIENT } from '../../common/client-version.js';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { readFile, stat } from 'node:fs/promises';
@@ -74,6 +75,7 @@ export class SiteService {
       },
       edition: plans.edition,
       plans: plans.tiers,
+      api: { level: API_LEVEL, minClient: { ...MIN_CLIENT } },
       captchaSiteKey: this.captcha.siteKey,
       demo: this.demo
         ? { email: DEMO_ACCOUNT.email, password: DEMO_ACCOUNT.password }

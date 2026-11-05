@@ -1,16 +1,18 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Redis } from 'ioredis';
 import { createHmac } from 'node:crypto';
 
 import { AppException } from '../../common/errors/app.exception.js';
 import type { Env } from '../../config/env.js';
+import { OutboxService } from '../../infra/outbox/outbox.service.js';
 import { PrismaService } from '../../infra/prisma/prisma.service.js';
 import { REDIS_CLIENT } from '../../infra/redis/redis.module.js';
 import { monthWindow } from '../downloads/download-rules.js';
+import type { NotificationPayloads } from '../notifications/notification.types.js';
 import { effectiveTier } from '../plans/plan.js';
 import { PlansService } from '../plans/plans.service.js';
-import { monthKey } from './traffic-rules.js';
+import { keptFrom, monthKey, trafficNotice } from './traffic-rules.js';
 
 export interface TrafficStanding {
   usedBytes: number;
@@ -18,6 +20,14 @@ export interface TrafficStanding {
   limitBytes: number;
   reached: boolean;
   resetAt: Date;
+}
+
+/** What an admin sees of an account's traffic. */
+export interface TrafficSummary {
+  usedBytes: number;
+  /** 0 = no limit. */
+  limitBytes: number;
+  lastMonthBytes: number;
 }
 
 /**
@@ -36,14 +46,19 @@ export interface TrafficViewer {
  * of its file comes off what the account has left, however much of it is then watched. Own uploads
  * cost nothing; a guest spends the traffic of whoever shared the video, a signed-in viewer their
  * own. Only the sum is kept. Self-hosted there is no limit, so nothing is written.
+ *
+ * The account hears when four fifths are spent and when all of it is, once a month each:
+ * the month's row remembers that it was told, so a limit raised or lowered meanwhile cannot repeat it.
  */
 @Injectable()
 export class TrafficService {
+  private readonly logger = new Logger(TrafficService.name);
   private readonly secret: Buffer;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly plans: PlansService,
+    private readonly outbox: OutboxService,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     config: ConfigService<Env, true>,
   ) {
@@ -70,6 +85,20 @@ export class TrafficService {
     return this.used(userId, monthWindow(now).start);
   }
 
+  /** This month against the limit, and the month before, for the admin's card. */
+  async summary(userId: string, now = new Date()): Promise<TrafficSummary> {
+    const { start } = monthWindow(now);
+    const lastMonth = new Date(
+      Date.UTC(start.getUTCFullYear(), start.getUTCMonth() - 1, 1),
+    );
+    const [usedBytes, limitBytes, lastMonthBytes] = await Promise.all([
+      this.used(userId, start),
+      this.limit(userId, now),
+      this.used(userId, lastMonth),
+    ]);
+    return { usedBytes, limitBytes, lastMonthBytes };
+  }
+
   /**
    * Takes `bytes` off the account or refuses: while anything is left, the next file may start, even
    * one bigger than what is left. `seen`: the same thing again within the window costs nothing.
@@ -91,14 +120,27 @@ export class TrafficService {
     const { start, resetAt } = monthWindow(now);
     const month = monthKey(start);
     // One statement, so two files starting together cannot both slip past the limit's edge.
-    const added = await this.prisma.$executeRaw`
+    const rows = await this.prisma.$queryRaw<{ bytes: bigint }[]>`
       INSERT INTO "TrafficUsage" ("userId", "month", "bytes", "updatedAt")
       VALUES (${o.accountId}::uuid, ${month}::date, ${o.bytes}::bigint, now())
       ON CONFLICT ("userId", "month") DO UPDATE
         SET "bytes" = "TrafficUsage"."bytes" + EXCLUDED."bytes", "updatedAt" = now()
-        WHERE "TrafficUsage"."bytes" < ${limit}::bigint`;
-    if (added > 0) return;
+        WHERE "TrafficUsage"."bytes" < ${limit}::bigint
+      RETURNING "bytes"`;
+    if (rows[0]) {
+      await this.tell(
+        o.accountId,
+        start,
+        Number(rows[0].bytes),
+        limit,
+        resetAt,
+      );
+      return;
+    }
     if (o.seen) await this.redis.del(...o.seen.keys).catch(() => undefined);
+    // Refused: all of it is spent. Normally said when the charge that spent it went through; said
+    // here when the limit shrank under the sum (Pro ended, a setting changed).
+    await this.tell(o.accountId, start, limit, limit, resetAt);
     throw new AppException(
       HttpStatus.TOO_MANY_REQUESTS,
       o.payer === 'viewer'
@@ -109,6 +151,15 @@ export class TrafficService {
         : 'errors.traffic.sharerLimitReached',
       { details: { resetAt: resetAt.toISOString() } },
     );
+  }
+
+  /** Rows of months no longer kept go: this month and the two before it stay. */
+  async sweep(now = new Date()): Promise<number> {
+    const { count } = await this.prisma.trafficUsage.deleteMany({
+      where: { month: { lt: keptFrom(now) } },
+    });
+    if (count) this.logger.log(`Traffic: ${count} old month row(s) removed`);
+    return count;
   }
 
   /** The keys for "this person already spent this": hashed, so no address is left in Redis. */
@@ -122,6 +173,57 @@ export class TrafficService {
         .digest('base64url');
       return `traffic:seen:${digest}`;
     });
+  }
+
+  /**
+   * Tells the account once a month that its traffic is running out, and once that it is used up
+   * the month's row remembers each. A word that fails to go out never fails the charge.
+   */
+  private async tell(
+    userId: string,
+    month: Date,
+    used: number,
+    limit: number,
+    resetAt: Date,
+  ): Promise<void> {
+    const notice = trafficNotice(used, limit);
+    if (!notice) return;
+    try {
+      const now = new Date();
+      const { count } = await this.prisma.trafficUsage.updateMany({
+        where:
+          notice === 'usedUp'
+            ? { userId, month, usedUpAt: null }
+            : { userId, month, warnedAt: null },
+        data: notice === 'usedUp' ? { usedUpAt: now } : { warnedAt: now },
+      });
+      if (!count) return;
+      const delivery =
+        notice === 'usedUp'
+          ? {
+              type: 'TRAFFIC_USED_UP' as const,
+              payload: {
+                limitBytes: limit,
+                resetAt: resetAt.toISOString(),
+              } satisfies NotificationPayloads['TRAFFIC_USED_UP'],
+            }
+          : {
+              type: 'TRAFFIC_RUNNING_OUT' as const,
+              payload: {
+                usedBytes: used,
+                limitBytes: limit,
+                resetAt: resetAt.toISOString(),
+              } satisfies NotificationPayloads['TRAFFIC_RUNNING_OUT'],
+            };
+      await this.outbox.emit(this.prisma, 'notify', {
+        deliveries: [{ userId, ...delivery }],
+      });
+      await this.outbox.nudge();
+    } catch (err) {
+      this.logger.warn(
+        `Traffic notice for ${userId} not sent: ${(err as Error).message}`,
+      );
+    }
   }
 
   private async used(userId: string, start: Date): Promise<number> {

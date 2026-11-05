@@ -24,6 +24,8 @@ const REFRESH_COOKIE_PATH = '/api/auth';
 export interface ClientMeta {
   userAgent?: string;
   ip?: string;
+  /** `X-Tapeshelf-Client` of a native app, as it came (common/client-version.ts). */
+  client?: string;
 }
 
 export interface IssuedTokens {
@@ -65,6 +67,7 @@ export class SessionService {
         refreshTokenHash: hashToken(refreshToken),
         userAgent: meta.userAgent?.slice(0, 300),
         ip: meta.ip?.slice(0, 64),
+        client: meta.client ?? null,
         expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
         secondFactorAt: secondFactor ? new Date() : null,
       },
@@ -108,16 +111,27 @@ export class SessionService {
       );
     }
     const refreshToken = randomBytes(32).toString('base64url');
-    await this.prisma.session.update({
-      where: { id: session.id },
+    // Only the caller whose token is still the session's gets a new one. Two calls with the same
+    // token at the same moment used to both succeed, the later write won, and the other caller
+    // was left holding a token the session no longer knew.
+    const swapped = await this.prisma.session.updateMany({
+      where: { id: session.id, refreshTokenHash: hashToken(rawRefresh) },
       data: {
         refreshTokenHash: hashToken(refreshToken),
         lastUsedAt: new Date(now),
         expiresAt: new Date(now + REFRESH_TTL_MS),
         userAgent: meta.userAgent?.slice(0, 300),
         ip: meta.ip?.slice(0, 64),
+        ...(meta.client ? { client: meta.client } : {}),
       },
     });
+    if (swapped.count === 0) {
+      throw new AppException(
+        HttpStatus.UNAUTHORIZED,
+        'sessionExpired',
+        'errors.auth.sessionExpired',
+      );
+    }
     const accessToken = await this.tokens.signAccess(
       session.userId,
       session.id,
@@ -210,6 +224,7 @@ export class SessionService {
         id: true,
         userAgent: true,
         ip: true,
+        client: true,
         createdAt: true,
         lastUsedAt: true,
       },

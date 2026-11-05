@@ -5,6 +5,7 @@ import { QUEUE_CONNECTION } from './queue.connection.js';
 import {
   JOB,
   QUEUES,
+  fairPriority,
   type MailQueueJob,
   type ProcessVideoJob,
   type SheetJob,
@@ -102,11 +103,29 @@ export class QueueService implements OnApplicationShutdown {
     await this.mail.add(JOB.mail, data);
   }
 
-  /** One processing job per video and queue; a finished job with the same id is replaced. */
+  /**
+   * One processing job per video and queue; a finished job with the same id is replaced. A
+   * transcode takes its turn behind the same person's transcodes already waiting.
+   */
   async enqueueProcessing(data: ProcessVideoJob): Promise<void> {
     const queue = data.mode === 'transcode' ? this.transcode : this.remux;
     await this.replaceFinished(queue, data.videoId);
-    await queue.add(JOB.process, data, { jobId: data.videoId });
+    await queue.add(JOB.process, data, {
+      jobId: data.videoId,
+      ...(data.mode === 'transcode'
+        ? { priority: fairPriority(await this.transcodesWaiting(data.userId)) }
+        : {}),
+    });
+  }
+
+  /** The person's transcodes not yet begun; the queue is short enough to read through. */
+  private async transcodesWaiting(userId: string): Promise<number> {
+    const waiting = await this.transcode.getJobs([
+      'prioritized',
+      'waiting',
+      'delayed',
+    ]);
+    return waiting.filter((job) => job?.data.userId === userId).length;
   }
 
   /** A processing job for the video waiting or under way, in either queue; a finished one is not. */
@@ -237,6 +256,11 @@ export class QueueService implements OnApplicationShutdown {
       JOB.retentionSweep,
       { every: 24 * 60 * 60_000 },
       { name: JOB.retentionSweep },
+    );
+    await this.maintenance.upsertJobScheduler(
+      JOB.trafficSweep,
+      { every: 24 * 60 * 60_000 },
+      { name: JOB.trafficSweep },
     );
   }
 

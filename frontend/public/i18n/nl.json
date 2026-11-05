@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Antwoorden van support",
       "SUPPORT_TICKET": "Supporttickets (beheerders)",
       "LINK_OPENED": "Mijn tijdelijke link is geopend",
-      "LINK_SAVED": "Video’s uit mijn link staan nu op iemands plank"
+      "LINK_SAVED": "Video’s uit mijn link staan nu op iemands plank",
+      "TRAFFIC_RUNNING_OUT": "Mijn maandelijkse dataverkeer raakt op",
+      "TRAFFIC_USED_UP": "Mijn maandelijkse dataverkeer is opgebruikt"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” is klaar om te bekijken.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} heeft je tijdelijke link met “{{title}}” geopend ({count, plural, one {# video} other {# video’s}}).",
       "LINK_OPENED_guest": "Iemand heeft je tijdelijke link met “{{title}}” geopend ({count, plural, one {# video} other {# video’s}}).",
       "LINK_SAVED": "@{{name}} heeft video’s uit je tijdelijke link op de eigen plank gezet: “{{title}}” ({count, plural, one {# video} other {# video’s}}).",
+      "TRAFFIC_RUNNING_OUT": "Je hebt deze maand {{used}} van {{limit}} dataverkeer gebruikt. Als het op is, gaan je openbare video’s en links tot {{date}} niet meer open voor anderen.",
+      "TRAFFIC_USED_UP": "Het dataverkeer van deze maand ({{limit}}) is opgebruikt. Tot {{date}} gaan je openbare video’s en links niet open voor anderen, en kun je geen video’s van anderen bekijken. Je eigen video’s bekijk je gewoon zoals altijd.",
       "REQUEST_INVALIDATED_expired": "De deal met een gast voor “{{title}}” is verlopen: drie dagen lang deed niemand een zet.",
       "PLAN_EXPIRING_links": "Je Pro-abonnement loopt af op {{date}}. Daarna gelden op je plank de limieten van Free en gaan je anonieme links niet meer open tot je weer Pro hebt; er wordt niets verwijderd.",
       "PLAN_EXPIRING_page_links": "Je Pro-abonnement loopt af op {{date}}. Daarna gelden op je plank de limieten van Free, is je verborgen pagina weer voor iedereen zichtbaar en gaan je anonieme links niet meer open tot je weer Pro hebt; er wordt niets verwijderd.",

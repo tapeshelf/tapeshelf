@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Respostas do suporte",
       "SUPPORT_TICKET": "Chamados de suporte (administradores)",
       "LINK_OPENED": "Meu link temporário foi aberto",
-      "LINK_SAVED": "Vídeos do meu link foram para a estante de alguém"
+      "LINK_SAVED": "Vídeos do meu link foram para a estante de alguém",
+      "TRAFFIC_RUNNING_OUT": "Meu tráfego mensal está acabando",
+      "TRAFFIC_USED_UP": "Meu tráfego mensal acabou"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” está pronto para assistir.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} abriu seu link temporário com “{{title}}” ({count, plural, one {# vídeo} many {# vídeos} other {# vídeos}}).",
       "LINK_OPENED_guest": "Alguém abriu seu link temporário com “{{title}}” ({count, plural, one {# vídeo} many {# vídeos} other {# vídeos}}).",
       "LINK_SAVED": "@{{name}} adicionou à própria estante os vídeos do seu link temporário: “{{title}}” ({count, plural, one {# vídeo} many {# vídeos} other {# vídeos}}).",
+      "TRAFFIC_RUNNING_OUT": "Você já usou {{used}} dos {{limit}} de tráfego deste mês. Quando ele acabar, seus vídeos públicos e seus links param de abrir para os outros até {{date}}.",
+      "TRAFFIC_USED_UP": "O tráfego deste mês ({{limit}}) acabou. Até {{date}}, seus vídeos públicos e seus links não abrem para os outros, e você não consegue assistir aos vídeos de outras pessoas. Os seus próprios vídeos continuam abrindo normalmente.",
       "REQUEST_INVALIDATED_expired": "A negociação com um convidado por “{{title}}” expirou: ninguém deu o próximo passo em três dias.",
       "PLAN_EXPIRING_links": "Seu plano Pro acaba em {{date}}. Depois disso, sua estante passa para os limites do Free e seus links anônimos param de abrir até você ter o Pro de novo; nada é excluído.",
       "PLAN_EXPIRING_page_links": "Seu plano Pro acaba em {{date}}. Depois disso, sua estante passa para os limites do Free, sua página oculta volta a ficar visível para todos e seus links anônimos param de abrir até você ter o Pro de novo; nada é excluído.",

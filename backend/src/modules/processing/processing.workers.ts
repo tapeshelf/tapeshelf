@@ -28,6 +28,7 @@ import { PlanExpiryService } from '../plans/plan-expiry.service.js';
 import { DemoService } from '../demo/demo.service.js';
 import { RetentionService } from '../retention/retention.service.js';
 import { SupportService } from '../support/support.service.js';
+import { TrafficService } from '../traffic/traffic.service.js';
 import { TrashService } from '../trash/trash.service.js';
 import { GuestEscrowService } from '../deals/guest-escrow.service.js';
 import { MaintenanceService } from './maintenance.service.js';
@@ -73,6 +74,7 @@ export class ProcessingWorkers
     private readonly blocklist: BlocklistService,
     private readonly trash: TrashService,
     private readonly retention: RetentionService,
+    private readonly traffic: TrafficService,
     private readonly support: SupportService,
     private readonly guestDeals: GuestEscrowService,
     private readonly queues: QueueService,
@@ -154,6 +156,7 @@ export class ProcessingWorkers
               // The passes that bring older videos up to date, once after each start.
               await this.maintenance.bakeEdits();
               await this.maintenance.refreshSheets();
+              await this.maintenance.measurePlayback();
               return this.maintenance.backfillPreviews();
             case JOB.tierExpire:
               return this.planExpiry.run();
@@ -163,6 +166,8 @@ export class ProcessingWorkers
               return this.trash.sweep();
             case JOB.retentionSweep:
               return this.retention.sweep();
+            case JOB.trafficSweep:
+              return this.traffic.sweep();
             case JOB.processingWatch:
               return this.maintenance.reviveStuck();
             case JOB.supportClose:

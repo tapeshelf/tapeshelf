@@ -298,6 +298,56 @@ export class MaintenanceService {
   }
 
   /**
+   * What the player streams, for videos packaged before it was measured: the
+   * segments under the current HLS prefix, added up from storage. Until measured, such a video
+   * counts against traffic by its file. A video whose segments cannot be read is logged, skipped
+   * and tried again on the next worker start.
+   */
+  async measurePlayback(): Promise<number> {
+    let done = 0;
+    const failed: string[] = [];
+    for (;;) {
+      const videos = await this.prisma.video.findMany({
+        where: {
+          status: 'READY',
+          hlsPrefix: { not: null },
+          playbackBytes: null,
+          purgedAt: null,
+          id: { notIn: failed },
+        },
+        select: { id: true, hlsPrefix: true },
+        take: BACKFILL_BATCH,
+      });
+      if (!videos.length) break;
+      for (const video of videos) {
+        try {
+          const objects = await this.storage.listSizes(
+            'private',
+            `${video.hlsPrefix!}/`,
+          );
+          const bytes = objects
+            .filter((o) => o.key.endsWith('.ts'))
+            .reduce((sum, o) => sum + o.size, 0);
+          if (bytes === 0) throw new Error('no segments under the prefix');
+          // Only while still unmeasured: a reprocess meanwhile wrote its own number.
+          const { count } = await this.prisma.video.updateMany({
+            where: { id: video.id, playbackBytes: null },
+            data: { playbackBytes: BigInt(bytes) },
+          });
+          if (count) done++;
+        } catch (err) {
+          failed.push(video.id);
+          this.logger.warn(
+            `Playback size of video ${video.id} not measured: ${(err as Error).message}`,
+          );
+        }
+      }
+    }
+    if (done) this.logger.log(`Measured the playback size of ${done} video(s)`);
+    return done;
+  }
+
+  /**
    * Small WebP frames and thumbnail for videos processed before they existed.
    * Built from the stored JPEGs, so the original is not touched; a video that fails is logged and
    * skipped (its tiles keep the JPEGs) and retried on the next worker start.

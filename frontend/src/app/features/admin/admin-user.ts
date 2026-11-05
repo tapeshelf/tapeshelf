@@ -284,7 +284,7 @@ import { profileLink } from '../../core/navigation/user-links';
         </div>
       }
 
-      <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      <div class="mt-6 grid gap-4 lg:grid-cols-4">
         <section class="rounded-lg border-2 border-line bg-surface p-4">
           <h3 class="label-mono mb-2 text-muted">{{ 'admin.users.quota' | transloco }}</h3>
           @if (u.quotaBytes > 0) {
@@ -301,6 +301,30 @@ import { profileLink } from '../../core/navigation/user-links';
               {{ u.storageUsedBytes | bytes }} · {{ 'admin.users.noQuota' | transloco }}
             </p>
           }
+        </section>
+        <!-- Views and downloads this month against the tier's traffic. -->
+        <section class="rounded-lg border-2 border-line bg-surface p-4">
+          <h3 class="label-mono mb-2 text-muted">{{ 'admin.users.traffic' | transloco }}</h3>
+          @if (u.trafficLimitBytes > 0) {
+            <p class="font-mono text-sm" data-testid="admin-user-traffic">
+              {{ u.trafficUsedBytes | bytes }} / {{ u.trafficLimitBytes | bytes }}
+            </p>
+            <app-progress-bar
+              class="mt-2 block"
+              [label]="'admin.users.traffic' | transloco"
+              [value]="trafficPercent()"
+            />
+          } @else {
+            <p class="font-mono text-sm" data-testid="admin-user-traffic">
+              {{ u.trafficUsedBytes | bytes }} · {{ 'admin.users.noQuota' | transloco }}
+            </p>
+          }
+          <p class="mt-2 text-xs text-muted">
+            {{
+              'admin.users.trafficLastMonth'
+                | transloco: { size: (u.trafficLastMonthBytes | bytes) }
+            }}
+          </p>
         </section>
         <section class="rounded-lg border-2 border-line bg-surface p-4 lg:col-span-2">
           <h3 class="label-mono mb-2 text-muted">{{ 'admin.users.counts' | transloco }}</h3>
@@ -404,6 +428,12 @@ export class AdminUserPage {
   protected readonly quotaPercent = computed(() => {
     const u = this.u();
     return u && u.quotaBytes > 0 ? Math.min(100, (u.storageUsedBytes / u.quotaBytes) * 100) : 0;
+  });
+  protected readonly trafficPercent = computed(() => {
+    const u = this.u();
+    return u && u.trafficLimitBytes > 0
+      ? Math.min(100, (u.trafficUsedBytes / u.trafficLimitBytes) * 100)
+      : 0;
   });
   protected readonly countKeys = [
     'videos',

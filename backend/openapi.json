@@ -8935,6 +8935,47 @@
           "password"
         ]
       },
+      "MinClientDto": {
+        "type": "object",
+        "properties": {
+          "android": {
+            "type": "string",
+            "nullable": true,
+            "example": "1.0.0"
+          },
+          "ios": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          }
+        },
+        "required": [
+          "android",
+          "ios"
+        ]
+      },
+      "ApiInfoDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number",
+            "description": "Grows by one whenever the API gains something an app may rely on; an app that needs more than the server has says so",
+            "example": 1
+          },
+          "minClient": {
+            "description": "The oldest app the server still talks to, per platform (null: no limit). An older app gets 426 `clientTooOld` on every request",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MinClientDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "level",
+          "minClient"
+        ]
+      },
       "SiteInfoDto": {
         "type": "object",
         "properties": {
@@ -9004,6 +9045,14 @@
             "type": "string",
             "nullable": true,
             "description": "Origin of the public bucket (thumbnails, frames, avatars): the app preconnects to it at start"
+          },
+          "api": {
+            "description": "Always sent. Optional in the contract only, because a server older than this field does not\nsend it, and an app has to read that server's answer to say \"too old\" rather than \"not found\".",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApiInfoDto"
+              }
+            ]
           }
         },
         "required": [
@@ -9761,6 +9810,11 @@
             "type": "string",
             "nullable": true
           },
+          "client": {
+            "type": "string",
+            "nullable": true,
+            "description": "What a native app said about itself when it signed in: `android/1.2.3 (Pixel 8; Android 15)`; null for a browser"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -9777,6 +9831,7 @@
           "id",
           "userAgent",
           "ip",
+          "client",
           "createdAt",
           "lastUsedAt",
           "current"
@@ -15055,7 +15110,9 @@
           "SUPPORT_REPLY",
           "SUPPORT_TICKET",
           "LINK_OPENED",
-          "LINK_SAVED"
+          "LINK_SAVED",
+          "TRAFFIC_RUNNING_OUT",
+          "TRAFFIC_USED_UP"
         ]
       },
       "NotificationDto": {
@@ -17000,6 +17057,18 @@
             "type": "number",
             "description": "Storage quota of the tier"
           },
+          "trafficUsedBytes": {
+            "type": "number",
+            "description": "Traffic spent this month"
+          },
+          "trafficLimitBytes": {
+            "type": "number",
+            "description": "Monthly traffic of the tier; 0 = no limit"
+          },
+          "trafficLastMonthBytes": {
+            "type": "number",
+            "description": "Traffic spent the month before"
+          },
           "tierUntil": {
             "type": "string",
             "nullable": true,
@@ -17064,6 +17133,9 @@
           "twoFactor",
           "providers",
           "quotaBytes",
+          "trafficUsedBytes",
+          "trafficLimitBytes",
+          "trafficLastMonthBytes",
           "tierUntil",
           "tierSource",
           "subscription",

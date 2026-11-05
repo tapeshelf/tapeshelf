@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Réponses de l’assistance",
       "SUPPORT_TICKET": "Demandes d’assistance (administrateurs)",
       "LINK_OPENED": "Mon lien temporaire a été ouvert",
-      "LINK_SAVED": "Des vidéos de mon lien ont rejoint l’étagère de quelqu’un"
+      "LINK_SAVED": "Des vidéos de mon lien ont rejoint l’étagère de quelqu’un",
+      "TRAFFIC_RUNNING_OUT": "Mon trafic mensuel est presque épuisé",
+      "TRAFFIC_USED_UP": "Mon trafic mensuel est épuisé"
     },
     "text": {
       "VIDEO_PROCESSED": "La vidéo « {{title}} » est prête à être regardée.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} a ouvert votre lien temporaire avec « {{title}} » ({count, plural, one {# vidéo} many {# vidéos} other {# vidéos}}).",
       "LINK_OPENED_guest": "Quelqu’un a ouvert votre lien temporaire avec « {{title}} » ({count, plural, one {# vidéo} many {# vidéos} other {# vidéos}}).",
       "LINK_SAVED": "@{{name}} a ajouté à son étagère des vidéos de votre lien temporaire : « {{title}} » ({count, plural, one {# vidéo} many {# vidéos} other {# vidéos}}).",
+      "TRAFFIC_RUNNING_OUT": "Vous avez utilisé {{used}} des {{limit}} de trafic de ce mois-ci. Quand il sera épuisé, vos vidéos publiques et vos liens cesseront de s’ouvrir pour les autres jusqu’au {{date}}.",
+      "TRAFFIC_USED_UP": "Le trafic de ce mois-ci ({{limit}}) est épuisé. Jusqu’au {{date}}, vos vidéos publiques et vos liens ne s’ouvrent pas pour les autres, et vous ne pouvez pas regarder les vidéos d’autres personnes. Vos propres vidéos continuent de se lire normalement.",
       "REQUEST_INVALIDATED_expired": "L’échange avec un invité pour « {{title}} » a expiré : personne n’a répondu pendant trois jours.",
       "PLAN_EXPIRING_links": "Votre formule Pro prend fin le {{date}}. Ensuite, votre étagère passe aux limites de Free et vos liens anonymes cessent de s’ouvrir jusqu’au retour de Pro ; rien n’est supprimé.",
       "PLAN_EXPIRING_page_links": "Votre formule Pro prend fin le {{date}}. Ensuite, votre étagère passe aux limites de Free, votre page masquée redevient visible pour tous et vos liens anonymes cessent de s’ouvrir jusqu’au retour de Pro ; rien n’est supprimé.",

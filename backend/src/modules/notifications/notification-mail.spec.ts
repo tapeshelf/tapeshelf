@@ -121,6 +121,15 @@ const PAYLOADS: Record<string, Record<string, unknown>> = {
     storageQuotaBytes: 30 * 1024 ** 3,
     overQuota: false,
   },
+  TRAFFIC_RUNNING_OUT: {
+    usedBytes: 41 * 1024 ** 3,
+    limitBytes: 50 * 1024 ** 3,
+    resetAt: '2026-12-01T00:00:00.000Z',
+  },
+  TRAFFIC_USED_UP: {
+    limitBytes: 50 * 1024 ** 3,
+    resetAt: '2026-12-01T00:00:00.000Z',
+  },
 };
 
 describe('renderNotificationMail', () => {

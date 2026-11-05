@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Odpowiedzi zespołu pomocy",
       "SUPPORT_TICKET": "Zgłoszenia do pomocy (administratorzy)",
       "LINK_OPENED": "Ktoś otworzył mój link tymczasowy",
-      "LINK_SAVED": "Filmy z mojego linku trafiły na czyjąś półkę"
+      "LINK_SAVED": "Filmy z mojego linku trafiły na czyjąś półkę",
+      "TRAFFIC_RUNNING_OUT": "Mój miesięczny transfer się kończy",
+      "TRAFFIC_USED_UP": "Mój miesięczny transfer się wyczerpał"
     },
     "text": {
       "VIDEO_PROCESSED": "Film „{{title}}” jest gotowy do obejrzenia.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "Twój link tymczasowy z „{{title}}” ({count, plural, one {# film} few {# filmy} many {# filmów} other {# filmu}}) został otwarty przez @{{name}}.",
       "LINK_OPENED_guest": "Ktoś otworzył Twój link tymczasowy z „{{title}}” ({count, plural, one {# film} few {# filmy} many {# filmów} other {# filmu}}).",
       "LINK_SAVED": "Filmy z Twojego linku tymczasowego trafiły na półkę @{{name}}: „{{title}}” ({count, plural, one {# film} few {# filmy} many {# filmów} other {# filmu}}).",
+      "TRAFFIC_RUNNING_OUT": "W tym miesiącu zużyto już {{used}} z {{limit}} transferu. Gdy się wyczerpie, Twoje filmy publiczne i linki przestaną się otwierać u innych do {{date}}.",
+      "TRAFFIC_USED_UP": "Transfer na ten miesiąc ({{limit}}) się wyczerpał. Do {{date}} Twoje filmy publiczne i linki nie otwierają się u innych, a Ty nie możesz oglądać filmów innych osób. Własne filmy oglądasz jak zwykle.",
       "REQUEST_INVALIDATED_expired": "Transakcja z gościem dotycząca „{{title}}” wygasła: przez trzy dni nikt nie wykonał ruchu.",
       "PLAN_EXPIRING_links": "Twój plan Pro kończy się {{date}}. Potem na Twojej półce zaczną obowiązywać limity Free, a anonimowe linki przestaną się otwierać, dopóki Pro nie wróci; nic nie zostanie usunięte.",
       "PLAN_EXPIRING_page_links": "Twój plan Pro kończy się {{date}}. Potem na Twojej półce zaczną obowiązywać limity Free, ukryta strona znów będzie widoczna dla wszystkich, a anonimowe linki przestaną się otwierać, dopóki Pro nie wróci; nic nie zostanie usunięte.",

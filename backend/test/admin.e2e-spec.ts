@@ -367,6 +367,37 @@ describe('reports and admin (e2e)', () => {
       await ann.get('/api/admin/dashboard').expect(200);
     });
 
+    it('the card shows this month’s traffic against the tier’s, and last month’s', async () => {
+      const month = (back: number) => {
+        const now = new Date();
+        return new Date(
+          Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1),
+        );
+      };
+      await prisma.trafficUsage.createMany({
+        data: [
+          { userId: annId, month: month(0), bytes: 123n },
+          { userId: annId, month: month(1), bytes: 45n },
+          { userId: annId, month: month(2), bytes: 6n },
+        ],
+      });
+      const card = (await admin.get(`/api/admin/users/${annId}`).expect(200))
+        .body;
+      expect(card).toMatchObject({
+        trafficUsedBytes: 123,
+        trafficLimitBytes: 50 * 1024 ** 3,
+        trafficLastMonthBytes: 45,
+      });
+      // An admin has no limit; the sum is still shown.
+      const own = (await admin.get(`/api/admin/users/${adminId}`).expect(200))
+        .body;
+      expect(own).toMatchObject({
+        trafficUsedBytes: 0,
+        trafficLimitBytes: 0,
+        trafficLastMonthBytes: 0,
+      });
+    });
+
     it('ban: sessions die, the page is gone, open requests close; unban brings the account back', async () => {
       const v = await seedVideo(annId, 'Lake');
       const req = (

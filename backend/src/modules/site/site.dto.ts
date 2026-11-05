@@ -19,6 +19,30 @@ export class DemoAccountDto {
   @ApiProperty() password!: string;
 }
 
+export class MinClientDto {
+  @ApiProperty({ nullable: true, type: String, example: '1.0.0' })
+  android!: string | null;
+
+  @ApiProperty({ nullable: true, type: String, example: null })
+  ios!: string | null;
+}
+
+export class ApiInfoDto {
+  @ApiProperty({
+    description:
+      'Grows by one whenever the API gains something an app may rely on; an app that needs more than the server has says so',
+    example: 1,
+  })
+  level!: number;
+
+  @ApiProperty({
+    type: MinClientDto,
+    description:
+      'The oldest app the server still talks to, per platform (null: no limit). An older app gets 426 `clientTooOld` on every request',
+  })
+  minClient!: MinClientDto;
+}
+
 export class SiteInfoDto {
   @ApiProperty({
     description: 'Instance name (SITE_NAME)',
@@ -92,6 +116,13 @@ export class SiteInfoDto {
       'Origin of the public bucket (thumbnails, frames, avatars): the app preconnects to it at start',
   })
   mediaOrigin!: string | null;
+
+  /**
+   * Always sent. Optional in the contract only, because a server older than this field does not
+   * send it, and an app has to read that server's answer to say "too old" rather than "not found".
+   */
+  @ApiProperty({ type: ApiInfoDto, required: false })
+  api?: ApiInfoDto;
 }
 
 export class LegalDocDto {

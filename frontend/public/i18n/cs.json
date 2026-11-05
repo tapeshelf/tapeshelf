@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Odpovědi podpory",
       "SUPPORT_TICKET": "Požadavky na podporu (pro administrátory)",
       "LINK_OPENED": "Někdo otevře můj dočasný odkaz",
-      "LINK_SAVED": "Někdo si dá videa z mého odkazu na polici"
+      "LINK_SAVED": "Někdo si dá videa z mého odkazu na polici",
+      "TRAFFIC_RUNNING_OUT": "Můj měsíční přenos dat dochází",
+      "TRAFFIC_USED_UP": "Můj měsíční přenos dat je vyčerpaný"
     },
     "text": {
       "VIDEO_PROCESSED": "Video „{{title}}“ je připravené ke sledování.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "Váš dočasný odkaz s „{{title}}“ ({count, plural, one {# video} few {# videa} many {# videa} other {# videí}}) otevřel uživatel @{{name}}.",
       "LINK_OPENED_guest": "Někdo otevřel váš dočasný odkaz s „{{title}}“ ({count, plural, one {# video} few {# videa} many {# videa} other {# videí}}).",
       "LINK_SAVED": "Uživatel @{{name}} si dal na polici videa z vašeho dočasného odkazu: „{{title}}“ ({count, plural, one {# video} few {# videa} many {# videa} other {# videí}}).",
+      "TRAFFIC_RUNNING_OUT": "Tento měsíc jste už využili {{used}} z {{limit}} přenosu dat. Až se vyčerpá, vaše veřejná videa a odkazy se ostatním přestanou otevírat až do {{date}}.",
+      "TRAFFIC_USED_UP": "Přenos dat na tento měsíc ({{limit}}) je vyčerpaný. Do {{date}} se vaše veřejná videa a odkazy ostatním neotevřou a vy nemůžete sledovat cizí videa. Vlastní videa se vám přehrávají dál.",
       "REQUEST_INVALIDATED_expired": "Obchod s hostem o „{{title}}“ vypršel: tři dny nikdo neudělal další krok.",
       "PLAN_EXPIRING_links": "Váš tarif Pro končí {{date}}. Potom budou pro vaši polici platit limity Free a anonymní odkazy se přestanou otevírat, dokud zase nebudete mít Pro; nic se nesmaže.",
       "PLAN_EXPIRING_page_links": "Váš tarif Pro končí {{date}}. Potom budou pro vaši polici platit limity Free, vaše skrytá stránka bude znovu vidět pro všechny a anonymní odkazy se přestanou otevírat, dokud zase nebudete mít Pro; nic se nesmaže.",

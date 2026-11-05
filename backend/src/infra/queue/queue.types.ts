@@ -44,6 +44,8 @@ export const JOB = {
   guestDeals: 'guest.deals',
   /** The public demo's daily erase and seed; scheduled only with DEMO_MODE. */
   demoReset: 'demo.reset',
+  /** Rows of monthly traffic older than what is kept go. */
+  trafficSweep: 'traffic.sweep',
   outboxDrain: 'outbox.drain',
   mail: 'mail',
   editRender: 'edit.render',
@@ -52,6 +54,18 @@ export const JOB = {
 } as const;
 
 export type ProcessingMode = 'remux' | 'transcode';
+
+/** BullMQ's lowest priority; a job without one would run before every prioritized job. */
+export const LOWEST_PRIORITY = 2_097_152;
+
+/**
+ * Where a transcode goes in its queue: behind the person's own jobs already waiting, so with
+ * one job each, people take turns, and someone's hundred videos let a newcomer's one go next. BullMQ
+ * runs the lowest number first, and equal numbers in order of arrival.
+ */
+export function fairPriority(waitingOfSameUser: number): number {
+  return Math.min(LOWEST_PRIORITY, Math.max(0, waitingOfSameUser) + 1);
+}
 
 export interface ProcessVideoJob {
   videoId: string;

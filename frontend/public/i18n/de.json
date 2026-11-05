@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Antworten vom Support",
       "SUPPORT_TICKET": "Supportanfragen (Admins)",
       "LINK_OPENED": "Mein temporärer Link wurde geöffnet",
-      "LINK_SAVED": "Videos von meinem Link sind in jemandes Regal gelandet"
+      "LINK_SAVED": "Videos von meinem Link sind in jemandes Regal gelandet",
+      "TRAFFIC_RUNNING_OUT": "Mein monatliches Datenvolumen wird knapp",
+      "TRAFFIC_USED_UP": "Mein monatliches Datenvolumen ist aufgebraucht"
     },
     "text": {
       "VIDEO_PROCESSED": "„{{title}}“ kann jetzt angesehen werden.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} hat deinen temporären Link mit „{{title}}“ geöffnet ({count, plural, one {# Video} other {# Videos}}).",
       "LINK_OPENED_guest": "Jemand hat deinen temporären Link mit „{{title}}“ geöffnet ({count, plural, one {# Video} other {# Videos}}).",
       "LINK_SAVED": "@{{name}} hat Videos von deinem temporären Link ins eigene Regal gelegt: „{{title}}“ ({count, plural, one {# Video} other {# Videos}}).",
+      "TRAFFIC_RUNNING_OUT": "Du hast in diesem Monat {{used}} von {{limit}} Datenvolumen verbraucht. Wenn es aufgebraucht ist, öffnen sich deine öffentlichen Videos und Links bis zum {{date}} nicht mehr für andere.",
+      "TRAFFIC_USED_UP": "Das Datenvolumen für diesen Monat ({{limit}}) ist aufgebraucht. Bis zum {{date}} öffnen sich deine öffentlichen Videos und Links nicht für andere, und Videos von anderen kannst du nicht ansehen. Deine eigenen Videos siehst du weiterhin wie gewohnt.",
       "REQUEST_INVALIDATED_expired": "Der Deal mit einem Gast für „{{title}}“ ist abgelaufen: Drei Tage lang hat niemand reagiert.",
       "PLAN_EXPIRING_links": "Dein Pro-Tarif endet am {{date}}. Danach gelten für dein Regal die Limits von Free, und deine anonymen Links öffnen sich nicht mehr, bis du wieder Pro hast; gelöscht wird nichts.",
       "PLAN_EXPIRING_page_links": "Dein Pro-Tarif endet am {{date}}. Danach gelten für dein Regal die Limits von Free, deine versteckte Seite ist wieder für alle sichtbar, und deine anonymen Links öffnen sich nicht mehr, bis du wieder Pro hast; gelöscht wird nichts.",

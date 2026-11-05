@@ -20,6 +20,7 @@ import { ButtonDirective } from '../../shared/ui/button/button.directive';
 import { FieldComponent } from '../../shared/ui/field/field';
 import { InputDirective } from '../../shared/ui/field/input.directive';
 import { ToastService } from '../../shared/ui/toast/toast.service';
+import { appSessionLabel } from './session-label';
 import { SettingsSectionComponent } from './settings-section';
 import { TwoFactorSettingsComponent } from './two-factor/two-factor-settings';
 
@@ -102,7 +103,11 @@ import { TwoFactorSettingsComponent } from './two-factor/two-factor-settings';
           >
             <div class="min-w-0">
               <p class="truncate">
-                {{ s.userAgent || ('settings.security.unknownDevice' | transloco) }}
+                {{
+                  s.client
+                    ? appLabel(s.client)
+                    : s.userAgent || ('settings.security.unknownDevice' | transloco)
+                }}
                 @if (s.current) {
                   <span
                     class="ml-2 rounded bg-accent-soft px-1.5 py-0.5 text-xs text-accent-text"
@@ -185,6 +190,7 @@ export class SecuritySettingsPage {
   });
   protected readonly sessions = resource({ loader: () => this.api.invoke(authListSessions) });
   protected readonly apps = resource({ loader: () => this.api.invoke(appTokensList) });
+  protected readonly appLabel = appSessionLabel;
 
   protected err(name: 'currentPassword' | 'newPassword'): string | null {
     const e = fieldError(

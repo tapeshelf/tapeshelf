@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'node:crypto';
 
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
+import { ClientVersionGuard } from './common/guards/client-version.guard.js';
 import { CsrfGuard } from './common/guards/csrf.guard.js';
 import { isUnloggedRoute } from './common/http/unlogged-routes.js';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
@@ -150,6 +151,7 @@ import { SupportModule } from './modules/support/support.module.js';
   ],
   providers: [
     // Guard order matters: identify user → rate limit (per user) → CSRF → role → verified email.
+    { provide: APP_GUARD, useClass: ClientVersionGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PlanThrottlerGuard },
     { provide: APP_GUARD, useClass: CsrfGuard },

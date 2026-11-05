@@ -279,6 +279,25 @@ export function describeNotification(n: NotificationDto): NotificationView {
         link: PLAN_LINK,
         icon: 'generic',
       };
+    // The month's traffic: four fifths spent, and all of it; both lead to the plan.
+    case 'TRAFFIC_RUNNING_OUT':
+      return {
+        key: 'notifications.text.TRAFFIC_RUNNING_OUT',
+        params: {
+          used: formatBytes(num(p, 'usedBytes')),
+          limit: formatBytes(num(p, 'limitBytes')),
+          date: formatMoment(str(p, 'resetAt')),
+        },
+        link: PLAN_LINK,
+        icon: 'generic',
+      };
+    case 'TRAFFIC_USED_UP':
+      return {
+        key: 'notifications.text.TRAFFIC_USED_UP',
+        params: { limit: formatBytes(num(p, 'limitBytes')), date: formatMoment(str(p, 'resetAt')) },
+        link: PLAN_LINK,
+        icon: 'failed',
+      };
     default:
       return { key: 'notifications.text.generic', params: {}, link: null, icon: 'generic' };
   }

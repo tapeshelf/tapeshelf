@@ -2,7 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import type { INestApplicationContext } from '@nestjs/common';
 import { execFileSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import {
   existsSync,
   mkdtempSync,
@@ -832,5 +832,102 @@ describe('video processing pipeline (worker)', () => {
       sheet.mockRestore();
       await (await queues.thumbnail.getJob(`sheet_${seeded.id}`))?.remove();
     }
+  });
+
+  it('transcodes take turns between people: one’s many let another’s one go next', async () => {
+    const ann = `ann-${randomUUID()}`;
+    const bob = `bob-${randomUUID()}`;
+    const ids: string[] = [];
+    const enqueue = async (userId: string) => {
+      const videoId = randomUUID();
+      ids.push(videoId);
+      await queues.enqueueProcessing({ videoId, userId, mode: 'transcode' });
+      return videoId;
+    };
+    try {
+      const a1 = await enqueue(ann);
+      const a2 = await enqueue(ann);
+      const a3 = await enqueue(ann);
+      const b1 = await enqueue(bob);
+      const a4 = await enqueue(ann);
+      const priorityOf = async (id: string) =>
+        (await queues.transcode.getJob(id))!.opts.priority;
+      expect(await Promise.all([a1, a2, a3, b1, a4].map(priorityOf))).toEqual([
+        1, 2, 3, 1, 4,
+      ]);
+      // What the worker would take, in order: Bob's one right after Ann's first.
+      const order = (
+        await queues.transcode.getJobs(['prioritized'], 0, -1, true)
+      )
+        .map((job) => job.id)
+        .filter((id) => ids.includes(id!));
+      expect(order).toEqual([a1, b1, a2, a3, a4]);
+      // The remux queue is untouched: short jobs run in the order they came.
+      const remuxId = await (async () => {
+        const videoId = randomUUID();
+        ids.push(videoId);
+        await queues.enqueueProcessing({ videoId, userId: ann });
+        return videoId;
+      })();
+      expect((await queues.remux.getJob(remuxId))!.opts.priority ?? 0).toBe(0);
+    } finally {
+      for (const id of ids) {
+        await (
+          await queues.transcode.getJob(id)
+        )
+          ?.remove()
+          .catch(() => undefined);
+        await (await queues.remux.getJob(id))?.remove().catch(() => undefined);
+      }
+    }
+  });
+
+  it('measures what the player streams for videos packaged before it was counted', async () => {
+    const maintenance = ctx.get(MaintenanceService);
+    const make = async (hlsPrefix: string | null) =>
+      prisma.video.create({
+        data: {
+          authorId: userId,
+          title: 'Old',
+          status: 'READY',
+          originalKey: 'x',
+          originalFilename: 'x.mp4',
+          sizeBytes: 9000n,
+          hlsPrefix,
+          holdings: { create: { holderId: userId, source: 'AUTHOR' } },
+        },
+      });
+    const measured = await make(`videos/${randomUUID()}/hls/v1`);
+    const empty = await make(`videos/${randomUUID()}/hls/v1`);
+    const never = await make(null);
+    await storage.putMany('private', [
+      {
+        key: `${measured.hlsPrefix}/index.m3u8`,
+        body: Buffer.alloc(100),
+        contentType: 'application/vnd.apple.mpegurl',
+      },
+      {
+        key: `${measured.hlsPrefix}/seg_00000.ts`,
+        body: Buffer.alloc(3000),
+        contentType: 'video/mp2t',
+      },
+      {
+        key: `${measured.hlsPrefix}/seg_00001.ts`,
+        body: Buffer.alloc(2000),
+        contentType: 'video/mp2t',
+      },
+    ]);
+    expect(await maintenance.measurePlayback()).toBe(1);
+    const after = await prisma.video.findMany({
+      where: { id: { in: [measured.id, empty.id, never.id] } },
+      select: { id: true, playbackBytes: true },
+    });
+    const of = (id: string) => after.find((v) => v.id === id)!.playbackBytes;
+    expect(of(measured.id)).toBe(5000n); // segments only, not the playlist
+    expect(of(empty.id)).toBeNull(); // nothing under the prefix: left for the next start
+    expect(of(never.id)).toBeNull();
+    // Measured once: a second pass finds nothing new to do.
+    expect(await maintenance.measurePlayback()).toBe(0);
+    await storage.deletePrefix('private', `${measured.hlsPrefix}/`);
   });
 });

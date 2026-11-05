@@ -307,6 +307,36 @@ describe('describeNotification', () => {
     expect(ended.key).toBe('notifications.text.PLAN_EXPIRED_links');
   });
 
+  it('traffic running out and used up lead to the plan with sizes and the reset moment', () => {
+    const soon = describeNotification({
+      ...base,
+      type: 'TRAFFIC_RUNNING_OUT',
+      payload: {
+        usedBytes: 41 * 1024 ** 3,
+        limitBytes: 50 * 1024 ** 3,
+        resetAt: '2026-12-01T00:00:00.000Z',
+      },
+    } as NotificationDto);
+    expect(soon).toMatchObject({
+      key: 'notifications.text.TRAFFIC_RUNNING_OUT',
+      params: { used: '41.0 GB', limit: '50.0 GB' },
+      link: panelLink('settings', 'plan'),
+      icon: 'generic',
+    });
+    expect(soon.params['date']).toMatch(/2026/);
+    const gone = describeNotification({
+      ...base,
+      type: 'TRAFFIC_USED_UP',
+      payload: { limitBytes: 1024 ** 4, resetAt: '2026-12-01T00:00:00.000Z' },
+    } as NotificationDto);
+    expect(gone).toMatchObject({
+      key: 'notifications.text.TRAFFIC_USED_UP',
+      params: { limit: '1.0 TB' },
+      link: panelLink('settings', 'plan'),
+      icon: 'failed',
+    });
+  });
+
   it('a removal by an admin carries the rule as a key and the moderator’s note when there is one', () => {
     const view = describeNotification({
       ...base,

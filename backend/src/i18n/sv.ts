@@ -1,5 +1,7 @@
 export const sv = {
   errors: {
+    clientTooOld:
+      'Den här versionen av appen är för gammal för den här servern.',
     internal: 'Något gick fel hos oss. Försök igen senare.',
     generic: 'Begäran kunde inte genomföras.',
     badRequest: 'Begäran är ogiltig.',
@@ -504,6 +506,18 @@ export const sv = {
         page: 'Din sida är synlig för alla igen: att dölja den ingår i Pro.',
         anonymousLinks:
           'Dina anonyma länkar öppnas inte längre. De fungerar igen när du har Pro.',
+        button: 'Öppna ditt abonnemang',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Din datatrafik håller på att ta slut',
+        title: 'Datatrafiken håller på att ta slut',
+        body: 'Du har använt {{used}} av månadens {{limit}} datatrafik på {{site}}. När den är slut öppnas dina offentliga videor och länkar inte för andra fram till {{date}} (UTC).',
+        button: 'Öppna ditt abonnemang',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Månadens datatrafik har tagit slut',
+        title: 'Datatrafiken har tagit slut',
+        body: 'Månadens datatrafik ({{limit}}) på {{site}} är slut. Fram till {{date}} (UTC) öppnas dina offentliga videor och länkar inte för andra, och du kan inte titta på andras videor. Dina egna videor spelas upp som vanligt.',
         button: 'Öppna ditt abonnemang',
       },
     },

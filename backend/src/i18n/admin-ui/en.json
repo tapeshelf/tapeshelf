@@ -143,6 +143,8 @@
     "ban": "Ban",
     "delete": "Delete account",
     "quota": "Storage",
+    "traffic": "Traffic this month",
+    "trafficLastMonth": "Last month: {{size}}",
     "counts": "Activity",
     "count": {
       "videos": "Videos",

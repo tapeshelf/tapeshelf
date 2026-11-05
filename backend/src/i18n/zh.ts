@@ -1,5 +1,6 @@
 export const zh = {
   errors: {
+    clientTooOld: '此版本的应用太旧，无法用于此服务器。',
     internal: '我们这边出了点问题，请稍后再试。',
     generic: '请求未能完成。',
     badRequest: '请求无效。',
@@ -444,6 +445,18 @@ export const zh = {
         page: '你的主页重新对所有人可见：隐藏主页是 Pro 功能。',
         anonymousLinks:
           '你的匿名链接现在无法打开；重新开通 Pro 后即可恢复使用。',
+        button: '打开我的套餐',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: '你的流量即将用完',
+        title: '流量即将用完',
+        body: '你在 {{site}} 的本月流量为 {{limit}}，已用掉 {{used}}。流量用完后，别人在 {{date}}（UTC）之前将无法打开你的公开视频和链接。',
+        button: '打开我的套餐',
+      },
+      TRAFFIC_USED_UP: {
+        subject: '你的本月流量已用完',
+        title: '流量已用完',
+        body: '你在 {{site}} 的本月流量（{{limit}}）已用完。在 {{date}}（UTC）之前，别人无法打开你的公开视频和链接，你也无法观看别人的视频。你自己的视频照常播放。',
         button: '打开我的套餐',
       },
     },

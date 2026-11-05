@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Phản hồi từ bộ phận hỗ trợ",
       "SUPPORT_TICKET": "Phiếu hỗ trợ (quản trị viên)",
       "LINK_OPENED": "Liên kết tạm thời của tôi được mở",
-      "LINK_SAVED": "Video từ liên kết của tôi được thêm lên kệ của người khác"
+      "LINK_SAVED": "Video từ liên kết của tôi được thêm lên kệ của người khác",
+      "TRAFFIC_RUNNING_OUT": "Lưu lượng tháng này của tôi sắp hết",
+      "TRAFFIC_USED_UP": "Lưu lượng tháng này của tôi đã hết"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” đã sẵn sàng để xem.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} đã mở liên kết tạm thời của bạn với “{{title}}” ({count, plural, other {# video}}).",
       "LINK_OPENED_guest": "Có người đã mở liên kết tạm thời của bạn với “{{title}}” ({count, plural, other {# video}}).",
       "LINK_SAVED": "@{{name}} đã thêm video từ liên kết tạm thời của bạn lên kệ của họ: “{{title}}” ({count, plural, other {# video}}).",
+      "TRAFFIC_RUNNING_OUT": "Bạn đã dùng {{used}} trong {{limit}} lưu lượng tháng này. Khi hết, người khác sẽ không mở được video công khai và liên kết của bạn cho đến {{date}}.",
+      "TRAFFIC_USED_UP": "Lưu lượng tháng này ({{limit}}) đã hết. Cho đến {{date}}, người khác không mở được video công khai và liên kết của bạn, còn bạn không xem được video của người khác. Video của chính bạn vẫn phát bình thường.",
       "REQUEST_INVALIDATED_expired": "Giao dịch với khách cho “{{title}}” đã hết hạn: ba ngày không ai thực hiện bước tiếp theo.",
       "PLAN_EXPIRING_links": "Gói Pro của bạn kết thúc vào {{date}}. Sau đó kệ của bạn sẽ theo giới hạn của Free và các liên kết ẩn danh sẽ không mở được cho tới khi bạn có lại Pro; không có gì bị xóa.",
       "PLAN_EXPIRING_page_links": "Gói Pro của bạn kết thúc vào {{date}}. Sau đó kệ của bạn sẽ theo giới hạn của Free, trang ẩn của bạn sẽ hiện lại với mọi người và các liên kết ẩn danh sẽ không mở được cho tới khi bạn có lại Pro; không có gì bị xóa.",

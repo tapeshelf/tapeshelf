@@ -1,5 +1,6 @@
 export const nl = {
   errors: {
+    clientTooOld: 'Deze versie van de app is te oud voor deze server.',
     internal: 'Er ging bij ons iets mis. Probeer het later opnieuw.',
     generic: 'Het verzoek kon niet worden uitgevoerd.',
     badRequest: 'Het verzoek is ongeldig.',
@@ -512,6 +513,18 @@ export const nl = {
         page: 'Je pagina is weer voor iedereen zichtbaar: een pagina verbergen hoort bij Pro.',
         anonymousLinks:
           'Je anonieme links gaan niet meer open; ze werken weer zodra je opnieuw Pro hebt.',
+        button: 'Je abonnement openen',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Je dataverkeer raakt op',
+        title: 'Dataverkeer raakt op',
+        body: 'Je hebt op {{site}} deze maand {{used}} van {{limit}} dataverkeer gebruikt. Als het op is, gaan je openbare video’s en links tot {{date}} (UTC) niet meer open voor anderen.',
+        button: 'Je abonnement openen',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Het dataverkeer van deze maand is opgebruikt',
+        title: 'Dataverkeer opgebruikt',
+        body: 'Je dataverkeer op {{site}} voor deze maand ({{limit}}) is opgebruikt. Tot {{date}} (UTC) gaan je openbare video’s en links niet open voor anderen, en kun je geen video’s van anderen bekijken. Je eigen video’s bekijk je gewoon zoals altijd.',
         button: 'Je abonnement openen',
       },
     },

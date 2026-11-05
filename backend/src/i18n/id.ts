@@ -1,5 +1,6 @@
 export const id = {
   errors: {
+    clientTooOld: 'Versi aplikasi ini terlalu lama untuk server ini.',
     internal: 'Terjadi kesalahan di pihak kami. Silakan coba lagi nanti.',
     generic: 'Permintaan tidak dapat diselesaikan.',
     badRequest: 'Permintaan tidak valid.',
@@ -493,6 +494,18 @@ export const id = {
         page: 'Halaman Anda kembali terlihat oleh semua orang: menyembunyikan halaman tersedia dengan Pro.',
         anonymousLinks:
           'Tautan anonim Anda tidak bisa dibuka lagi; tautan itu akan berfungsi kembali begitu Anda punya Pro.',
+        button: 'Buka paket Anda',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Trafik Anda hampir habis',
+        title: 'Trafik hampir habis',
+        body: 'Anda sudah memakai {{used}} dari {{limit}} trafik bulan ini di {{site}}. Saat trafik habis, video publik dan tautan Anda tidak bisa dibuka orang lain sampai {{date}} (UTC).',
+        button: 'Buka paket Anda',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Trafik bulan ini sudah habis',
+        title: 'Trafik sudah habis',
+        body: 'Trafik bulan ini ({{limit}}) di {{site}} sudah habis. Sampai {{date}} (UTC), video publik dan tautan Anda tidak bisa dibuka orang lain, dan Anda tidak bisa menonton video orang lain. Video Anda sendiri tetap bisa diputar seperti biasa.',
         button: 'Buka paket Anda',
       },
     },

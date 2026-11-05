@@ -1,5 +1,6 @@
 export const ko = {
   errors: {
+    clientTooOld: '이 버전의 앱은 너무 오래돼서 이 서버에서 쓸 수 없어요.',
     internal: '서버에 문제가 생겼어요. 나중에 다시 시도해 주세요.',
     generic: '요청을 처리하지 못했어요.',
     badRequest: '잘못된 요청이에요.',
@@ -477,6 +478,18 @@ export const ko = {
         page: '내 페이지가 다시 모두에게 보여요. 페이지 숨기기는 Pro에서 쓸 수 있어요.',
         anonymousLinks:
           '익명 링크가 더 이상 열리지 않아요. Pro를 다시 시작하면 다시 열려요.',
+        button: '내 요금제 열기',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: '트래픽이 얼마 남지 않았어요',
+        title: '트래픽이 얼마 남지 않았어요',
+        body: '{{site}}에서 이번 달 트래픽 {{limit}} 중 {{used}} 사용했어요. 트래픽을 다 쓰면 {{date}}(UTC)까지 내 공개 동영상과 링크가 다른 사람에게 열리지 않아요.',
+        button: '내 요금제 열기',
+      },
+      TRAFFIC_USED_UP: {
+        subject: '이번 달 트래픽을 다 썼어요',
+        title: '트래픽을 다 썼어요',
+        body: '{{site}}의 이번 달 트래픽({{limit}})을 다 썼어요. {{date}}(UTC)까지 내 공개 동영상과 링크가 다른 사람에게 열리지 않고, 다른 사람의 동영상도 볼 수 없어요. 내 동영상은 평소처럼 볼 수 있어요.',
         button: '내 요금제 열기',
       },
     },

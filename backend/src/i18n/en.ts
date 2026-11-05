@@ -1,5 +1,6 @@
 export const en = {
   errors: {
+    clientTooOld: 'This version of the app is too old for this server.',
     internal: 'Something went wrong on our side. Please try again later.',
     generic: 'The request could not be completed.',
     badRequest: 'The request is invalid.',
@@ -504,6 +505,18 @@ export const en = {
         page: 'Your page is visible to everyone again: hiding it comes with Pro.',
         anonymousLinks:
           'Your anonymous links no longer open; they work again once you have Pro.',
+        button: 'Open your plan',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Your traffic is running out',
+        title: 'Traffic is running out',
+        body: 'You have used {{used}} of this month’s {{limit}} of traffic on {{site}}. When it runs out, your public videos and links stop opening for others until {{date}} (UTC).',
+        button: 'Open your plan',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'This month’s traffic is used up',
+        title: 'Traffic used up',
+        body: 'This month’s traffic ({{limit}}) on {{site}} is used up. Until {{date}} (UTC) your public videos and links do not open for others, and you cannot watch other people’s videos. Your own videos still play for you.',
         button: 'Open your plan',
       },
     },

@@ -380,6 +380,46 @@ exports[`renderNotificationMail > renders SUPPORT_TICKET in ru 1`] = `
 Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
 `;
 
+exports[`renderNotificationMail > renders TRAFFIC_RUNNING_OUT in en 1`] = `
+"Traffic is running out
+
+You have used 41.0 GiB of this month’s 50.0 GiB of traffic on tapeshelf. When it runs out, your public videos and links stop opening for others until 1 December 2026 at 00:00 (UTC).
+
+Open your plan: https://tapeshelf.test/settings/plan
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders TRAFFIC_RUNNING_OUT in ru 1`] = `
+"Трафик заканчивается
+
+На tapeshelf израсходовано 41.0 GiB из 50.0 GiB трафика за месяц. Когда он кончится, ваши публичные видео и ссылки перестанут открываться у других до 1 декабря 2026 г. в 00:00 (UTC).
+
+Открыть тариф: https://tapeshelf.test/settings/plan
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders TRAFFIC_USED_UP in en 1`] = `
+"Traffic used up
+
+This month’s traffic (50.0 GiB) on tapeshelf is used up. Until 1 December 2026 at 00:00 (UTC) your public videos and links do not open for others, and you cannot watch other people’s videos. Your own videos still play for you.
+
+Open your plan: https://tapeshelf.test/settings/plan
+
+Change which notifications you receive: https://tapeshelf.test/settings/notifications"
+`;
+
+exports[`renderNotificationMail > renders TRAFFIC_USED_UP in ru 1`] = `
+"Трафик исчерпан
+
+Трафик за месяц (50.0 GiB) на tapeshelf исчерпан. До 1 декабря 2026 г. в 00:00 (UTC) ваши публичные видео и ссылки не открываются у других, а чужие видео не играют у вас. Свои видео вы смотрите как обычно.
+
+Открыть тариф: https://tapeshelf.test/settings/plan
+
+Настроить, какие уведомления получать: https://tapeshelf.test/settings/notifications"
+`;
+
 exports[`renderNotificationMail > renders VIDEO_EDIT_FAILED in en 1`] = `
 "Edit not saved
 

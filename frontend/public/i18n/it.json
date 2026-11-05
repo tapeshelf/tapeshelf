@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Risposte dell’assistenza",
       "SUPPORT_TICKET": "Ticket di assistenza (amministratori)",
       "LINK_OPENED": "Qualcuno apre un mio link temporaneo",
-      "LINK_SAVED": "I video di un mio link finiscono sullo scaffale di qualcuno"
+      "LINK_SAVED": "I video di un mio link finiscono sullo scaffale di qualcuno",
+      "TRAFFIC_RUNNING_OUT": "Il mio traffico mensile sta per esaurirsi",
+      "TRAFFIC_USED_UP": "Il mio traffico mensile è esaurito"
     },
     "text": {
       "VIDEO_PROCESSED": "«{{title}}» è pronto per la visione.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} ha aperto il tuo link temporaneo con «{{title}}» ({count, plural, one {# video} many {# video} other {# video}}).",
       "LINK_OPENED_guest": "Qualcuno ha aperto il tuo link temporaneo con «{{title}}» ({count, plural, one {# video} many {# video} other {# video}}).",
       "LINK_SAVED": "@{{name}} ha aggiunto al suo scaffale i video del tuo link temporaneo: «{{title}}» ({count, plural, one {# video} many {# video} other {# video}}).",
+      "TRAFFIC_RUNNING_OUT": "Hai usato {{used}} dei {{limit}} di traffico di questo mese. Quando si esaurirà, i tuoi video pubblici e i tuoi link smetteranno di aprirsi per gli altri fino al {{date}}.",
+      "TRAFFIC_USED_UP": "Il traffico di questo mese ({{limit}}) è esaurito. Fino al {{date}} i tuoi video pubblici e i tuoi link non si aprono per gli altri, e tu non puoi guardare i video degli altri. I tuoi video continui a vederli come sempre.",
       "REQUEST_INVALIDATED_expired": "La trattativa con un ospite per «{{title}}» è scaduta: per tre giorni nessuno ha fatto una mossa.",
       "PLAN_EXPIRING_links": "Il tuo piano Pro scade il {{date}}. Dopo, il tuo scaffale avrà i limiti di Free e i tuoi link anonimi smetteranno di aprirsi finché non riavrai Pro; non verrà eliminato nulla.",
       "PLAN_EXPIRING_page_links": "Il tuo piano Pro scade il {{date}}. Dopo, il tuo scaffale avrà i limiti di Free, la tua pagina nascosta tornerà visibile a tutti e i tuoi link anonimi smetteranno di aprirsi finché non riavrai Pro; non verrà eliminato nulla.",

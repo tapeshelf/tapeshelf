@@ -38,6 +38,9 @@ export const DEFAULT_PREFERENCES: Record<NotificationType, ChannelPrefs> = {
   SUPPORT_TICKET: { inApp: true, email: true },
   LINK_OPENED: { inApp: true, email: false },
   LINK_SAVED: { inApp: true, email: false },
+  // Running out is a heads-up; used up ends sharing for the month, like the end of Pro.
+  TRAFFIC_RUNNING_OUT: { inApp: true, email: false },
+  TRAFFIC_USED_UP: { inApp: true, email: true },
 };
 
 /**
@@ -70,6 +73,8 @@ export const ACTIVE_NOTIFICATION_TYPES: NotificationType[] = [
   'SUPPORT_TICKET',
   'LINK_OPENED',
   'LINK_SAVED',
+  'TRAFFIC_RUNNING_OUT',
+  'TRAFFIC_USED_UP',
 ];
 
 /** About a request: each also tells the recipient's app to refresh its requests, whatever the bell shows. */
@@ -83,11 +88,16 @@ export const EXCHANGE_NOTIFICATION_TYPES: readonly NotificationType[] = [
   'REQUEST_INVALIDATED',
 ];
 
-/** About Pro: only the cloud has tiers, a self-hosted instance never sends these. */
+/**
+ * About Pro and the monthly traffic: only the cloud has tiers and limits, a self-hosted instance
+ * never sends these.
+ */
 export const PLAN_NOTIFICATION_TYPES: NotificationType[] = [
   'PLAN_EXPIRING',
   'PLAN_EXPIRED',
   'PLAN_PAYMENT_FAILED',
+  'TRAFFIC_RUNNING_OUT',
+  'TRAFFIC_USED_UP',
 ];
 
 /** For admins only: nobody else is sent these or sees them in the settings. */
@@ -277,6 +287,14 @@ export interface NotificationPayloads {
     count: number;
     title: string;
   };
+  /** Four fifths of the month's traffic are spent; `resetAt` is ISO, when the next month starts. */
+  TRAFFIC_RUNNING_OUT: {
+    usedBytes: number;
+    limitBytes: number;
+    resetAt: string;
+  };
+  /** The month's traffic is spent: nothing of theirs opens for others until `resetAt`. */
+  TRAFFIC_USED_UP: { limitBytes: number; resetAt: string };
 }
 export type ActiveNotificationType = keyof NotificationPayloads;
 

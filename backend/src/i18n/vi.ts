@@ -1,5 +1,6 @@
 export const vi = {
   errors: {
+    clientTooOld: 'Phiên bản ứng dụng này quá cũ so với máy chủ này.',
     internal: 'Đã xảy ra lỗi ở phía chúng tôi. Hãy thử lại sau.',
     generic: 'Không thể hoàn tất yêu cầu.',
     badRequest: 'Yêu cầu không hợp lệ.',
@@ -481,6 +482,18 @@ export const vi = {
         page: 'Trang của bạn đã hiện lại với mọi người: ẩn trang là tính năng của Pro.',
         anonymousLinks:
           'Các liên kết ẩn danh của bạn không còn mở được; chúng sẽ hoạt động lại khi bạn có lại Pro.',
+        button: 'Mở gói của bạn',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Lưu lượng của bạn sắp hết',
+        title: 'Lưu lượng sắp hết',
+        body: 'Bạn đã dùng {{used}} trong {{limit}} lưu lượng tháng này trên {{site}}. Khi hết, người khác sẽ không mở được video công khai và liên kết của bạn cho đến {{date}} (UTC).',
+        button: 'Mở gói của bạn',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Lưu lượng tháng này đã hết',
+        title: 'Lưu lượng đã hết',
+        body: 'Lưu lượng tháng này ({{limit}}) trên {{site}} đã hết. Cho đến {{date}} (UTC), người khác không mở được video công khai và liên kết của bạn, còn bạn không xem được video của người khác. Video của chính bạn vẫn phát bình thường.',
         button: 'Mở gói của bạn',
       },
     },

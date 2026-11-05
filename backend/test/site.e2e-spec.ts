@@ -1,6 +1,7 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 
+import { API_LEVEL, MIN_CLIENT } from '../src/common/client-version.js';
 import { SETTING_DEFAULTS } from '../src/modules/settings/settings.defaults.js';
 import { createTestApp, resetDatabase } from './utils/test-app.js';
 
@@ -33,8 +34,57 @@ describe('site (e2e)', () => {
       registrationOpen: true,
       // Where the public pictures come from: the app preconnects to it.
       mediaOrigin: 'http://localhost:9100',
+      // What an app needs to know before anything else: how much the API can do and the oldest
+      // app the server still talks to.
+      api: { level: API_LEVEL, minClient: MIN_CLIENT },
     });
     expect(res.headers['cache-control']).toBe('public, max-age=60');
+  });
+
+  it('tells an app older than it accepts to update, on any request; others pass', async () => {
+    const min = MIN_CLIENT.android!;
+    const server = app.getHttpServer();
+    const old = await request(server)
+      .get('/api/site')
+      .set('X-Tapeshelf-Client', 'android/0.0.1 (Test phone; Android 15)')
+      .expect(426);
+    expect(old.body).toMatchObject({
+      statusCode: 426,
+      code: 'clientTooOld',
+      message: 'This version of the app is too old for this server.',
+      details: { platform: 'android', min },
+    });
+    // In the app's language, like every other message.
+    const inRussian = await request(server)
+      .get('/api/site')
+      .set('X-Tapeshelf-Client', 'android/0.0.1')
+      .set('Accept-Language', 'ru')
+      .expect(426);
+    expect(inRussian.body.message).toBe(
+      'Эта версия приложения слишком старая для этого сервера.',
+    );
+    // Before the request is looked at at all: no sign-in is attempted for it.
+    const signIn = await request(server)
+      .post('/api/auth/login')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('X-Tapeshelf-Client', 'android/0.0.1')
+      .send({ email: 'nobody@example.com', password: 'whatever123' })
+      .expect(426);
+    expect(signIn.body.code).toBe('clientTooOld');
+
+    // The oldest accepted version, a newer one, a platform without a limit, a browser and a
+    // header that is not an app's all get their answer.
+    for (const client of [
+      `android/${min}`,
+      'android/99.0.0 (Test phone; Android 15)',
+      'ios/0.0.1',
+      'not an app',
+      undefined,
+    ]) {
+      const req = request(server).get('/api/site');
+      if (client) void req.set('X-Tapeshelf-Client', client);
+      await req.expect(200);
+    }
   });
 
   it('serves a document in the asked language and falls back to English', async () => {

@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Answers of support",
       "SUPPORT_TICKET": "Support requests (admins)",
       "LINK_OPENED": "My temporary link was opened",
-      "LINK_SAVED": "Videos from my link went to someone’s shelf"
+      "LINK_SAVED": "Videos from my link went to someone’s shelf",
+      "TRAFFIC_RUNNING_OUT": "My monthly traffic is running out",
+      "TRAFFIC_USED_UP": "My monthly traffic is used up"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” is ready to watch.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} opened your temporary link with “{{title}}” ({count, plural, one {# video} other {# videos}}).",
       "LINK_OPENED_guest": "Someone opened your temporary link with “{{title}}” ({count, plural, one {# video} other {# videos}}).",
       "LINK_SAVED": "@{{name}} added videos from your temporary link to their shelf: “{{title}}” ({count, plural, one {# video} other {# videos}}).",
+      "TRAFFIC_RUNNING_OUT": "You’ve used {{used}} of this month’s {{limit}} of traffic. When it runs out, your public videos and links stop opening for others until {{date}}.",
+      "TRAFFIC_USED_UP": "This month’s traffic ({{limit}}) is used up. Until {{date}} your public videos and links don’t open for others, and you can’t watch other people’s videos. Your own videos still play for you.",
       "REQUEST_INVALIDATED_expired": "The deal with a guest for “{{title}}” ran out: nobody moved for three days.",
       "PLAN_EXPIRING_links": "Your Pro plan ends on {{date}}. After that your shelf gets the Free limits and your anonymous links stop opening until you have Pro again; nothing is deleted.",
       "PLAN_EXPIRING_page_links": "Your Pro plan ends on {{date}}. After that your shelf gets the Free limits, your hidden page becomes visible to everyone again and your anonymous links stop opening until you have Pro again; nothing is deleted.",

@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "문의 답변",
       "SUPPORT_TICKET": "새 문의 (관리자용)",
       "LINK_OPENED": "누군가 내 임시 링크를 엶",
-      "LINK_SAVED": "내 링크의 동영상을 누군가 선반에 담음"
+      "LINK_SAVED": "내 링크의 동영상을 누군가 선반에 담음",
+      "TRAFFIC_RUNNING_OUT": "내 월 트래픽 곧 소진",
+      "TRAFFIC_USED_UP": "내 월 트래픽 소진"
     },
     "text": {
       "VIDEO_PROCESSED": "‘{{title}}’ 동영상을 이제 볼 수 있어요.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}}님이 ‘{{title}}’ 임시 링크를 열었어요 (동영상 {count, plural, other {#개}}).",
       "LINK_OPENED_guest": "누군가 ‘{{title}}’ 임시 링크를 열었어요 (동영상 {count, plural, other {#개}}).",
       "LINK_SAVED": "@{{name}}님이 내 임시 링크의 동영상을 자기 선반에 담았어요: ‘{{title}}’ (동영상 {count, plural, other {#개}})",
+      "TRAFFIC_RUNNING_OUT": "이번 달 트래픽 {{limit}} 중 {{used}} 사용했어요. 트래픽을 다 쓰면 {{date}}까지 내 공개 동영상과 링크가 다른 사람에게 열리지 않아요.",
+      "TRAFFIC_USED_UP": "이번 달 트래픽({{limit}})을 다 썼어요. {{date}}까지 내 공개 동영상과 링크가 다른 사람에게 열리지 않고, 다른 사람의 동영상도 볼 수 없어요. 내 동영상은 평소처럼 볼 수 있어요.",
       "REQUEST_INVALIDATED_expired": "게스트와 하던 ‘{{title}}’ 거래가 만료됐어요. 3일 동안 아무도 응답하지 않았어요.",
       "PLAN_EXPIRING_links": "Pro 요금제가 {{date}}에 끝나요. 그 후에는 선반에 Free 한도가 적용되고, 익명 링크는 Pro를 다시 시작할 때까지 열리지 않아요. 삭제되는 건 없어요.",
       "PLAN_EXPIRING_page_links": "Pro 요금제가 {{date}}에 끝나요. 그 후에는 선반에 Free 한도가 적용되고, 숨긴 페이지가 다시 모두에게 보이며, 익명 링크는 Pro를 다시 시작할 때까지 열리지 않아요. 삭제되는 건 없어요.",

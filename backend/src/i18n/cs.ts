@@ -1,5 +1,6 @@
 export const cs = {
   errors: {
+    clientTooOld: 'Tato verze aplikace je pro tento server příliš stará.',
     internal: 'Na naší straně se něco pokazilo. Zkuste to prosím později.',
     generic: 'Akci se nepodařilo dokončit.',
     badRequest: 'Neplatný požadavek.',
@@ -532,6 +533,18 @@ export const cs = {
         page: 'Vaši stránku teď zase vidí všichni: skrytí stránky je součástí Pro.',
         anonymousLinks:
           'Vaše anonymní odkazy se už neotevírají; s Pro zase začnou fungovat.',
+        button: 'Otevřít tarif',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Váš přenos dat dochází',
+        title: 'Přenos dat dochází',
+        body: 'Na {{site}} jste tento měsíc už využili {{used}} z {{limit}} přenosu dat. Až se vyčerpá, vaše veřejná videa a odkazy se ostatním přestanou otevírat až do {{date}} (UTC).',
+        button: 'Otevřít tarif',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Přenos dat na tento měsíc je vyčerpaný',
+        title: 'Přenos dat je vyčerpaný',
+        body: 'Na {{site}} je přenos dat na tento měsíc ({{limit}}) vyčerpaný. Do {{date}} (UTC) se vaše veřejná videa a odkazy ostatním neotevřou a vy nemůžete sledovat cizí videa. Vlastní videa se vám přehrávají dál.',
         button: 'Otevřít tarif',
       },
     },

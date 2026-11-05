@@ -315,6 +315,12 @@ export class AdminUserDetailDto extends AdminUserRowDto {
   @ApiProperty({ type: [String] }) providers!: string[];
   @ApiProperty({ description: 'Storage quota of the tier' })
   quotaBytes!: number;
+  @ApiProperty({ description: 'Traffic spent this month' })
+  trafficUsedBytes!: number;
+  @ApiProperty({ description: 'Monthly traffic of the tier; 0 = no limit' })
+  trafficLimitBytes!: number;
+  @ApiProperty({ description: 'Traffic spent the month before' })
+  trafficLastMonthBytes!: number;
   @ApiProperty({
     nullable: true,
     type: String,

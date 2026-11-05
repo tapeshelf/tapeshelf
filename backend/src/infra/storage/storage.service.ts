@@ -417,6 +417,28 @@ export class StorageService implements OnApplicationShutdown {
     return keys;
   }
 
+  /** The objects under a prefix with their sizes. */
+  async listSizes(
+    kind: BucketKind,
+    prefix: string,
+  ): Promise<{ key: string; size: number }[]> {
+    const out: { key: string; size: number }[] = [];
+    let token: string | undefined;
+    do {
+      const res = await this.internal.send(
+        new ListObjectsV2Command({
+          Bucket: this.bucket(kind),
+          Prefix: prefix,
+          ContinuationToken: token,
+        }),
+      );
+      for (const o of res.Contents ?? [])
+        if (o.Key) out.push({ key: o.Key, size: o.Size ?? 0 });
+      token = res.IsTruncated ? res.NextContinuationToken : undefined;
+    } while (token);
+    return out;
+  }
+
   /** Total size of the objects under a prefix (the admin trash shows what a purge frees). */
   async prefixSize(kind: BucketKind, prefix: string): Promise<number> {
     let bytes = 0;

@@ -1,3 +1,4 @@
+import { CLIENT_HEADER, parseClient } from '../../common/client-version.js';
 import {
   Body,
   Controller,
@@ -73,7 +74,11 @@ const SECOND_STEP_COOKIE = 'vs_2fa';
 const SECOND_STEP_COOKIE_PATH = '/api/auth/login';
 
 function meta(req: AppRequest): ClientMeta {
-  return { userAgent: req.headers['user-agent'], ip: req.ip };
+  return {
+    userAgent: req.headers['user-agent'],
+    ip: req.ip,
+    client: parseClient(req.headers[CLIENT_HEADER])?.raw,
+  };
 }
 
 /** Only same-site relative paths are accepted as post-login destinations. */
@@ -392,6 +397,7 @@ export class AuthController {
       id: s.id,
       userAgent: s.userAgent,
       ip: s.ip,
+      client: s.client,
       createdAt: s.createdAt.toISOString(),
       lastUsedAt: s.lastUsedAt.toISOString(),
       current: s.id === user.sessionId,

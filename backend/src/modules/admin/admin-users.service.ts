@@ -12,6 +12,7 @@ import { BillingService } from '../billing/billing.service.js';
 import { canHidePage } from '../access/access-policy.js';
 import { effectiveTier } from '../plans/plan.js';
 import { PlansService } from '../plans/plans.service.js';
+import { TrafficService } from '../traffic/traffic.service.js';
 import { UsersService } from '../users/users.service.js';
 import { AdminReportsService } from './admin-reports.service.js';
 import { USER_REF_SELECT } from './admin-mappers.js';
@@ -65,6 +66,7 @@ export class AdminUsersService {
     private readonly plans: PlansService,
     private readonly billing: BillingService,
     private readonly reports: AdminReportsService,
+    private readonly traffic: TrafficService,
     private readonly twoFactor: TwoFactorService,
   ) {}
 
@@ -127,6 +129,7 @@ export class AdminUsersService {
       reports,
       limits,
       subscription,
+      traffic,
     ] = await Promise.all([
       this.prisma.videoAccess.count({
         where: {
@@ -150,6 +153,7 @@ export class AdminUsersService {
       this.reports.list({ userId: id, limit: 10 }),
       this.plans.limitsForUser({ role: u.role, tier: effectiveTier(u) }),
       this.billing.subscriptionOf(id),
+      this.traffic.summary(id, now),
     ]);
     return Object.assign(this.row(u), {
       bio: u.bio,
@@ -160,6 +164,9 @@ export class AdminUsersService {
       twoFactor: u.twoFactorAt !== null,
       providers: u.oauthAccounts.map((a) => a.provider),
       quotaBytes: limits.storageQuotaBytes,
+      trafficUsedBytes: traffic.usedBytes,
+      trafficLimitBytes: traffic.limitBytes,
+      trafficLastMonthBytes: traffic.lastMonthBytes,
       tierUntil:
         this.plans.hasTiers && effectiveTier(u) === 'PREMIUM'
           ? (u.tierUntil?.toISOString() ?? null)

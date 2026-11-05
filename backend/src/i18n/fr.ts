@@ -1,5 +1,7 @@
 export const fr = {
   errors: {
+    clientTooOld:
+      'Cette version de l’application est trop ancienne pour ce serveur.',
     internal:
       'Un problème est survenu de notre côté. Veuillez réessayer plus tard.',
     generic: 'La requête n’a pas pu aboutir.',
@@ -540,6 +542,18 @@ export const fr = {
         page: 'Votre page est de nouveau visible pour tous : la masquer est réservé à Pro.',
         anonymousLinks:
           'Vos liens anonymes ne s’ouvrent plus ; ils fonctionneront de nouveau dès que vous aurez Pro.',
+        button: 'Voir votre formule',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Votre trafic est presque épuisé',
+        title: 'Le trafic est presque épuisé',
+        body: 'Sur {{site}}, vous avez utilisé {{used}} des {{limit}} de trafic de ce mois-ci. Quand il sera épuisé, vos vidéos publiques et vos liens cesseront de s’ouvrir pour les autres jusqu’au {{date}} (UTC).',
+        button: 'Voir votre formule',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Le trafic de ce mois-ci est épuisé',
+        title: 'Trafic épuisé',
+        body: 'Le trafic de ce mois-ci ({{limit}}) sur {{site}} est épuisé. Jusqu’au {{date}} (UTC), vos vidéos publiques et vos liens ne s’ouvrent pas pour les autres, et vous ne pouvez pas regarder les vidéos d’autres personnes. Vos propres vidéos continuent de se lire normalement.',
         button: 'Voir votre formule',
       },
     },

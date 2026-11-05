@@ -1,5 +1,7 @@
 export const es = {
   errors: {
+    clientTooOld:
+      'Esta versión de la app es demasiado antigua para este servidor.',
     internal: 'Algo salió mal por nuestra parte. Inténtalo más tarde.',
     generic: 'No se pudo completar la solicitud.',
     badRequest: 'La solicitud no es válida.',
@@ -522,6 +524,18 @@ export const es = {
         page: 'Tu página vuelve a ser visible para todos: ocultarla es parte de Pro.',
         anonymousLinks:
           'Tus enlaces anónimos ya no se abren; con Pro volverán a funcionar.',
+        button: 'Abrir tu plan',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Tu tráfico se está acabando',
+        title: 'El tráfico se está acabando',
+        body: 'En {{site}} has usado {{used}} de los {{limit}} de tráfico de este mes. Cuando se acabe, tus videos públicos y tus enlaces dejarán de abrirse para los demás hasta el {{date}} (UTC).',
+        button: 'Abrir tu plan',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'El tráfico de este mes se agotó',
+        title: 'Tráfico agotado',
+        body: 'El tráfico de este mes ({{limit}}) en {{site}} se agotó. Hasta el {{date}} (UTC), tus videos públicos y tus enlaces no se abren para los demás, y no puedes ver los videos de otras personas. Tus propios videos los sigues viendo como siempre.',
         button: 'Abrir tu plan',
       },
     },

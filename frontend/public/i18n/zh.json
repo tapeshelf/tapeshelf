@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "客服回复",
       "SUPPORT_TICKET": "工单（管理员）",
       "LINK_OPENED": "我的限时链接被打开",
-      "LINK_SAVED": "有人把我链接里的视频加到了片架"
+      "LINK_SAVED": "有人把我链接里的视频加到了片架",
+      "TRAFFIC_RUNNING_OUT": "我的每月流量即将用完",
+      "TRAFFIC_USED_UP": "我的每月流量已用完"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}”已可以观看。",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} 打开了你的限时链接“{{title}}”（{count, plural, other {# 个视频}}）。",
       "LINK_OPENED_guest": "有人打开了你的限时链接“{{title}}”（{count, plural, other {# 个视频}}）。",
       "LINK_SAVED": "@{{name}} 把你限时链接里的视频加到了自己的片架：“{{title}}”（{count, plural, other {# 个视频}}）。",
+      "TRAFFIC_RUNNING_OUT": "本月流量 {{limit}}，已用掉 {{used}}。流量用完后，别人在 {{date}} 之前将无法打开你的公开视频和链接。",
+      "TRAFFIC_USED_UP": "本月流量（{{limit}}）已用完。在 {{date}} 之前，别人无法打开你的公开视频和链接，你也无法观看别人的视频。你自己的视频照常播放。",
       "REQUEST_INVALIDATED_expired": "与游客就“{{title}}”的交易已过期：三天内双方都没有操作。",
       "PLAN_EXPIRING_links": "你的 Pro 套餐将于 {{date}} 到期。之后你的片架将改用 Free 的限额，匿名链接在你重新开通 Pro 之前也无法打开；不会删除任何内容。",
       "PLAN_EXPIRING_page_links": "你的 Pro 套餐将于 {{date}} 到期。之后你的片架将改用 Free 的限额，隐藏的主页也会重新对所有人可见，匿名链接在你重新开通 Pro 之前无法打开；不会删除任何内容。",

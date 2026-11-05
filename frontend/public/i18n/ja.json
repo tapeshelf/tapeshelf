@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "サポートからの返信",
       "SUPPORT_TICKET": "お問い合わせ（管理者向け）",
       "LINK_OPENED": "自分の期限付きリンクが開かれたとき",
-      "LINK_SAVED": "リンクの動画が誰かの棚に追加されたとき"
+      "LINK_SAVED": "リンクの動画が誰かの棚に追加されたとき",
+      "TRAFFIC_RUNNING_OUT": "月間転送量が残り少なくなったとき",
+      "TRAFFIC_USED_UP": "月間転送量を使い切ったとき"
     },
     "text": {
       "VIDEO_PROCESSED": "「{{title}}」を視聴できるようになりました。",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}}さんが「{{title}}」の期限付きリンクを開きました（{count, plural, other {動画#本}}）。",
       "LINK_OPENED_guest": "「{{title}}」の期限付きリンクが開かれました（{count, plural, other {動画#本}}）。",
       "LINK_SAVED": "@{{name}}さんが期限付きリンクの動画を自分の棚に追加しました：「{{title}}」（{count, plural, other {動画#本}}）。",
+      "TRAFFIC_RUNNING_OUT": "今月の転送量{{limit}}のうち{{used}}を使用しました。使い切ると、{{date}}まで公開動画とリンクをほかの人が開けなくなります。",
+      "TRAFFIC_USED_UP": "今月の転送量（{{limit}}）を使い切りました。{{date}}まで、公開動画とリンクはほかの人が開けず、ほかの人の動画も視聴できません。自分の動画はこれまでどおり再生できます。",
       "REQUEST_INVALIDATED_expired": "「{{title}}」をめぐるゲストとの取引は期限切れになりました。3日間どちらも動きがありませんでした。",
       "PLAN_EXPIRING_links": "Proプランは{{date}}に終了します。その後、棚にはFreeプランの上限が適用され、匿名リンクはProを再開するまで開けなくなります。削除されるものはありません。",
       "PLAN_EXPIRING_page_links": "Proプランは{{date}}に終了します。その後、棚にはFreeプランの上限が適用され、非表示にしたページは再び全員に表示され、匿名リンクはProを再開するまで開けなくなります。削除されるものはありません。",

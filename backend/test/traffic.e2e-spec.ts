@@ -2,10 +2,14 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { randomBytes } from 'node:crypto';
 
 import { PrismaService } from '../src/infra/prisma/prisma.service.js';
+import { QueueService } from '../src/infra/queue/queue.service.js';
+import type { MailJob } from '../src/infra/queue/queue.types.js';
 import { StorageService } from '../src/infra/storage/storage.service.js';
 import { monthWindow } from '../src/modules/downloads/download-rules.js';
+import { OutboxRelayService } from '../src/modules/notifications/outbox-relay.service.js';
 import { SETTING_DEFAULTS } from '../src/modules/settings/settings.defaults.js';
 import { SettingsService } from '../src/modules/settings/settings.service.js';
+import { TrafficService } from '../src/modules/traffic/traffic.service.js';
 import { client, createTestApp, resetDatabase } from './utils/test-app.js';
 import { signUp } from './utils/users.js';
 
@@ -24,6 +28,9 @@ describe('traffic (e2e)', () => {
   let app: NestExpressApplication;
   let prisma: PrismaService;
   let settings: SettingsService;
+  let relay: OutboxRelayService;
+  let traffic: TrafficService;
+  let queues: QueueService;
   let author: C, viewer: C, pro: C, guest: C;
   let authorId: string, viewerId: string, proId: string;
 
@@ -31,6 +38,9 @@ describe('traffic (e2e)', () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
     settings = app.get(SettingsService);
+    relay = app.get(OutboxRelayService);
+    traffic = app.get(TrafficService);
+    queues = app.get(QueueService);
     await app.get(StorageService).put('private', {
       key: KEY,
       body: FILE,
@@ -395,6 +405,131 @@ describe('traffic (e2e)', () => {
       await author
         .get(`/api/links/${code}/videos/${video.id}/download`)
         .expect(302);
+    });
+  });
+
+  describe('the account is told', () => {
+    const notes = async (c: C) => {
+      await relay.drain();
+      return (await c.get('/api/notifications').expect(200)).body.items as {
+        type: string;
+        payload: Record<string, unknown>;
+      }[];
+    };
+    const row = (id: string) =>
+      prisma.trafficUsage.findUniqueOrThrow({
+        where: {
+          userId_month: { userId: id, month: monthWindow(new Date()).start },
+        },
+      });
+    /** Another guest each time: each view spends the author's traffic again. */
+    let address = 1;
+    const guestView = (id: string) =>
+      play(client(app), id, `203.0.113.${address++}`);
+
+    it('once when four fifths are spent, by the bell; once when all is, by the bell and by mail', async () => {
+      await limits(5 * PLAYBACK);
+      const v = await seed();
+      for (let i = 0; i < 3; i++) await guestView(v.id).expect(200);
+      expect(await notes(author)).toEqual([]);
+
+      // The fourth view makes 4000 of 5000: running out.
+      await guestView(v.id).expect(200);
+      const warned = await notes(author);
+      expect(warned.map((n) => n.type)).toEqual(['TRAFFIC_RUNNING_OUT']);
+      expect(warned[0]!.payload).toEqual({
+        usedBytes: 4 * PLAYBACK,
+        limitBytes: 5 * PLAYBACK,
+        resetAt: monthWindow(new Date()).resetAt.toISOString(),
+      });
+      expect((await row(authorId)).warnedAt).not.toBeNull();
+
+      // The fifth spends the rest: used up, and the refusals after it add nothing.
+      await guestView(v.id).expect(200);
+      await guestView(v.id).expect(429);
+      await guestView(v.id).expect(429);
+      const all = await notes(author);
+      expect(all.map((n) => n.type)).toEqual([
+        'TRAFFIC_USED_UP',
+        'TRAFFIC_RUNNING_OUT',
+      ]);
+      expect(all[0]!.payload).toEqual({
+        limitBytes: 5 * PLAYBACK,
+        resetAt: monthWindow(new Date()).resetAt.toISOString(),
+      });
+      expect((await row(authorId)).usedUpAt).not.toBeNull();
+      // Four fifths went by the bell alone (the default); the end of it also goes by mail.
+      const mails = await queues.mail.getJobs([
+        'waiting',
+        'delayed',
+        'prioritized',
+      ]);
+      expect(mails.map((job) => (job.data as MailJob).type)).toEqual([
+        'TRAFFIC_USED_UP',
+      ]);
+      expect((mails[0]!.data as MailJob).to).toBe('author@example.com');
+    });
+
+    it('a limit that shrank under the sum is told on the first refusal, once; a viewer hears of their own', async () => {
+      await limits(PLAYBACK);
+      // More than the limit already, as after the end of Pro.
+      await exhaust(viewerId, 3 * PLAYBACK);
+      const v = await seed();
+      await play(viewer, v.id).expect(429);
+      await play(viewer, v.id).expect(429);
+      const told = await notes(viewer);
+      expect(told.map((n) => n.type)).toEqual(['TRAFFIC_USED_UP']);
+      expect(told[0]!.payload).toMatchObject({ limitBytes: PLAYBACK });
+      expect(await notes(author)).toEqual([]);
+    });
+
+    it('one charge from under four fifths to the limit says only that it is used up', async () => {
+      await limits(PLAYBACK);
+      const v = await seed();
+      await play(viewer, v.id).expect(200);
+      expect((await notes(viewer)).map((n) => n.type)).toEqual([
+        'TRAFFIC_USED_UP',
+      ]);
+    });
+
+    it('an admin and a self-hosted-like account without a limit hear nothing', async () => {
+      await limits(PLAYBACK);
+      await prisma.user.update({
+        where: { id: viewerId },
+        data: { role: 'ADMIN' },
+      });
+      const v = await seed();
+      await play(viewer, v.id).expect(200);
+      await play(viewer, (await seed()).id).expect(200);
+      expect(await notes(viewer)).toEqual([]);
+    });
+  });
+
+  describe('old months', () => {
+    it('the sweep keeps this month and the two before it', async () => {
+      const now = new Date(Date.UTC(2026, 10, 4));
+      const month = (y: number, m: number) => new Date(Date.UTC(y, m, 1));
+      for (const m of [
+        month(2026, 10),
+        month(2026, 9),
+        month(2026, 8),
+        month(2026, 7),
+        month(2025, 10),
+      ])
+        await prisma.trafficUsage.create({
+          data: { userId: viewerId, month: m, bytes: 1n },
+        });
+      expect(await traffic.sweep(now)).toBe(2);
+      const kept = await prisma.trafficUsage.findMany({
+        where: { userId: viewerId },
+        orderBy: { month: 'asc' },
+      });
+      expect(kept.map((r) => r.month.toISOString().slice(0, 7))).toEqual([
+        '2026-09',
+        '2026-10',
+        '2026-11',
+      ]);
+      expect(await traffic.sweep(now)).toBe(0);
     });
   });
 });

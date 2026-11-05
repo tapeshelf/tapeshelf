@@ -1,5 +1,6 @@
 export const pl = {
   errors: {
+    clientTooOld: 'Ta wersja aplikacji jest za stara dla tego serwera.',
     internal: 'Coś poszło nie tak po naszej stronie. Spróbuj ponownie później.',
     generic: 'Nie udało się wykonać żądania.',
     badRequest: 'Nieprawidłowe żądanie.',
@@ -534,6 +535,18 @@ export const pl = {
         page: 'Twoja strona znów jest widoczna dla wszystkich: ukrywanie strony jest dostępne w Pro.',
         anonymousLinks:
           'Twoje anonimowe linki już się nie otwierają; z Pro znów zaczną działać.',
+        button: 'Otwórz swój plan',
+      },
+      TRAFFIC_RUNNING_OUT: {
+        subject: 'Twój transfer się kończy',
+        title: 'Transfer się kończy',
+        body: 'W {{site}} zużyto już {{used}} z {{limit}} transferu na ten miesiąc. Gdy się wyczerpie, Twoje filmy publiczne i linki przestaną się otwierać u innych do {{date}} (UTC).',
+        button: 'Otwórz swój plan',
+      },
+      TRAFFIC_USED_UP: {
+        subject: 'Transfer na ten miesiąc się wyczerpał',
+        title: 'Transfer się wyczerpał',
+        body: 'Transfer na ten miesiąc ({{limit}}) w {{site}} się wyczerpał. Do {{date}} (UTC) Twoje filmy publiczne i linki nie otwierają się u innych, a Ty nie możesz oglądać filmów innych osób. Własne filmy oglądasz jak zwykle.',
         button: 'Otwórz swój plan',
       },
     },

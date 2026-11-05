@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Destek ekibinin yanıtları",
       "SUPPORT_TICKET": "Destek talepleri (yöneticiler)",
       "LINK_OPENED": "Geçici bağlantım açıldı",
-      "LINK_SAVED": "Bağlantımdaki videolar birinin rafına eklendi"
+      "LINK_SAVED": "Bağlantımdaki videolar birinin rafına eklendi",
+      "TRAFFIC_RUNNING_OUT": "Aylık trafiğim bitmek üzere",
+      "TRAFFIC_USED_UP": "Aylık trafiğim tükendi"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” izlenmeye hazır.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}}, “{{title}}” içeren geçici bağlantınızı açtı ({count, plural, one {# video} other {# video}}).",
       "LINK_OPENED_guest": "Biri, “{{title}}” içeren geçici bağlantınızı açtı ({count, plural, one {# video} other {# video}}).",
       "LINK_SAVED": "@{{name}}, geçici bağlantınızdaki videoları rafına ekledi: “{{title}}” ({count, plural, one {# video} other {# video}}).",
+      "TRAFFIC_RUNNING_OUT": "Bu ayki {{limit}} trafiğinizin {{used}} kadarını kullandınız. Trafik bittiğinde herkese açık videolarınız ve bağlantılarınız {{date}} tarihine kadar başkaları için açılmaz.",
+      "TRAFFIC_USED_UP": "Bu ayki trafiğiniz ({{limit}}) tükendi. {{date}} tarihine kadar herkese açık videolarınız ve bağlantılarınız başkaları için açılmaz, siz de başkalarının videolarını izleyemezsiniz. Kendi videolarınızı her zamanki gibi izleyebilirsiniz.",
       "REQUEST_INVALIDATED_expired": "Bir misafirle “{{title}}” için başlayan takasın süresi doldu: üç gün boyunca kimse adım atmadı.",
       "PLAN_EXPIRING_links": "Pro planınız {{date}} tarihinde sona eriyor. Sonrasında rafınız Free sınırlarına geçer ve anonim bağlantılarınız tekrar Pro’ya geçene kadar açılmaz; hiçbir şey silinmez.",
       "PLAN_EXPIRING_page_links": "Pro planınız {{date}} tarihinde sona eriyor. Sonrasında rafınız Free sınırlarına geçer, gizli sayfanız yeniden herkese görünür olur ve anonim bağlantılarınız tekrar Pro’ya geçene kadar açılmaz; hiçbir şey silinmez.",

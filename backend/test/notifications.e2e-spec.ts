@@ -229,8 +229,9 @@ describe('notifications and outbox (e2e)', () => {
     ).body;
     // No "new video of someone I follow" any more: "What's new" shows those; a moderator's
     // edit of one's video is told, and an edit that did not work out; support
-    // answers — a new ticket is told only to admins; a temporary link opened or saved.
-    expect(defaults).toHaveLength(24);
+    // answers — a new ticket is told only to admins; a temporary link opened or saved;
+    // the month's traffic running out and used up.
+    expect(defaults).toHaveLength(26);
     expect(defaults.map((d: { type: string }) => d.type)).not.toContain(
       'SUPPORT_TICKET',
     );
@@ -244,6 +245,8 @@ describe('notifications and outbox (e2e)', () => {
         { type: 'VIDEO_PROCESSED', inApp: true, email: false },
         { type: 'VIDEO_FAILED', inApp: true, email: false },
         { type: 'VIDEO_REMOVED', inApp: true, email: false },
+        { type: 'TRAFFIC_RUNNING_OUT', inApp: true, email: false },
+        { type: 'TRAFFIC_USED_UP', inApp: true, email: true },
       ]),
     );
     await author

@@ -875,7 +875,9 @@
       "SUPPORT_REPLY": "Jawaban dari tim dukungan",
       "SUPPORT_TICKET": "Tiket dukungan (admin)",
       "LINK_OPENED": "Tautan sementara saya dibuka",
-      "LINK_SAVED": "Video dari tautan saya masuk ke rak seseorang"
+      "LINK_SAVED": "Video dari tautan saya masuk ke rak seseorang",
+      "TRAFFIC_RUNNING_OUT": "Trafik bulanan saya hampir habis",
+      "TRAFFIC_USED_UP": "Trafik bulanan saya sudah habis"
     },
     "text": {
       "VIDEO_PROCESSED": "“{{title}}” siap ditonton.",
@@ -926,6 +928,8 @@
       "LINK_OPENED": "@{{name}} membuka tautan sementara Anda berisi “{{title}}” ({count, plural, other {# video}}).",
       "LINK_OPENED_guest": "Seseorang membuka tautan sementara Anda berisi “{{title}}” ({count, plural, other {# video}}).",
       "LINK_SAVED": "@{{name}} menambahkan video dari tautan sementara Anda ke raknya: “{{title}}” ({count, plural, other {# video}}).",
+      "TRAFFIC_RUNNING_OUT": "Anda sudah memakai {{used}} dari {{limit}} trafik bulan ini. Saat trafik habis, video publik dan tautan Anda tidak bisa dibuka orang lain sampai {{date}}.",
+      "TRAFFIC_USED_UP": "Trafik bulan ini ({{limit}}) sudah habis. Sampai {{date}}, video publik dan tautan Anda tidak bisa dibuka orang lain, dan Anda tidak bisa menonton video orang lain. Video Anda sendiri tetap bisa diputar seperti biasa.",
       "REQUEST_INVALIDATED_expired": "Kesepakatan dengan tamu untuk “{{title}}” kedaluwarsa: tidak ada yang bergerak selama tiga hari.",
       "PLAN_EXPIRING_links": "Paket Pro Anda berakhir pada {{date}}. Setelah itu rak Anda mendapat batas Free dan tautan anonim Anda tidak bisa dibuka sampai Anda punya Pro lagi; tidak ada yang dihapus.",
       "PLAN_EXPIRING_page_links": "Paket Pro Anda berakhir pada {{date}}. Setelah itu rak Anda mendapat batas Free, halaman tersembunyi Anda kembali terlihat oleh semua orang, dan tautan anonim Anda tidak bisa dibuka sampai Anda punya Pro lagi; tidak ada yang dihapus.",

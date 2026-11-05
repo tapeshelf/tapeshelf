@@ -219,6 +219,13 @@ export class SessionDto {
   @ApiProperty() id!: string;
   @ApiProperty({ nullable: true, type: String }) userAgent!: string | null;
   @ApiProperty({ nullable: true, type: String }) ip!: string | null;
+  @ApiProperty({
+    nullable: true,
+    type: String,
+    description:
+      'What a native app said about itself when it signed in: `android/1.2.3 (Pixel 8; Android 15)`; null for a browser',
+  })
+  client!: string | null;
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) lastUsedAt!: string;
   @ApiProperty() current!: boolean;
