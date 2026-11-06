@@ -177,7 +177,8 @@ describe('downloads (e2e)', () => {
     await freeLimits();
     const v = await seed();
     const t = (await ticket(free, v.id).expect(200)).body;
-    expect(t).toMatchObject({ direct: false });
+    // The name it is saved under, for an app that saves it itself (M10).
+    expect(t).toMatchObject({ direct: false, filename: FILENAME });
     expect(t.url).toMatch(
       new RegExp(`^/api/videos/${v.id}/download/file\\?t=`),
     );

@@ -161,10 +161,8 @@ export class VideosService {
       where: { id },
       data: {
         title: title || undefined,
-        description:
-          dto.description === undefined
-            ? undefined
-            : dto.description.trim() || null,
+        // Null clears it, as the contract says; it used to fail on null.
+        description: ownText(dto.description),
         visibility: dto.visibility,
         sensitive: dto.sensitive,
       },

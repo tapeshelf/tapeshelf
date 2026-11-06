@@ -354,7 +354,7 @@ export class MyCollectionService {
           videoIds,
         ),
       );
-    });
+    }, ORDER_TX);
   }
 
   /** A drag (MoveDto): the move is made on the whole shelf, under the order lock. */
@@ -392,6 +392,13 @@ export class MyCollectionService {
           },
         });
       }
-    });
+    }, ORDER_TX);
   }
 }
+
+/**
+ * A shelf's order is written in one transaction: on a very large shelf the first drag numbers
+ * all of it (tens of thousands of rows), which on a busy machine outlasts Prisma's default five
+ * seconds and came back as 503 (P2028). The budget of the account's other long transactions.
+ */
+const ORDER_TX = { timeout: 120_000, maxWait: 10_000 };

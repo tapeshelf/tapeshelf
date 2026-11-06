@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /** What the wait page needs: the video, the limits and where the user stands. */
 export class DownloadInfoDto {
@@ -60,4 +60,9 @@ export class DownloadTicketDto {
   })
   url!: string;
   @ApiProperty() direct!: boolean;
+  @ApiPropertyOptional({
+    description:
+      'The name the file is saved under (an edited video is an .mp4); absent on servers before it',
+  })
+  filename?: string;
 }

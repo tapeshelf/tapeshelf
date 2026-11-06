@@ -194,7 +194,11 @@ export class DownloadsService {
     const video = await this.load(user, { id: videoId });
     const limits = await this.limits(user);
     if (downloadMode(user.role, limits) === 'direct')
-      return { url: await this.direct(user, video, now), direct: true };
+      return {
+        url: await this.direct(user, video, now),
+        direct: true,
+        filename: fileOf(video).filename,
+      };
     if (
       limits.downloadConcurrency > 0 &&
       (await this.activeCount(user.id, now)) >= limits.downloadConcurrency
@@ -207,6 +211,7 @@ export class DownloadsService {
     return {
       url: `/api/videos/${video.id}/download/file?t=${encodeURIComponent(t)}`,
       direct: false,
+      filename: fileOf(video).filename,
     };
   }
 

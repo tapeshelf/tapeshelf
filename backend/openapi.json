@@ -13468,8 +13468,8 @@
           },
           "description": {
             "type": "string",
-            "maxLength": 2000,
-            "nullable": true
+            "nullable": true,
+            "maxLength": 2000
           },
           "visibility": {
             "allOf": [
@@ -14079,6 +14079,10 @@
           },
           "direct": {
             "type": "boolean"
+          },
+          "filename": {
+            "type": "string",
+            "description": "The name the file is saved under (an edited video is an .mp4); absent on servers before it"
           }
         },
         "required": [

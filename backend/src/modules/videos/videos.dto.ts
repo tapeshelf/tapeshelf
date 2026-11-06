@@ -126,7 +126,7 @@ export class UpdateVideoDto {
   @IsOptional()
   @IsString()
   @MaxLength(DESCRIPTION_MAX)
-  description?: string;
+  description?: string | null;
 
   @ApiPropertyOptional({ enum: Visibility, enumName: 'Visibility' })
   @IsOptional()

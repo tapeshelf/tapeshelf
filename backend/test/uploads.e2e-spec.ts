@@ -426,6 +426,16 @@ describe('uploads (e2e)', () => {
       .patch(`/api/videos/${video.id}`)
       .send({ title: 'Clip 2' })
       .expect(200);
+    // A description set, then cleared with null, as the contract allows (it failed with 500).
+    await c
+      .patch(`/api/videos/${video.id}`)
+      .send({ description: 'Notes' })
+      .expect(200);
+    const cleared = await c
+      .patch(`/api/videos/${video.id}`)
+      .send({ description: null })
+      .expect(200);
+    expect(cleared.body.description).toBeNull();
     expect(await queues.thumbnail.getJob(`sheet_${video.id}`)).toBeFalsy();
     expect(
       (
